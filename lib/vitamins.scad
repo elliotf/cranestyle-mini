@@ -1,6 +1,11 @@
 include <../lib/util.scad>;
 
 m3_diam = 3;
+m3_socket_head_height = 3.25;
+m3_nut_diam = 5.5;
+m5_diam = 5;
+m5_socket_head_height = 6.25;
+m5_nut_diam = 9;
 
 byj_body_diam = 28;
 byj_height = 19.5; // body is 19, but flanges stick up
