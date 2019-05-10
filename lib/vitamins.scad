@@ -4,7 +4,7 @@ m3_diam = 3;
 m3_socket_head_height = 3.25;
 m3_nut_diam = 5.5;
 m5_diam = 5;
-m5_socket_head_height = 6.25;
+m5_socket_head_height = 6;
 m5_nut_diam = 9;
 
 byj_body_diam = 28;
@@ -275,37 +275,36 @@ v_slot_width     = 9.5;
 v_slot_gap       = v_slot_width-v_slot_depth*2;
 v_slot_opening   = 6.2;
 
-module extrusion_2040_profile() {
-
-  width = 40;
-  height = 20;
-
-  module groove_profile() {
-    square([v_slot_depth*3,v_slot_opening],center=true);
-    hull() {
-      square([v_slot_depth*2,v_slot_gap],center=true);
-      translate([0,0,0]) {
-        square([0.00001,v_slot_width],center=true);
-      }
+module openbuilds_groove_profile() {
+  square([v_slot_depth*3,v_slot_opening],center=true);
+  hull() {
+    square([v_slot_depth*2,v_slot_gap],center=true);
+    translate([0,0,0]) {
+      square([0.00001,v_slot_width],center=true);
     }
+  }
 
-    groove_depth = 12.2/2;
-    opening_behind_slot = 1.64;
-    opening_behind_slot_width = v_slot_gap+(groove_depth-opening_behind_slot-v_slot_depth)*2;
+  groove_depth = 12.2/2;
+  opening_behind_slot = 1.64;
+  opening_behind_slot_width = v_slot_gap+(groove_depth-opening_behind_slot-v_slot_depth)*2;
 
-    for(side=[left,right]) {
-      translate([side*v_slot_depth,0,0]) {
-        hull() {
-          translate([side*(groove_depth-v_slot_depth)/2,0,0]) {
-            square([groove_depth-v_slot_depth,v_slot_gap],center=true);
-          }
-          translate([side*opening_behind_slot/2,0,0]) {
-            square([opening_behind_slot,opening_behind_slot_width],center=true);
-          }
+  for(side=[left,right]) {
+    translate([side*v_slot_depth,0,0]) {
+      hull() {
+        translate([side*(groove_depth-v_slot_depth)/2,0,0]) {
+          square([groove_depth-v_slot_depth,v_slot_gap],center=true);
+        }
+        translate([side*opening_behind_slot/2,0,0]) {
+          square([opening_behind_slot,opening_behind_slot_width],center=true);
         }
       }
     }
   }
+}
+
+module extrusion_2040_profile() {
+  width = 40;
+  height = 20;
 
   base_unit = 20;
   open_space_between_sides = base_unit-v_slot_depth*2;
@@ -326,7 +325,7 @@ module extrusion_2040_profile() {
         for(y=[top,bottom]) {
           translate([0,y*height/2,0]) {
             rotate([0,0,90]) {
-              groove_profile();
+              openbuilds_groove_profile();
             }
           }
         }
@@ -334,7 +333,45 @@ module extrusion_2040_profile() {
 
       translate([x*width/2,0]) {
         rotate([0,0,0]) {
-          groove_profile();
+          openbuilds_groove_profile();
+        }
+      }
+    }
+  }
+}
+
+module extrusion_2080_profile() {
+  width = 80;
+  height = 20;
+
+  base_unit = 20;
+  open_space_between_sides = base_unit-v_slot_depth*2;
+  difference() {
+    square([width,height],center=true);
+
+    square([5.4,open_space_between_sides],center=true);
+
+    hull() {
+      square([5.4,open_space_between_sides-1.96*2],center=true);
+      square([12.2,5.68],center=true);
+    }
+
+    for(x=[left,right]) {
+      translate([x*width/4,0]) {
+        accurate_circle(4.2,16);
+
+        for(y=[top,bottom]) {
+          translate([0,y*height/2,0]) {
+            rotate([0,0,90]) {
+              openbuilds_groove_profile();
+            }
+          }
+        }
+      }
+
+      translate([x*width/2,0]) {
+        rotate([0,0,0]) {
+          openbuilds_groove_profile();
         }
       }
     }
@@ -344,6 +381,12 @@ module extrusion_2040_profile() {
 module extrusion_2040(len) {
   linear_extrude(height=len,center=true,convexity=2) {
     extrusion_2040_profile();
+  }
+}
+
+module extrusion_2080(len) {
+  linear_extrude(height=len,center=true,convexity=2) {
+    extrusion_2080_profile();
   }
 }
 
@@ -600,3 +643,64 @@ module mech_endstop_tiny() {
     holes();
   }
 }
+
+// via
+//   https://www.hiwin.de/en/Products/Linear_Guideways/Series_MG/Block_MGN/21089/148407
+mgn9c_width = 20;
+mgn9c_length = 28.9;
+mgn9c_surface_above_surface = 10;
+mgn9c_dist_above_surface = 2;
+mgn9c_height = mgn9c_surface_above_surface - mgn9c_dist_above_surface;
+mgn9c_hole_spacing_width = 15;
+mgn9c_hole_spacing_length = 10;
+
+module mgn9c() {
+  difference() {
+    translate([0,0,-mgn9c_height/2]) {
+      cube([mgn9c_width,mgn9c_length,mgn9c_height],center=true);
+    }
+
+    for(x=[left,right]) {
+      for(y=[front,rear]) {
+        translate([x*mgn9c_hole_spacing_width/2,y*mgn9c_hole_spacing_length/2,0]) {
+          hole(3,8,resolution);
+        }
+      }
+    }
+  }
+}
+
+// via
+//   https://www.hiwin.de/en/Products/Linear_Guideways/Series_MG/Block_MGN/21089/148409
+mgn12c_width = 27;
+mgn12c_length = 34.7;
+mgn12c_dist_above_surface = 3;
+mgn12c_surface_above_surface = 13;
+mgn12c_height = mgn12c_surface_above_surface - mgn12c_dist_above_surface;
+mgn12c_dist_to_surface = 3;
+mgn12c_hole_spacing_width = 20;
+mgn12c_hole_spacing_length = 15;
+
+module mgn12c() {
+  difference() {
+    translate([0,0,-mgn12c_height/2]) {
+      cube([mgn12c_width,mgn12c_length,mgn12c_height],center=true);
+    }
+
+    for(x=[left,right]) {
+      for(y=[front,rear]) {
+        translate([x*mgn12c_hole_spacing_width/2,y*mgn12c_hole_spacing_length/2,0]) {
+          hole(3,8,resolution);
+        }
+      }
+    }
+  }
+}
+
+//   https://www.hiwin.de/en/Products/Linear_Guideways/Series_MG_PM/Series_MG/Rail_MGNR/21097
+mgn12_rail_width = 12;
+mgn12_rail_height = 8;
+mgn12_rail_hole_spacing = 25;
+mgn9_rail_width = 9;
+mgn9_rail_height = 6.5;
+mgn9_rail_hole_spacing = 20;

@@ -53,11 +53,17 @@ module y_motor_mount() {
 
   rounded_diam = m3_nut_diam + tolerance*2 + wall_thickness*4;
 
-  length_to_screw_into_motor = 2.5;
+  length_to_screw_into_motor = 3;
+  length_to_screw_into_t_slot_nut = 5;
+
   open_side_m3_length = 5;
   closed_side_m3_length = 16;
+  extrusion_anchor_screw_length = 20;
+
+  extrusion_anchor_shoulder_pos_z = -height/2-length_to_screw_into_t_slot_nut+extrusion_anchor_screw_length;
 
   meat_above_pulley = open_side_m3_length + m3_socket_head_height - length_to_screw_into_motor;
+  echo("meat_above_pulley: ", meat_above_pulley);
 
   belt_opening_angle = 90;
 
@@ -66,6 +72,10 @@ module y_motor_mount() {
   set_screw_access_width = 8;
 
   overall_side = nema14_hole_spacing+rounded_diam;
+
+  translate([0,0,50]) {
+    // profile();
+  }
 
   module profile() {
     module body() {
@@ -76,7 +86,8 @@ module y_motor_mount() {
         // mount to extrusion
         for(x=[left,right]) {
           translate([x*extrusion_mount_hole_spacing/2,0,0]) {
-            square([extrusion_mount_screw_hole_diam+wall_thickness*4,extrusion_mount_head_hole_diam+wall_thickness*2],center=true);
+            rounded_diam = 6;
+            rounded_square(extrusion_mount_screw_hole_diam+wall_thickness*4,extrusion_mount_head_hole_diam+rounded_diam+wall_thickness*2,rounded_diam,resolution);
           }
         }
       }
@@ -90,7 +101,7 @@ module y_motor_mount() {
           translate([0,front*nema14_shoulder_diam/4,0]) {
             // square off area to access pulley set screw
             // so that it can bridge more cleanly
-            square([set_screw_access_width,nema14_shoulder_diam/2+2],center=true);
+            rounded_square(set_screw_access_width+5,nema14_shoulder_diam/2+2,4);
           }
         }
       }
@@ -129,8 +140,9 @@ module y_motor_mount() {
   module holes() {
     // maybe for accessing the pulley set screw?
     if (set_screw_access_width) {
-      translate([0,-overall_side/2,height/2]) {
-        cube([set_screw_access_width,nema14_side,height],center=true);
+      set_screw_access_hole_height = height/2 - nema14_shoulder_height;
+      translate([0,-overall_side/2,height/2-nema14_shoulder_height-set_screw_access_hole_height/2]) {
+        cube([set_screw_access_width,nema14_side,set_screw_access_hole_height],center=true);
 
         for(x=[left,right]) {
           translate([x*set_screw_access_width/2,0,0]) {
@@ -186,17 +198,22 @@ module y_motor_mount() {
     }
 
     // extrusion mount screw heads
-    translate([0,0,height-m5_socket_head_height]) {
+    translate([0,0,extrusion_anchor_shoulder_pos_z]) {
       for(x=[left,right]) {
         translate([x*(extrusion_mount_hole_spacing/2+extrusion_mount_head_hole_diam/2),0,0]) {
-          rounded_cube(extrusion_mount_head_hole_diam*2,extrusion_mount_head_hole_diam,height,extrusion_mount_head_hole_diam,resolution);
+          translate([0,0,height/2]) {
+            rounded_cube(extrusion_mount_head_hole_diam*2,extrusion_mount_head_hole_diam,height,extrusion_mount_head_hole_diam,resolution);
+          }
+          translate([-x*(extrusion_mount_head_hole_diam/2),0,m5_socket_head_height/2]) {
+            % hole(m5_nut_diam,m5_socket_head_height,resolution);
+          }
         }
       }
     }
   }
 
   module bridges() {
-    translate([0,0,height/2-m5_socket_head_height-0.1]) {
+    translate([0,0,extrusion_anchor_shoulder_pos_z-0.1]) {
       for(x=[left,right]) {
         translate([x*(extrusion_mount_hole_spacing/2),0,0]) {
           hole(extrusion_mount_screw_hole_diam+1,0.2,8);
