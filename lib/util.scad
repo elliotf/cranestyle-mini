@@ -1,4 +1,4 @@
-resolution = 32;
+resolution = 64;
 
 left = -1;
 right = 1;

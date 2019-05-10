@@ -87,7 +87,11 @@ module z_nut() {
   m3_socket_head_diam = 5.6;
   m3_socket_head_height = 3;
 
-  rounded_diam = 4; //m3_socket_head_diam; // + wall_thickness*2;
+  rounded_diam = 4;
+
+  base_height = mgn12c_length/2 - mgn12c_hole_spacing_length/2 + m3_socket_head_diam/2 + wall_thickness;
+
+  gt2_toothed_idler_id_hole = gt2_toothed_idler_id-0.15; // thread the idler pulley shaft into plastic
 
   leadscrew_pos_y = -13;
   leadscrew_diam = 5;
@@ -99,7 +103,7 @@ module z_nut() {
   leadscrew_nut_flange_thickness = 3.25;
   leadscrew_nut_mounting_hole_dist = 6.35;
   leadscrew_nut_mounting_hole_diam = 2.8; // from walter's -- threading m3 into plastic?
-  leadscrew_nut_mounting_hole_depth = 12.75;
+  leadscrew_nut_mounting_hole_depth = base_height - leadscrew_nut_flange_thickness - extrude_width*2;
 
   leadscrew_nut_shoulder_below_carriage_holes = 4.5;
 
@@ -113,22 +117,17 @@ module z_nut() {
   body_pos_z = mgn12c_hole_spacing_length/2+idler_shoulder_above_rail-idler_bevel_height-height/2;
 
   // idler_pos_x = -11; // walter
-  //idler_pos_x = left*(mgn12c_hole_spacing_width/2+m3_loose_diam/2+gt2_toothed_idler_id/2+wall_thickness*2);
   idler_pos_x = left*(leadscrew_diam/2+gt2_toothed_idler_flange_od/2+1);
   idler_pos_y = leadscrew_pos_y-3;
   idler_pos_z = body_pos_z + height/2 + idler_bevel_height;
 
-  meat_on_far_side_of_idler = gt2_toothed_idler_id/2 + wall_thickness*3;
+  meat_on_far_side_of_idler = gt2_toothed_idler_id_hole/2 + wall_thickness*3;
   idler_shaft_body_width = meat_on_far_side_of_idler + abs(idler_pos_x) - leadscrew_hole_diam/2 - 1.75; // fatter to be same as walter's
   width = meat_on_far_side_of_idler + abs(idler_pos_x) + mgn12c_width/2;
-  //body_pos_x = mgn12c_hole_spacing_width/2 + wall_thickness + rounded_diam/2 - width/2;
   body_pos_x = mgn12c_width/2-width/2;
 
   mgn9_rail_width_allowance = mgn9_rail_width+tolerance;
   mgn9_rail_height_allowance = mgn9_rail_height+tolerance;
-
-  //base_height = mgn12c_hole_spacing_length-mgn9_rail_width_allowance/2+rounded_diam/2 + leadscrew_nut_flange_thickness;
-  base_height = mgn12c_hole_spacing_length/2-mgn9_rail_width_allowance/2+mgn12c_length/2;
 
   module profile() {
     translate([body_pos_x,body_pos_z,0]) {
@@ -158,7 +157,7 @@ module z_nut() {
     translate([idler_pos_x,idler_pos_y,idler_pos_z-idler_bevel_height]) {
       idler_shaft_dist_to_front = depth - abs(idler_pos_y);
       hull() {
-        hole(gt2_toothed_idler_id+extrude_width*2,idler_bevel_height*2,resolution*2);
+        hole(gt2_toothed_idler_id_hole+extrude_width*2,idler_bevel_height*2,resolution*2);
         translate([0,0,-5]) {
           //resize([meat_on_far_side_of_idler*2,idler_shaft_dist_to_front*2,10]) {
             hole(idler_shaft_dist_to_front*2,10,resolution*2);
@@ -227,7 +226,7 @@ module z_nut() {
     idler_shaft_hole_len = idler_bevel_height + idler_pos_z + mgn12c_hole_spacing_length/2 - m3_loose_diam - wall_thickness*2;
     echo("idler_shaft_hole_len: ", idler_shaft_hole_len);
     translate([idler_pos_x,idler_pos_y,idler_pos_z]) {
-      hole(gt2_toothed_idler_id,idler_shaft_hole_len*2,resolution);
+      hole(gt2_toothed_idler_id_hole,idler_shaft_hole_len*2,resolution);
     }
   }
 
