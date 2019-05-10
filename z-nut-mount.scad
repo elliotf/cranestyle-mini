@@ -230,10 +230,19 @@ module z_nut() {
     }
   }
 
+  module bridges() {
+    for(x=[left,right]) {
+      translate([x*mgn12c_hole_spacing_width/2,-depth+m3_socket_head_height+0.1,-mgn12c_hole_spacing_length/2]) {
+        cube([m3_socket_head_diam,0.2,m3_socket_head_diam],center=true);
+      }
+    }
+  }
+
   difference() {
     body();
     holes();
   }
+  bridges();
 
   translate([16,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {
     % color("lightgrey") cube([64,mgn9_rail_height,mgn9_rail_width],center=true);
@@ -256,7 +265,7 @@ module z_nut() {
 }
 
 module to_print() {
-  rotate([0,0,0]) {
+  rotate([90,0,0]) {
     z_nut();
   }
 }
