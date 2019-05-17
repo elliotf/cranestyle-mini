@@ -351,19 +351,25 @@ module extrusion_2080_profile() {
 
     square([5.4,open_space_between_sides],center=true);
 
-    hull() {
-      square([5.4,open_space_between_sides-1.96*2],center=true);
-      square([12.2,5.68],center=true);
+    for(x=[left,right,0]) {
+      translate([x*20,0,0]) {
+        hull() {
+          square([5.4,open_space_between_sides-1.96*2],center=true);
+          square([12.2,5.68],center=true);
+        }
+      }
     }
 
     for(x=[left,right]) {
-      translate([x*width/4,0]) {
-        accurate_circle(4.2,16);
+      for(dist=[10,30]) {
+        translate([x*dist,0]) {
+          accurate_circle(4.2,16);
 
-        for(y=[top,bottom]) {
-          translate([0,y*height/2,0]) {
-            rotate([0,0,90]) {
-              openbuilds_groove_profile();
+          for(y=[top,bottom]) {
+            translate([0,y*height/2,0]) {
+              rotate([0,0,90]) {
+                openbuilds_groove_profile();
+              }
             }
           }
         }
@@ -704,3 +710,47 @@ mgn12_rail_hole_spacing = 25;
 mgn9_rail_width = 9;
 mgn9_rail_height = 6.5;
 mgn9_rail_hole_spacing = 20;
+
+//gt2_toothed_idler_id = 3; // walter and whosawhatsis
+gt2_toothed_idler_id = 5; // use a toothed idler with more meat
+gt2_toothed_idler_od = 12.2;
+//gt2_toothed_idler_od = 20*2 / pi;
+gt2_toothed_idler_height = 9;
+gt2_toothed_idler_flange_od = 18.2;
+gt2_toothed_idler_flange_thickness = 1;
+
+module gt2_toothed_idler() {
+  difference() {
+    union() {
+      hole(gt2_toothed_idler_od, gt2_toothed_idler_height-0.05,resolution);
+
+      for(z=[top,bottom]) {
+        translate([0,0,z*(gt2_toothed_idler_height/2-gt2_toothed_idler_flange_thickness/2)]) {
+          hole(gt2_toothed_idler_flange_od, gt2_toothed_idler_flange_thickness,resolution);
+        }
+      }
+    }
+
+    hole(gt2_toothed_idler_id,gt2_toothed_idler_height+1,resolution);
+  }
+}
+
+module gt2_16t_pulley() {
+  flange_diam = 14;
+  flange_thickness = 1;
+  teeth_diam = 10; // not really, but close enough
+  height = 8;
+  difference() {
+    union() {
+      hole(teeth_diam, height-0.05, resolution);
+
+      for(z=[top,bottom]) {
+        translate([0,0,z*(height/2-flange_thickness/2)]) {
+          hole(flange_diam, flange_thickness,resolution);
+        }
+      }
+    }
+
+    hole(5,height+1,resolution);
+  }
+}

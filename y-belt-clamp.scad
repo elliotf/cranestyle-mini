@@ -2,7 +2,7 @@ B = 20;
 C = 15;
 L = 35;
 L1 = 22;
-W = 27;
+W = 27; // MGN carriage width
 h = 12;
 
 trigger = 10 + 3;
@@ -22,17 +22,24 @@ difference() {
 	}
 }
 
-difference() {
-	linear_extrude(2 + h, convexity = 5) difference() {
-		offset(1) offset(-2) offset(1) {
+module profile() {
+  difference() {
+		//offset(1) { //offset(-2) offset(1) {
 			translate([-5, 0, 0]) square([W + 10, L1], center = true);
-		}
+		//}
 		translate([-20, 0, 0]) circle(3 / 2);
 		offset(-.4) offset(.4) {
 			square([W + 2, L + 2], center = true);
 			for(i = [.5:10], j = [1, -1]) translate([0, 2 * i * j, 0]) square([W + 5, 1], center = true);
 		}
-;
-	}
+  }
+}
+
+translate([0,0,30]) {
+  profile();
+}
+
+difference() {
+	linear_extrude(2 + h, convexity = 5) profile();
 	translate([-20, 0, h]) rotate(90) cylinder(r = 6.5/2, h = 10, $fn = 6);
 }

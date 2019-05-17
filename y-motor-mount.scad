@@ -43,12 +43,33 @@ module y_motor_mount() {
   resolution = 72;
   screw_head_hole_resolution = 36;
 
+  /*
+  */
+  y_motor_side = nema14_side;
+  y_motor_screw_diam = nema14_screw_diam;
+  y_motor_shoulder_diam = nema14_shoulder_diam;
+  y_motor_shoulder_height = nema14_shoulder_height;
+  y_motor_hole_spacing = nema14_hole_spacing;
+  y_motor_len = nema14_len;
+
+  /*
+  y_motor_side = nema17_side;
+  y_motor_screw_diam = nema17_screw_diam;
+  y_motor_shoulder_diam = nema17_shoulder_diam;
+  y_motor_shoulder_height = nema17_shoulder_height;
+  y_motor_hole_spacing = nema17_hole_spacing;
+  y_motor_len = nema17_len;
+  */
+
   wall_thickness = extrude_width*2;
-  motor_screw_hole_diam = nema14_screw_diam+tolerance*2;
+  motor_screw_hole_diam = y_motor_screw_diam+tolerance*2;
   height = 21;
 
+  belt_opening_angle = 90;
+  motor_offset = nema14_side/2-y_motor_side/2;
+
   extrusion_mount_screw_hole_diam = extrusion_mount_screw_diam + tolerance*2;
-  extrusion_mount_hole_spacing = nema14_side + extrusion_mount_screw_head_diam - 2;
+  extrusion_mount_hole_spacing = y_motor_side + extrusion_mount_screw_head_diam - 2;
   extrusion_mount_head_hole_diam = extrusion_mount_screw_head_diam + tolerance*3;
 
   rounded_diam = m3_nut_diam + tolerance*2 + wall_thickness*4;
@@ -65,13 +86,11 @@ module y_motor_mount() {
   meat_above_pulley = open_side_m3_length + m3_socket_head_height - length_to_screw_into_motor;
   echo("meat_above_pulley: ", meat_above_pulley);
 
-  belt_opening_angle = 90;
-
   // I'm assuming this little gap is for accessing the motor's set screw while it's mounted, so that the pulley height can be adjusted.
   // Only whosawhatsis knows for sure.
   set_screw_access_width = 8;
 
-  overall_side = nema14_hole_spacing+rounded_diam;
+  overall_side = y_motor_hole_spacing+rounded_diam;
 
   translate([0,0,50]) {
     // profile();
@@ -81,7 +100,9 @@ module y_motor_mount() {
     module body() {
       hull() {
         // main body, defined by motor hole spacing
-        rounded_square(overall_side,overall_side,rounded_diam,resolution);
+        translate([0,motor_offset,0]) {
+          rounded_square(overall_side,overall_side,rounded_diam,resolution);
+        }
 
         // mount to extrusion
         for(x=[left,right]) {
@@ -94,14 +115,24 @@ module y_motor_mount() {
     }
 
     module holes() {
-      hull() {
-        accurate_circle(nema14_shoulder_diam+1,resolution*2);
+      translate([0,motor_offset,0]) {
+        hull() {
+          accurate_circle(y_motor_shoulder_diam+1,resolution*2);
 
-        if (set_screw_access_width) {
-          translate([0,front*nema14_shoulder_diam/4,0]) {
-            // square off area to access pulley set screw
-            // so that it can bridge more cleanly
-            rounded_square(set_screw_access_width+5,nema14_shoulder_diam/2+2,4);
+          if (set_screw_access_width) {
+            translate([0,front*y_motor_shoulder_diam/4,0]) {
+              // square off area to access pulley set screw
+              // so that it can bridge more cleanly
+              rounded_square(set_screw_access_width+5,y_motor_shoulder_diam/2+2,4);
+            }
+          }
+        }
+
+        for(x=[left,right]) {
+          for(y=[front,rear]) {
+            translate([x*y_motor_hole_spacing/2,y*y_motor_hole_spacing/2]) {
+              accurate_circle(motor_screw_hole_diam,16);
+            }
           }
         }
       }
@@ -109,14 +140,6 @@ module y_motor_mount() {
       for(x=[left,right]) {
         translate([x*extrusion_mount_hole_spacing/2,0,0]) {
           accurate_circle(extrusion_mount_screw_hole_diam,screw_head_hole_resolution);
-        }
-      }
-
-      for(x=[left,right]) {
-        for(y=[front,rear]) {
-          translate([x*nema14_hole_spacing/2,y*nema14_hole_spacing/2]) {
-            accurate_circle(motor_screw_hole_diam,16);
-          }
         }
       }
     }
@@ -138,58 +161,60 @@ module y_motor_mount() {
   }
 
   module holes() {
-    // maybe for accessing the pulley set screw?
-    if (set_screw_access_width) {
-      set_screw_access_hole_height = height/2 - nema14_shoulder_height;
-      translate([0,-overall_side/2,height/2-nema14_shoulder_height-set_screw_access_hole_height/2]) {
-        cube([set_screw_access_width,nema14_side,set_screw_access_hole_height],center=true);
+    translate([0,motor_offset,0]) {
+      // maybe for accessing the pulley set screw?
+      if (set_screw_access_width) {
+        set_screw_access_hole_height = height/2 - y_motor_shoulder_height;
+        translate([0,-overall_side/2,height/2-y_motor_shoulder_height-set_screw_access_hole_height/2]) {
+          cube([set_screw_access_width,y_motor_side,set_screw_access_hole_height],center=true);
 
+          for(x=[left,right]) {
+            translate([x*set_screw_access_width/2,0,0]) {
+              rotate([0,0,45-x*45]) {
+                // round_corner_filler(3,height);
+              }
+            }
+          }
+        }
+        translate([0,0,height/2+y_motor_len/2]) {
+          % cube([y_motor_side,y_motor_side,y_motor_len],center=true);
+        }
+      }
+
+      // recess motor screw heads by opening, should be able to use 5mm m3
+      translate([0,0,-meat_above_pulley+m3_socket_head_height]) {
         for(x=[left,right]) {
-          translate([x*set_screw_access_width/2,0,0]) {
-            rotate([0,0,45-x*45]) {
-              // round_corner_filler(3,height);
+          for(y=[rear]) {
+            translate([x*y_motor_hole_spacing/2,y*y_motor_hole_spacing/2]) {
+              hole(m3_nut_diam+tolerance*2,height,screw_head_hole_resolution);
             }
           }
         }
       }
-      translate([0,0,height/2+nema14_len/2]) {
-        % cube([nema14_side,nema14_side,nema14_len],center=true);
-      }
-    }
 
-    // recess motor screw heads by opening, should be able to use 5mm m3
-    translate([0,0,-meat_above_pulley+m3_socket_head_height]) {
-      for(x=[left,right]) {
-        for(y=[rear]) {
-          translate([x*nema14_hole_spacing/2,y*nema14_hole_spacing/2]) {
-            hole(m3_nut_diam+tolerance*2,height,screw_head_hole_resolution);
+      // motor screw heads on the back, should be able to use 15mm m3
+      translate([0,0,-closed_side_m3_length+length_to_screw_into_motor]) {
+        for(x=[left,right]) {
+          for(y=[front]) {
+            translate([x*y_motor_hole_spacing/2,y*y_motor_hole_spacing/2]) {
+              hole(m3_nut_diam+tolerance*2,height,screw_head_hole_resolution);
+            }
           }
         }
       }
-    }
 
-    // motor screw heads on the back, should be able to use 15mm m3
-    translate([0,0,-closed_side_m3_length+length_to_screw_into_motor]) {
-      for(x=[left,right]) {
-        for(y=[front]) {
-          translate([x*nema14_hole_spacing/2,y*nema14_hole_spacing/2]) {
-            hole(m3_nut_diam+tolerance*2,height,screw_head_hole_resolution);
-          }
-        }
-      }
-    }
+      // belt access
+      translate([0,0,-meat_above_pulley]) {
+        linear_extrude(height=height,convexity=3,center=true) {
+          hull() {
+            diam = 16; // both whosawhatsis and walter are using this diam. Not sure why. Maybe it's the pulley diam?
+            accurate_circle(diam,resolution);
 
-    // belt access
-    translate([0,0,-meat_above_pulley]) {
-      linear_extrude(height=height,convexity=3,center=true) {
-        hull() {
-          diam = 16; // both whosawhatsis and walter are using this diam. Not sure why. Maybe it's the pulley diam?
-          accurate_circle(diam,resolution);
-
-          for(x=[left,right]) {
-            rotate([0,0,x*belt_opening_angle/2]) {
-              translate([0,50,0]) {
-                accurate_circle(diam,resolution);
+            for(x=[left,right]) {
+              rotate([0,0,x*belt_opening_angle/2]) {
+                translate([0,50,0]) {
+                  accurate_circle(diam,resolution);
+                }
               }
             }
           }

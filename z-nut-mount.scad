@@ -60,90 +60,28 @@ module original_z_nut() {
   }
 }
 
-//gt2_toothed_idler_id = 3; // walter and whosawhatsis
-gt2_toothed_idler_id = 5; // use a toothed idler with more meat
-gt2_toothed_idler_od = 12; // rough, on the GT2 teeth
-gt2_toothed_idler_height = 9;
-gt2_toothed_idler_flange_od = 18.2;
-gt2_toothed_idler_flange_thickness = 1;
-
-module gt2_toothed_idler() {
-  difference() {
-    union() {
-      hole(gt2_toothed_idler_od, gt2_toothed_idler_height-0.05,resolution);
-
-      for(z=[top,bottom]) {
-        translate([0,0,z*(gt2_toothed_idler_height/2-gt2_toothed_idler_flange_thickness/2)]) {
-          hole(gt2_toothed_idler_flange_od, gt2_toothed_idler_flange_thickness,resolution);
-        }
-      }
-    }
-
-    hole(gt2_toothed_idler_id,gt2_toothed_idler_height+1,resolution);
-  }
-}
-
 module z_nut() {
-  m3_socket_head_diam = 5.6;
-  m3_socket_head_height = 3;
-
-  rounded_diam = 4;
-
-  base_height = mgn12c_length/2 - mgn12c_hole_spacing_length/2 + m3_socket_head_diam/2 + wall_thickness;
-
-  gt2_toothed_idler_id_hole = gt2_toothed_idler_id-0.15; // thread the idler pulley shaft into plastic
-
-  leadscrew_pos_y = -13;
-  leadscrew_diam = 5;
-  leadscrew_hole_diam = 6.5;
-  leadscrew_nut_shaft_diam = 8.5;
-  leadscrew_nut_shaft_length = 6.5;
-  leadscrew_nut_hole_dist = 6.611;
-  leadscrew_nut_flange_diam = 20;
-  leadscrew_nut_flange_thickness = 3.25;
-  leadscrew_nut_mounting_hole_dist = 6.35;
-  leadscrew_nut_mounting_hole_diam = 2.8; // from walter's -- threading m3 into plastic?
-  leadscrew_nut_mounting_hole_depth = base_height - leadscrew_nut_flange_thickness - extrude_width*2;
-
-  leadscrew_nut_shoulder_below_carriage_holes = 4.5;
-
-  idler_bevel_height = 1;
-  idler_shoulder_above_rail = 9.2/2+4.8;
-
-  depth = abs(leadscrew_pos_y)+7; // copying from walter
-  height = idler_shoulder_above_rail - idler_bevel_height + mgn12c_hole_spacing_length/2 + mgn12c_length/2;
-
-  echo("height: ", height);
-  body_pos_z = mgn12c_hole_spacing_length/2+idler_shoulder_above_rail-idler_bevel_height-height/2;
-
-  // idler_pos_x = -11; // walter
-  idler_pos_x = left*(leadscrew_diam/2+gt2_toothed_idler_flange_od/2+1);
-  idler_pos_y = leadscrew_pos_y-3;
-  idler_pos_z = body_pos_z + height/2 + idler_bevel_height;
-
-  meat_on_far_side_of_idler = gt2_toothed_idler_id_hole/2 + wall_thickness*3;
-  idler_shaft_body_width = meat_on_far_side_of_idler + abs(idler_pos_x) - leadscrew_hole_diam/2 - 1.75; // fatter to be same as walter's
-  width = meat_on_far_side_of_idler + abs(idler_pos_x) + mgn12c_width/2;
-  body_pos_x = mgn12c_width/2-width/2;
-
-  mgn9_rail_width_allowance = mgn9_rail_width+tolerance;
-  mgn9_rail_height_allowance = mgn9_rail_height+tolerance;
-
   module profile() {
-    translate([body_pos_x,body_pos_z,0]) {
-      translate([0,-height/2+base_height/2]) {
-        rounded_square(width,base_height,rounded_diam,resolution);
+    translate([z_nut_body_pos_x,z_nut_body_pos_z,0]) {
+      translate([0,-z_nut_mount_height/2+z_nut_base_height/2]) {
+        //rounded_square(z_nut_mount_width,z_nut_base_height,m3_socket_head_diam+extrude_width*4,resolution);
+        square([z_nut_mount_width,z_nut_base_height],center=true);
 
-        translate([-width/2+idler_shaft_body_width,base_height/2,0]) {
+        translate([-z_nut_mount_width/2+idler_shaft_body_width,z_nut_base_height/2,0]) {
           round_corner_filler_profile(rounded_diam,resolution);
         }
       }
 
-      translate([-width/2+idler_shaft_body_width/2,0,0]) {
-        rounded_square(idler_shaft_body_width,height,rounded_diam,resolution);
+      translate([-z_nut_mount_width/2+idler_shaft_body_width/2,0,0]) {
+        //rounded_square(idler_shaft_body_width,z_nut_mount_height,rounded_diam,resolution);
+        square([idler_shaft_body_width,z_nut_mount_height],center=true);
       }
     }
   }
+
+  carriage_opening = mgn12c_height + tolerance;
+  z_endstop_adjustment_screw_pos_x = -20 + tolerance;
+  z_endstop_adjustment_screw_pos_y = 0;
 
   module body() {
     translate([0,-depth/2,0]) {
@@ -154,14 +92,22 @@ module z_nut() {
       }
     }
 
-    translate([idler_pos_x,idler_pos_y,idler_pos_z-idler_bevel_height]) {
-      idler_shaft_dist_to_front = depth - abs(idler_pos_y);
+    // X idler bevel
+    translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z-idler_bevel_height]) {
+      idler_shaft_dist_to_front = depth - abs(x_idler_on_z_pos_y);
       hull() {
         hole(gt2_toothed_idler_id_hole+extrude_width*2,idler_bevel_height*2,resolution*2);
         translate([0,0,-5]) {
-          //resize([meat_on_far_side_of_idler*2,idler_shaft_dist_to_front*2,10]) {
-            hole(idler_shaft_dist_to_front*2,10,resolution*2);
-          //}
+          hole(idler_shaft_dist_to_front*2,10,resolution*2);
+        }
+      }
+    }
+
+    // endstop mount
+    hull() {
+      translate([z_nut_body_pos_x-z_nut_mount_width/4,0,z_nut_body_pos_z-z_nut_mount_height/4]) {
+        translate([0,carriage_opening/2+5,0]) {
+          cube([z_nut_mount_width/2,carriage_opening+10,z_nut_mount_height/2],center=true);
         }
       }
     }
@@ -179,13 +125,13 @@ module z_nut() {
     }
 
     // X rail
-    translate([0,front*mgn9_rail_height_allowance/2+0.05,mgn12c_hole_spacing_length/2]) {
-      cube([32,mgn9_rail_height_allowance+0.1,mgn9_rail_width_allowance],center=true);
+    translate([z_nut_body_pos_x-z_nut_mount_width/2+wall_thickness*2+32,front*mgn9_rail_height_allowance/2+0.05,mgn12c_hole_spacing_length/2]) {
+      cube([64,mgn9_rail_height_allowance+0.1,mgn9_rail_width_allowance],center=true);
     }
 
-    translate([0,leadscrew_pos_y,body_pos_z-height/2]) {
+    translate([0,leadscrew_pos_y,z_nut_body_pos_z-z_nut_mount_height/2]) {
       // leadscrew
-      hole(leadscrew_hole_diam,height*2+1,resolution);
+      hole(leadscrew_hole_diam,z_nut_mount_height*2+1,resolution);
       // leadscrew nut
       hole(leadscrew_nut_shaft_diam,2*(leadscrew_nut_shaft_length+leadscrew_nut_flange_thickness),resolution);
       // leadscrew nut flange
@@ -194,7 +140,7 @@ module z_nut() {
         // make it easier to print by making the shallowest angle a bridge
         // in case we end up printing it on its front
         translate([0,leadscrew_nut_flange_diam/2-1,0]) {
-          cube([10,2,2*leadscrew_nut_flange_thickness],center=true);
+          // cube([10,2,2*leadscrew_nut_flange_thickness],center=true);
         }
       }
 
@@ -208,13 +154,13 @@ module z_nut() {
       }
     }
 
-    // avoid thin bits of plastic..  oh who am I kidding, this is gratuitous!
+    // avoid in-air printing, depending on print orientation
     leadscrew_dist_to_front = depth - abs(leadscrew_pos_y);
-    translate([0,-depth,body_pos_z-height/2]) {
+    translate([0,-depth,z_nut_body_pos_z-z_nut_mount_height/2]) {
       nut_opening_width = 2*sqrt(pow(leadscrew_nut_flange_diam/2,2) - pow(leadscrew_dist_to_front,2)); // thank you, pythagoras!
       hull() {
-        translate([0,-1,0]) {
-          cube([nut_opening_width,2,leadscrew_nut_flange_thickness*2],center=true);
+        translate([0,0,0]) {
+          cube([nut_opening_width+0.5,1,leadscrew_nut_flange_thickness*2],center=true);
         }
         translate([0,0,-1]) {
           cube([leadscrew_nut_flange_diam,leadscrew_dist_to_front*2,2],center=true);
@@ -223,17 +169,35 @@ module z_nut() {
     }
 
     // idler pulley shaft
-    idler_shaft_hole_len = idler_bevel_height + idler_pos_z + mgn12c_hole_spacing_length/2 - m3_loose_diam - wall_thickness*2;
+    idler_shaft_hole_len = idler_bevel_height + x_idler_on_z_pos_z + mgn12c_hole_spacing_length/2 - m3_loose_diam - wall_thickness*2;
     echo("idler_shaft_hole_len: ", idler_shaft_hole_len);
-    translate([idler_pos_x,idler_pos_y,idler_pos_z]) {
+    translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z]) {
       hole(gt2_toothed_idler_id_hole,idler_shaft_hole_len*2,resolution);
+    }
+
+    // endstop trigger
+    translate([left*12.5,rear*17.45,0]) {
+      # hole(1.9,50,16);
+    }
+
+    // carriage room
+    translate([0,carriage_opening/2,0]) {
+      cube([mgn12c_width+tolerance*2,carriage_opening,100],center=true);
+    }
+
+    // extrusion_room
+    translate([0,carriage_opening+20,0]) {
+      cube([20+tolerance*2,40,100],center=true);
     }
   }
 
   module bridges() {
     for(x=[left,right]) {
       translate([x*mgn12c_hole_spacing_width/2,-depth+m3_socket_head_height+0.1,-mgn12c_hole_spacing_length/2]) {
-        cube([m3_socket_head_diam,0.2,m3_socket_head_diam],center=true);
+        rotate([90,0,0]) {
+          // print on back of part for now; don't need this bridges
+          hole(m3_socket_head_diam,0.2,resolution);
+        }
       }
     }
   }
@@ -244,12 +208,15 @@ module z_nut() {
   }
   bridges();
 
-  translate([16,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {
-    % color("lightgrey") cube([64,mgn9_rail_height,mgn9_rail_width],center=true);
+  x_rail_len = 150;
+  translate([-16+x_rail_len/2,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {
+    % color("lightgrey") cube([x_rail_len,mgn9_rail_height,mgn9_rail_width],center=true);
   }
 
-  translate([0,mgn12c_surface_above_surface-mgn12_rail_height/2,0]) {
-    % color("silver") cube([mgn12_rail_width,mgn12_rail_height,100],center=true);
+  translate([0,0,0]) {
+    translate([0,mgn12c_surface_above_surface-mgn12_rail_height/2,+220/2-170/2]) {
+      % color("silver") cube([mgn12_rail_width,mgn12_rail_height,170],center=true);
+    }
   }
   rotate([90,0,0]) {
     % color("darkgrey") mgn12c();
@@ -259,29 +226,29 @@ module z_nut() {
     % color("lightgrey") hole(leadscrew_diam,100,resolution);
   }
 
-  translate([idler_pos_x,idler_pos_y,idler_pos_z+gt2_toothed_idler_height/2]) {
-    % color("lightgrey") gt2_toothed_idler();
+  translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z+gt2_toothed_idler_height/2]) {
+    //% color("lightgrey") gt2_toothed_idler();
   }
 }
 
 module to_print() {
-  rotate([90,0,0]) {
+  rotate([-90,0,0]) {
     z_nut();
   }
 }
 
-debug = 0;
+debug = 1;
 if (debug) {
   translate([0,20+mgn12c_surface_above_surface,0]) {
     rotate([0,0,90]) {
-      % extrusion_2040(220);
+      % color("lightgrey") extrusion_2040(220);
     }
   }
   z_nut();
 
   translate([-50,-25,-mgn12c_hole_spacing_length/2]) {
     rotate([90,0,180]) {
-      original_z_nut();
+      // original_z_nut();
     }
   }
 } else {

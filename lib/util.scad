@@ -1,5 +1,7 @@
 resolution = 64;
 
+pi = 3.141592;
+
 left = -1;
 right = 1;
 top = 1;
