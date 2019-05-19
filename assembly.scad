@@ -1,11 +1,13 @@
 include <./config.scad>;
-use <./x-carriage.scad>
-use <./y-motor-mount.scad>
-use <./z-motor-mount.scad>
-use <./z-nut-mount.scad>
-use <./duet-wifi-mount.scad>
-use <./end-caps.scad>
-use <./handle.scad>
+use <./x-carriage.scad>;
+use <./y-carriage.scad>;
+use <./y-motor-mount.scad>;
+use <./y-belt-clamp.scad>;
+use <./z-motor-mount.scad>;
+use <./z-nut-mount.scad>;
+use <./duet-wifi-mount.scad>;
+use <./end-caps.scad>;
+use <./handle.scad>;
 
 translate([0,20+mgn12c_surface_above_surface,0]) {
   rotate([0,0,90]) {
@@ -151,17 +153,55 @@ translate([0,-nema14_side*2-1,-220/2+10.5]) {
   }
 }
 
+hbp_thickness = 2;
+
+module heated_build_plate() {
+  color("black") {
+    difference() {
+      cube([100,100,hbp_thickness],center=true);
+
+      for(x=[left,right]) {
+        for(y=[front,rear]) {
+          translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,0]) {
+            hole(m3_diam,hbp_thickness+1,resolution);
+          }
+        }
+      }
+    }
+  }
+}
+
 translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
   // Y MGN carriage and rail
   translate([40-3.3-mgn12_rail_width/2,0,0]) {
-    translate([0,0,mgn12c_surface_above_surface]) {
-      color("darkgrey") mgn12c();
-    }
-    translate([0,0,mgn12_rail_height/2]) {
-      color("lightgrey") cube([mgn12_rail_width,150,mgn12_rail_height],center=true);
+    y_belt_clamp_assembly();
+
+    y_carriage_thickness = 3;
+    build_plate_thickness = 2;
+
+    translate([0,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
+      //color("silver") cube([100,100,2],center=true);
+      color("silver") {
+        linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
+          y_carriage_profile();
+        }
+      }
+
+      translate([bed_carriage_offset,0,y_carriage_thickness/2 + 2 + hbp_thickness/2]) {
+        heated_build_plate();
+
+        translate([0,0,hbp_thickness/2+build_plate_thickness/2]) {
+          color("silver") {
+            linear_extrude(height=build_plate_thickness,center=true,convexity=2) {
+              build_plate();
+            }
+          }
+        }
+      }
     }
   }
 
+  /*
   translate([-15+63,0,6+mgn12c_surface_above_surface]) {
     rotate([0,0,0]) {
       rotate([180,0,0]) {
@@ -169,6 +209,7 @@ translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
       }
     }
   }
+  */
 
   // Y idlers
   for(y=[front,rear]) {

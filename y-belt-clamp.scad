@@ -57,11 +57,18 @@ top_of_belt_below_mgn = 3.5;
 bottom_of_belt_below_mgn = 10.5;
 belt_opening_height = abs(bottom_of_belt_below_mgn - top_of_belt_below_mgn);
 
+clamp_hole_dist_from_mgn = 7;
+belt_thickness = 0.9;
+
+mgn_clamp_mount_width = 12;
+mgn_clamp_mount_height = top_of_belt_below_mgn+extra_clearance_for_leveling_screws_and_y_idlers;
+
+y_belt_clamp_width = mgn_clamp_mount_width-belt_thickness; // walter has 8
+y_belt_clamp_length = mgn12c_hole_spacing_length+10+wall_thickness*2; // walter has 22
+y_belt_clamp_height = belt_opening_height+0.6;
+
+
 module belt_clamp() {
-  belt_thickness = 0.9;
-  y_belt_clamp_width = 12-belt_thickness; // walter has 8
-  y_belt_clamp_length = mgn12c_hole_spacing_length+10+wall_thickness*2; // walter has 22
-  y_belt_clamp_height = belt_opening_height+0.6;
   // on the X carriage, walter is making room for a 0.8mm tall tooth that is 0.5 at its peak, with 60deg sides, and belt of 0.8mm
   // on the Y carriage, walter is making room for a 1.0mm tall tooth that is 0.422 at its peak, with 60deg sides, and belt of 0.8mm
 
@@ -150,7 +157,7 @@ module belt_clamp() {
 
   module holes() {
     for(y=[front,rear]) {
-      translate([y_belt_clamp_width/2+belt_thickness-7,y*mgn12c_hole_spacing_length/2,0]) {
+      translate([y_belt_clamp_width/2+belt_thickness-clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,0]) {
         translate([0,0,m3_threaded_insert_len+1+0.2]) {
           hole(m3_loose_diam,y_belt_clamp_height,resolution);
         }
@@ -176,12 +183,12 @@ module belt_clamp() {
     }
   }
 
-  translate([y_belt_clamp_width/2+0.8+mgn12c_width/2,0,y_belt_clamp_height/2+top_of_belt_below_mgn]) {
-    % color("lightgrey") mgn12c();
+  translate([y_belt_clamp_width/2+belt_thickness+mgn12c_width/2,0,y_belt_clamp_height/2+top_of_belt_below_mgn]) {
+    //% color("lightgrey") mgn12c();
 
     translate([-10,0,-mgn12c_surface_above_surface-10]) {
       rotate([90,0,0]) {
-        % color("silver") extrusion_2080();
+        // % color("silver") extrusion_2080();
       }
     }
   }
@@ -192,7 +199,71 @@ module belt_clamp() {
   }
 }
 
-belt_clamp();
+module mgn_clamp_mount() {
+
+  module body() {
+    translate([-y_belt_clamp_width/2+mgn_clamp_mount_width/2,0,0]) {
+      rounded_cube(mgn_clamp_mount_width-0.4,y_belt_clamp_length,mgn_clamp_mount_height,2);
+
+      translate([0,0,mgn_clamp_mount_height/2-extra_clearance_for_leveling_screws_and_y_idlers/2]) {
+        linear_extrude(height=extra_clearance_for_leveling_screws_and_y_idlers,center=true,convexity=3) {
+          hull() {
+            rounded_square(mgn_clamp_mount_width-0.4,y_belt_clamp_length,2);
+
+            translate([mgn_clamp_mount_width/2+mgn12c_width/2,0]) {
+              rounded_square(mgn12c_width,mgn12c_length,2);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    for(y=[front,rear]) {
+      m3_fsc_head_rim = 0.5;
+      translate([y_belt_clamp_width/2+belt_thickness-clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,mgn_clamp_mount_height/2-m3_fsc_head_rim]) {
+        hole(m3_loose_diam,mgn_clamp_mount_height*2+1,resolution);
+        // room for screw head
+        hull() {
+          hole(m3_loose_diam,m3_fsc_head_diam-m3_loose_diam,resolution);
+          translate([0,0,1]) {
+            hole(m3_fsc_head_diam,2,resolution);
+          }
+        }
+
+        for(x=[10.5,30.5]) { // TODO: need to put this somewhere?
+          translate([x,0,0]) {
+            hole(m3_loose_diam,mgn_clamp_mount_height*2+1,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module y_belt_clamp_assembly() {
+  translate([-mgn12c_width/2-y_belt_clamp_width/2-belt_thickness,0,mgn12c_surface_above_surface-top_of_belt_below_mgn-y_belt_clamp_height/2]) {
+    belt_clamp();
+
+    translate([0,0,y_belt_clamp_height/2+mgn_clamp_mount_height/2+0.1]) {
+      mgn_clamp_mount();
+    }
+  }
+  translate([0,0,mgn12c_surface_above_surface]) {
+    color("darkgrey") mgn12c();
+  }
+  translate([0,0,mgn12_rail_height/2]) {
+    color("lightgrey") cube([mgn12_rail_width,150,mgn12_rail_height],center=true);
+  }
+}
+
+y_belt_clamp_assembly();
 
 translate([mgn12c_width/2+0.8+4,35,0]) {
   // original_y_belt_clamp();

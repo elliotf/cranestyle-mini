@@ -3,9 +3,11 @@ include <../lib/util.scad>;
 m3_diam = 3;
 m3_socket_head_height = 3.25;
 m3_nut_diam = 5.5;
+m3_fsc_head_diam = 6;
 m5_diam = 5;
 m5_socket_head_height = 6;
 m5_nut_diam = 9;
+m5_fsc_head_diam = 10;
 
 m2_threaded_insert_diam = 3.4;
 m2_5_threaded_insert_diam = 3.6;

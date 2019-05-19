@@ -14,7 +14,6 @@ m3_loose_diam = m3_diam + tolerance;
 
 m5_thread_into_hole_diam = 4.9;
 m5_loose_diam = 5+tolerance;
-m5_fsc_head_diam = 10;
 
 leadscrew_diam = 5;
 leadscrew_hole_diam = 6.5;
@@ -37,6 +36,15 @@ end_cap_height = 20+room_below_extrusion_for_electronics+1;
 y_idler_pos_x = -40 + 50;
 y_idler_dist_y_from_extrusion = (y_idler_in_endcap) ? end_cap_thickness/2 : -gt2_toothed_idler_id;
 y_idler_dist_z_from_extrusion = 1;
+
+bed_offset_from_mgn12 = 15;
+extra_clearance_for_leveling_screws_and_y_idlers = 3;
+
+heated_bed_hole_spacing = 92;
+// using what walter is doing, as I don't understand whosawhatsis' version, but he's using something like -24
+// I like the idea of a less-cantilevered platform.
+bed_carriage_offset = 15;
+build_plate_len = 130;
 
 //leadscrew_pos_y = -leadscrew_nut_flange_diam/2-1;
 //leadscrew_pos_y = -11; // we could move it closer with a printed bracket, but it would interfere with the X idler without redefining the X idler Y pos
