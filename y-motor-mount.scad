@@ -176,9 +176,6 @@ module y_motor_mount() {
             }
           }
         }
-        translate([0,0,height/2+y_motor_len/2]) {
-          % cube([y_motor_side,y_motor_side,y_motor_len],center=true);
-        }
       }
 
       // recess motor screw heads by opening, should be able to use 5mm m3
@@ -248,8 +245,18 @@ module y_motor_mount() {
   }
 
   difference() {
-    body();
+    color("salmon") body();
     holes();
+  }
+
+  color("dimgrey") translate([0,motor_offset,height/2]) {
+    rotate([180,0,0]) {
+      if (y_motor_side == nema14_side) {
+        motor_nema14();
+      } else {
+        motor_nema17();
+      }
+    }
   }
 
   bridges();

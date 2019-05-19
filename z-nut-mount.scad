@@ -84,9 +84,9 @@ module z_nut() {
   z_endstop_adjustment_screw_pos_y = 0;
 
   module body() {
-    translate([0,-depth/2,0]) {
+    translate([0,-z_nut_mount_depth/2,0]) {
       rotate([90,0,0]) {
-        linear_extrude(convexity=3,height=depth,center=true) {
+        linear_extrude(convexity=3,height=z_nut_mount_depth,center=true) {
           profile();
         }
       }
@@ -94,7 +94,7 @@ module z_nut() {
 
     // X idler bevel
     translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z-idler_bevel_height]) {
-      idler_shaft_dist_to_front = depth - abs(x_idler_on_z_pos_y);
+      idler_shaft_dist_to_front = z_nut_mount_depth - abs(x_idler_on_z_pos_y);
       hull() {
         hole(gt2_toothed_idler_id_hole+extrude_width*2,idler_bevel_height*2,resolution*2);
         translate([0,0,-5]) {
@@ -116,9 +116,9 @@ module z_nut() {
   module holes() {
     for(x=[left,right]) {
       // mount nut to Z carriage
-      translate([x*mgn12c_hole_spacing_width/2,-depth,-mgn12c_hole_spacing_length/2]) {
+      translate([x*mgn12c_hole_spacing_width/2,-z_nut_mount_depth,-mgn12c_hole_spacing_length/2]) {
         rotate([90,0,0]) {
-          hole(m3_loose_diam,depth*2+1,resolution);
+          hole(m3_loose_diam,z_nut_mount_depth*2+1,resolution);
           hole(m3_socket_head_diam,m3_socket_head_height*2,resolution);
         }
       }
@@ -155,8 +155,8 @@ module z_nut() {
     }
 
     // avoid in-air printing, depending on print orientation
-    leadscrew_dist_to_front = depth - abs(leadscrew_pos_y);
-    translate([0,-depth,z_nut_body_pos_z-z_nut_mount_height/2]) {
+    leadscrew_dist_to_front = z_nut_mount_depth - abs(leadscrew_pos_y);
+    translate([0,-z_nut_mount_depth,z_nut_body_pos_z-z_nut_mount_height/2]) {
       nut_opening_width = 2*sqrt(pow(leadscrew_nut_flange_diam/2,2) - pow(leadscrew_dist_to_front,2)); // thank you, pythagoras!
       hull() {
         translate([0,0,0]) {
@@ -193,7 +193,7 @@ module z_nut() {
 
   module bridges() {
     for(x=[left,right]) {
-      translate([x*mgn12c_hole_spacing_width/2,-depth+m3_socket_head_height+0.1,-mgn12c_hole_spacing_length/2]) {
+      translate([x*mgn12c_hole_spacing_width/2,-z_nut_mount_depth+m3_socket_head_height+0.1,-mgn12c_hole_spacing_length/2]) {
         rotate([90,0,0]) {
           // print on back of part for now; don't need this bridges
           hole(m3_socket_head_diam,0.2,resolution);
@@ -214,7 +214,7 @@ module z_nut() {
   }
 
   translate([0,0,0]) {
-    translate([0,mgn12c_surface_above_surface-mgn12_rail_height/2,+220/2-170/2]) {
+    translate([0,mgn12c_surface_above_surface-mgn12_rail_height/2,+220/2-170/2-10.5]) {
       % color("silver") cube([mgn12_rail_width,mgn12_rail_height,170],center=true);
     }
   }
@@ -222,8 +222,8 @@ module z_nut() {
     % color("darkgrey") mgn12c();
   }
 
-  translate([0,leadscrew_pos_y,0]) {
-    % color("lightgrey") hole(leadscrew_diam,100,resolution);
+  translate([0,leadscrew_pos_y,220/2-170/2-1]) {
+    % color("lightgrey") hole(leadscrew_diam,170,resolution);
   }
 
   translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z+gt2_toothed_idler_height/2]) {

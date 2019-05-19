@@ -3,10 +3,32 @@ use <./x-carriage.scad>
 use <./y-motor-mount.scad>
 use <./z-motor-mount.scad>
 use <./z-nut-mount.scad>
+use <./duet-wifi-mount.scad>
+use <./end-caps.scad>
+use <./handle.scad>
 
 translate([0,20+mgn12c_surface_above_surface,0]) {
   rotate([0,0,90]) {
     % color("lightgrey") extrusion_2040(220);
+  }
+
+  translate([-20/2,40/2,220/2]) {
+    translate([0,0,2.75]) {
+      rotate([0,0,90]) {
+        rotate([-30+180,0,0]) {
+          % color("lightblue") import("./walter/Handle-modified.stl");
+        }
+      }
+    }
+    /*
+    translate([20/2,0,0]) {
+      rotate([0,0,-90]) {
+        rotate([-30+90,0,0]) {
+          original_handle();
+        }
+      }
+    }
+    */
   }
 }
 
@@ -98,7 +120,7 @@ translate([80/2-20/2,-150/2+mgn12c_surface_above_surface+40,-220/2-20/2]) {
   }
 }
 
-translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
+translate([75-53,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
   rotate([90,0,0]) {
     rotate([0,0,90]) {
       % color("grey") mgn9c();
@@ -130,17 +152,10 @@ translate([0,-nema14_side*2-1,-220/2+10.5]) {
 
 
 
-translate([15+63,0,-220/2+6+mgn12c_surface_above_surface]) {
-  rotate([0,0,0]) {
-    rotate([180,0,0]) {
-      // % color("lightblue", 0.5) import("./walter/Bed Platform.stl");
-    }
-  }
-}
 
 translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
-  // MGN carriage and rail
-  translate([30,0,0]) {
+  // Y MGN carriage and rail
+  translate([40-3.3-mgn12_rail_width/2,0,0]) {
     translate([0,0,mgn12c_surface_above_surface]) {
       color("darkgrey") mgn12c();
     }
@@ -149,11 +164,35 @@ translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
     }
   }
 
+  translate([-15+63,0,6+mgn12c_surface_above_surface]) {
+    rotate([0,0,0]) {
+      rotate([180,0,0]) {
+        % color("lightblue", 0.5) import("./walter/Bed Platform.stl");
+      }
+    }
+  }
+
   // Y idlers
   for(y=[front,rear]) {
-    height_of_washers = 2;
-    translate([10,y*(150/2-gt2_toothed_idler_flange_od/2),gt2_toothed_idler_height/2+height_of_washers]) {
+    translate([y_idler_pos_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
       % color("lightgrey") gt2_toothed_idler();
+    }
+  }
+
+  // end caps
+  translate([0,0,-20/2]) {
+    translate([0,150/2,0]) {
+      end_cap_rear();
+    }
+    translate([0,-150/2,0]) {
+      end_cap_front();
+    }
+  }
+
+  // duet wifi board underneath
+  translate([-40+duet_width/2,0,-20-5]) {
+    rotate([180,0,0]) {
+      duet_board();
     }
   }
 }

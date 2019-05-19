@@ -24,9 +24,9 @@ difference() {
 
 module profile() {
   difference() {
-		//offset(1) { //offset(-2) offset(1) {
+		offset(1) offset(-2) offset(1) {
 			translate([-5, 0, 0]) square([W + 10, L1], center = true);
-		//}
+		}
 		translate([-20, 0, 0]) circle(3 / 2);
 		offset(-.4) offset(.4) {
 			square([W + 2, L + 2], center = true);

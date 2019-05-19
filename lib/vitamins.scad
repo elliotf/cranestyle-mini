@@ -754,3 +754,32 @@ module gt2_16t_pulley() {
     hole(5,height+1,resolution);
   }
 }
+
+duet_width = 100;
+duet_length = 123;
+duet_overall_length = duet_length + 6; // wifi antenna sticks out
+
+duet_hole_spacing_x = 92;
+duet_hole_spacing_y = 115;
+
+module duet_board() {
+  linear_extrude(height=3,convexity=3,center=true) {
+    difference() {
+      union() {
+        square([duet_width,duet_length],center=true);
+      }
+      for(x=[left,right]) {
+        for(y=[front,rear]) {
+          translate([x*duet_hole_spacing_x/2,y*duet_hole_spacing_y/2,0]) {
+            accurate_circle(4,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  esp_len = 20;
+  translate([duet_width/2 -12 -16/2,front*(duet_length/2-esp_len/2+6),3]) {
+    cube([16,esp_len,3],center=true);
+  }
+}
