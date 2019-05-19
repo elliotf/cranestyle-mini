@@ -7,6 +7,11 @@ m5_diam = 5;
 m5_socket_head_height = 6;
 m5_nut_diam = 9;
 
+m2_threaded_insert_diam = 3.4;
+m2_5_threaded_insert_diam = 3.6;
+m3_threaded_insert_diam = 5.4;
+m3_threaded_insert_len = 4;
+
 byj_body_diam = 28;
 byj_height = 19.5; // body is 19, but flanges stick up
 

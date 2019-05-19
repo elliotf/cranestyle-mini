@@ -13,6 +13,8 @@ translate([0,20+mgn12c_surface_above_surface,0]) {
   }
 
   translate([-20/2,40/2,220/2]) {
+    /*
+    */
     translate([0,0,2.75]) {
       rotate([0,0,90]) {
         rotate([-30+180,0,0]) {
@@ -21,10 +23,10 @@ translate([0,20+mgn12c_surface_above_surface,0]) {
       }
     }
     /*
-    translate([20/2,0,0]) {
+    translate([20,0,0]) {
       rotate([0,0,-90]) {
         rotate([-30+90,0,0]) {
-          original_handle();
+          handle();
         }
       }
     }
