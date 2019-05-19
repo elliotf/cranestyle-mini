@@ -2,8 +2,6 @@ include <./config.scad>;
 include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
 
-idler = false;
-
 module end_cap() {
   module body() {
     translate([-40+end_cap_extrusion_width_to_cover/2,front*end_cap_thickness/2,-end_cap_height/2+20/2]) {
@@ -12,7 +10,7 @@ module end_cap() {
       }
     }
 
-    if (idler) {
+    if (y_idler_in_endcap) {
       translate([y_idler_pos_x,y_idler_dist_y_from_extrusion,20/2]) {
         hull() {
           hole(m5_thread_into_hole_diam+extrude_width*2,y_idler_dist_z_from_extrusion*2,resolution);
@@ -26,7 +24,7 @@ module end_cap() {
 
   module holes() {
     // idler hole
-    if (idler) {
+    if (y_idler_in_endcap) {
       translate([-40+50,-end_cap_thickness/2,0]) {
         hole(m5_thread_into_hole_diam,60,resolution);
       }

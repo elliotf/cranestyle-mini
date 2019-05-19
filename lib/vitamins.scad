@@ -762,13 +762,14 @@ module gt2_16t_pulley() {
 
 duet_width = 100;
 duet_length = 123;
+duet_board_thickness = 3;
 duet_overall_length = duet_length + 6; // wifi antenna sticks out
 
 duet_hole_spacing_x = 92;
 duet_hole_spacing_y = 115;
 
-module duet_board() {
-  linear_extrude(height=3,convexity=3,center=true) {
+module duet_wifi() {
+  linear_extrude(height=duet_board_thickness,convexity=3,center=true) {
     difference() {
       union() {
         square([duet_width,duet_length],center=true);
