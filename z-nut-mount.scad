@@ -2,8 +2,6 @@ include <./config.scad>;
 include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
 
-m3_loose_diam = m3_diam + tolerance;
-
 /*
 
 TODO:

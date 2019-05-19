@@ -10,6 +10,8 @@ room_below_extrusion_for_electronics = 34;
 extrusion_mount_screw_diam = m5_diam;
 extrusion_mount_screw_head_diam = m5_nut_diam;
 
+m3_loose_diam = m3_diam + tolerance;
+
 m5_thread_into_hole_diam = 4.9;
 m5_loose_diam = 5+tolerance;
 m5_fsc_head_diam = 10;
@@ -32,7 +34,7 @@ end_cap_height = 20+room_below_extrusion_for_electronics+1;
 
 y_idler_pos_x = -40 + 50;
 y_idler_dist_y_from_extrusion = -end_cap_thickness/2;
-y_idler_dist_z_from_extrusion = 1;
+y_idler_dist_z_from_extrusion = 2;
 
 //leadscrew_pos_y = -leadscrew_nut_flange_diam/2-1;
 //leadscrew_pos_y = -11; // we could move it closer with a printed bracket, but it would interfere with the X idler without redefining the X idler Y pos
