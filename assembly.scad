@@ -145,15 +145,11 @@ translate([-16+150,0,0]) {
   }
 }
 
-// Y idler
 translate([0,-nema14_side*2-1,-220/2+10.5]) {
   rotate([0,0,-90]) {
     y_motor_mount();
   }
 }
-
-
-
 
 translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
   // Y MGN carriage and rail
