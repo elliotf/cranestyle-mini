@@ -64,7 +64,7 @@ leadscrew_nut_mounting_hole_depth = z_nut_base_height - leadscrew_nut_flange_thi
 leadscrew_nut_shoulder_below_carriage_holes = 4.5;
 
 x_idler_bevel_height = 1;
-idler_shoulder_above_rail = 9.2/2+4.8;
+idler_shoulder_above_rail = 9/2+5.75;
 
 z_nut_mount_depth = abs(leadscrew_pos_y)+7; // copying from walter
 echo("z_nut_mount_depth: ", z_nut_mount_depth);

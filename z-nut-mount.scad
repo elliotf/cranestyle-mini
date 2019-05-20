@@ -138,7 +138,7 @@ module z_nut() {
         // make it easier to print by making the shallowest angle a bridge
         // in case we end up printing it on its front
         translate([0,leadscrew_nut_flange_diam/2-1,0]) {
-          // cube([10,2,2*leadscrew_nut_flange_thickness],center=true);
+          cube([10,2,2*leadscrew_nut_flange_thickness],center=true);
         }
       }
 
