@@ -135,7 +135,7 @@ translate([75-53,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
 
 // X idler
 translate([-16+150,0,0]) {
-  translate([7,-mgn9_rail_height/2,x_idler_on_z_pos_z+idler_bevel_height+gt2_toothed_idler_height/2]) {
+  translate([7,-mgn9_rail_height/2,x_idler_on_z_pos_z+x_idler_bevel_height+gt2_toothed_idler_height/2]) {
     % color("silver") gt2_toothed_idler();
   }
   translate([-9,3,7.5]) {

@@ -63,20 +63,20 @@ leadscrew_nut_mounting_hole_depth = z_nut_base_height - leadscrew_nut_flange_thi
 
 leadscrew_nut_shoulder_below_carriage_holes = 4.5;
 
-idler_bevel_height = 1;
+x_idler_bevel_height = 1;
 idler_shoulder_above_rail = 9.2/2+4.8;
 
 z_nut_mount_depth = abs(leadscrew_pos_y)+7; // copying from walter
 echo("z_nut_mount_depth: ", z_nut_mount_depth);
-z_nut_mount_height = idler_shoulder_above_rail - idler_bevel_height + mgn12c_hole_spacing_length/2 + mgn12c_length/2;
+z_nut_mount_height = idler_shoulder_above_rail - x_idler_bevel_height + mgn12c_hole_spacing_length/2 + mgn12c_length/2;
 
 echo("z_nut_mount_height: ", z_nut_mount_height);
-z_nut_body_pos_z = mgn12c_hole_spacing_length/2+idler_shoulder_above_rail-idler_bevel_height-z_nut_mount_height/2;
+z_nut_body_pos_z = mgn12c_hole_spacing_length/2+idler_shoulder_above_rail-x_idler_bevel_height-z_nut_mount_height/2;
 
 // x_idler_on_z_pos_x = -11; // walter
 x_idler_on_z_pos_x = left*(leadscrew_diam/2+gt2_toothed_idler_flange_od/2+1);
 x_idler_on_z_pos_y = leadscrew_pos_y-3;
-x_idler_on_z_pos_z = z_nut_body_pos_z + z_nut_mount_height/2 + idler_bevel_height;
+x_idler_on_z_pos_z = z_nut_body_pos_z + z_nut_mount_height/2 + x_idler_bevel_height;
 
 meat_on_far_side_of_idler = gt2_toothed_idler_id_hole/2 + wall_thickness*3;
 idler_shaft_body_width = meat_on_far_side_of_idler + abs(x_idler_on_z_pos_x) - leadscrew_hole_diam/2 - 1.75; // fatter to be same as walter's

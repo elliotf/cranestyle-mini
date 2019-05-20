@@ -91,10 +91,10 @@ module z_nut() {
     }
 
     // X idler bevel
-    translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z-idler_bevel_height]) {
+    translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z-x_idler_bevel_height]) {
       idler_shaft_dist_to_front = z_nut_mount_depth - abs(x_idler_on_z_pos_y);
       hull() {
-        hole(gt2_toothed_idler_id_hole+extrude_width*2,idler_bevel_height*2,resolution*2);
+        hole(gt2_toothed_idler_id_hole+extrude_width*2,x_idler_bevel_height*2,resolution*2);
         translate([0,0,-5]) {
           hole(idler_shaft_dist_to_front*2,10,resolution*2);
         }
@@ -167,7 +167,7 @@ module z_nut() {
     }
 
     // idler pulley shaft
-    idler_shaft_hole_len = idler_bevel_height + x_idler_on_z_pos_z + mgn12c_hole_spacing_length/2 - m3_loose_diam - wall_thickness*2;
+    idler_shaft_hole_len = x_idler_bevel_height + x_idler_on_z_pos_z + mgn12c_hole_spacing_length/2 - m3_loose_diam - wall_thickness*2;
     echo("idler_shaft_hole_len: ", idler_shaft_hole_len);
     translate([x_idler_on_z_pos_x,x_idler_on_z_pos_y,x_idler_on_z_pos_z]) {
       hole(gt2_toothed_idler_id_hole,idler_shaft_hole_len*2,resolution);
