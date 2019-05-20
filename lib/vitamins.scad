@@ -455,11 +455,10 @@ module motor_nema17() {
       }
     }
   }
-  hole(nema17_shoulder_diam,nema17_shoulder_height*2,16);
+  hole(nema17_shoulder_diam,nema17_shoulder_height*2,resolution);
 
   translate([0,0,nema17_shaft_len/2]) {
-    hole(nema17_shaft_diam,nema17_shaft_len,16);
-    // hole(line_pulley_diam,line_pulley_height,16);
+    hole(nema17_shaft_diam,nema17_shaft_len,resolution);
   }
 }
 
@@ -472,11 +471,10 @@ module motor_nema14() {
       }
     }
   }
-  hole(nema14_shoulder_diam,nema14_shoulder_height*2,16);
+  hole(nema14_shoulder_diam,nema14_shoulder_height*2,resolution);
 
   translate([0,0,nema14_shaft_len/2]) {
-    hole(nema14_shaft_diam,nema14_shaft_len,16);
-    //hole(line_pulley_diam,line_pulley_height,16);
+    hole(nema14_shaft_diam,nema14_shaft_len,resolution);
   }
 }
 
