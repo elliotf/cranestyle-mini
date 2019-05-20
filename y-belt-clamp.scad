@@ -67,10 +67,11 @@ y_belt_clamp_width = mgn_clamp_mount_width-belt_thickness; // walter has 8
 y_belt_clamp_length = mgn12c_hole_spacing_length+10+wall_thickness*2; // walter has 22
 y_belt_clamp_height = belt_opening_height+0.6;
 
-
 module belt_clamp() {
   // on the X carriage, walter is making room for a 0.8mm tall tooth that is 0.5 at its peak, with 60deg sides, and belt of 0.8mm
   // on the Y carriage, walter is making room for a 1.0mm tall tooth that is 0.422 at its peak, with 60deg sides, and belt of 0.8mm
+
+  echo("y_belt_clamp_height: ", y_belt_clamp_height);
 
   tooth_height = 1;
   tooth_width = 0.422;

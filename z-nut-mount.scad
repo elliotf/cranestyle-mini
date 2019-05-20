@@ -59,6 +59,7 @@ module original_z_nut() {
 }
 
 module z_nut() {
+  rounded_diam = 4;
   module profile() {
     translate([z_nut_body_pos_x,z_nut_body_pos_z,0]) {
       translate([0,-z_nut_mount_height/2+z_nut_base_height/2]) {

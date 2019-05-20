@@ -72,8 +72,6 @@ module y_motor_mount() {
   extrusion_mount_hole_spacing = y_motor_side + extrusion_mount_screw_head_diam - 2;
   extrusion_mount_head_hole_diam = extrusion_mount_screw_head_diam + tolerance*3;
 
-  rounded_diam = m3_nut_diam + tolerance*2 + wall_thickness*4;
-
   length_to_screw_into_motor = 3;
   length_to_screw_into_t_slot_nut = 5;
 

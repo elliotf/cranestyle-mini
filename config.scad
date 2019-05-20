@@ -25,11 +25,13 @@ leadscrew_nut_flange_thickness = 3.25;
 leadscrew_nut_mounting_hole_dist = 6.35;
 leadscrew_nut_mounting_hole_diam = 2.8; // from walter's -- threading m3 into plastic?
 
+rounded_diam = m3_nut_diam + tolerance*2 + wall_thickness*4;
+
 y_idler_in_endcap = false;
 
 end_cap_extrusion_width_to_cover = 100;
 end_cap_thickness = (y_idler_in_endcap) ? m5_thread_into_hole_diam + 2*(1.2*2) : 5;
-end_cap_overhang = 5;
+end_cap_overhang = rounded_diam/2;
 end_cap_width = end_cap_extrusion_width_to_cover + end_cap_overhang*2;
 end_cap_height = 20+room_below_extrusion_for_electronics+1;
 
@@ -52,8 +54,6 @@ leadscrew_pos_y = -13; // what walter is using
 
 m3_socket_head_diam = 5.6;
 m3_socket_head_height = 3;
-
-rounded_diam = 4;
 
 z_nut_base_height = mgn12c_length/2 - mgn12c_hole_spacing_length/2 + m3_socket_head_diam/2 + extrude_width*2;
 

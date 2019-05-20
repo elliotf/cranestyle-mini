@@ -148,9 +148,6 @@ module z_motor_mount_front() {
     bridges();
   }
 
-  translate([0,0,gap_beneath_z_motor+nema14_len]) {
-    % color("dimgrey") motor_nema14();
-  }
 }
 
 module z_motor_mount_rear_to_print() {

@@ -791,3 +791,33 @@ module duet_wifi() {
     cube([16,esp_len,3],center=true);
   }
 }
+
+mini_thumb_screw_od = 12;
+mini_thumb_screw_id = 3;
+mini_thumb_screw_thickness = 4;
+mini_thumb_screw_grip_thickness = 3;
+
+module mini_thumb_screw() {
+  bevel_small_od = 7;
+  bevel_large_od = 8;
+  bevel_height = mini_thumb_screw_thickness - mini_thumb_screw_grip_thickness;
+
+  module body() {
+    hole(mini_thumb_screw_od,mini_thumb_screw_grip_thickness,resolution);
+    hull() {
+      hole(bevel_large_od,mini_thumb_screw_grip_thickness,resolution);
+      translate([0,0,bevel_height]) {
+        hole(bevel_small_od,mini_thumb_screw_grip_thickness,resolution);
+      }
+    }
+  }
+
+  module holes() {
+    hole(mini_thumb_screw_id,mini_thumb_screw_thickness+1,resolution);
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
