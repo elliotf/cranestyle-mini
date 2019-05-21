@@ -209,7 +209,7 @@ module z_nut() {
 
   x_rail_len = 150;
   translate([-16+x_rail_len/2,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {
-    difference() {
+    % difference() {
       color("lightgrey") cube([x_rail_len,mgn9_rail_height,mgn9_rail_width],center=true);
       for (x=[0:30]) {
         color("#444") translate([-150/2+5+20*x,-mgn9_rail_height/2,0]) {

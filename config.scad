@@ -27,7 +27,7 @@ leadscrew_nut_mounting_hole_diam = 2.8; // from walter's -- threading m3 into pl
 
 rounded_diam = m3_nut_diam + tolerance*2 + wall_thickness*4;
 
-y_idler_in_endcap = false;
+y_idler_in_endcap = true;
 
 end_cap_extrusion_width_to_cover = 100;
 end_cap_thickness = (y_idler_in_endcap) ? m5_thread_into_hole_diam + 2*(1.2*2) : 5;
@@ -36,7 +36,7 @@ end_cap_width = end_cap_extrusion_width_to_cover + end_cap_overhang*2;
 end_cap_height = 20+room_below_extrusion_for_electronics+1;
 
 y_idler_pos_x = -40 + 50;
-y_idler_dist_y_from_extrusion = (y_idler_in_endcap) ? end_cap_thickness/2 : -gt2_toothed_idler_id;
+y_idler_dist_y_from_extrusion = (y_idler_in_endcap) ? -end_cap_thickness/2 : gt2_toothed_idler_id;
 y_idler_dist_z_from_extrusion = 1;
 
 bed_offset_from_mgn12 = 15;

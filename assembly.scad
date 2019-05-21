@@ -270,7 +270,7 @@ translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
 
   // Y idlers
   for(y=[front,rear]) {
-    translate([y_idler_pos_x,y*(150/2+y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
+    translate([y_idler_pos_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
       % color("lightgrey") gt2_toothed_idler();
     }
   }
