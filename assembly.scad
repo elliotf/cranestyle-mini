@@ -1,5 +1,6 @@
 include <./config.scad>;
 use <./x-carriage.scad>;
+use <./x-idler.scad>;
 use <./y-carriage.scad>;
 use <./y-motor-mount.scad>;
 use <./y-belt-clamp.scad>;
@@ -124,7 +125,7 @@ translate([80/2-20/2,-150/2+mgn12c_surface_above_surface+40,-220/2-20/2]) {
   }
 }
 
-translate([75-53,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
+translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
   rotate([90,0,0]) {
     rotate([0,0,90]) {
       % color("grey") mgn9c();
@@ -135,13 +136,27 @@ translate([75-53,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
 
 // X idler
 translate([-16+150,0,0]) {
-  translate([7,-mgn9_rail_height/2,x_idler_on_z_pos_z+x_idler_bevel_height+gt2_toothed_idler_height/2]) {
-    % color("silver") gt2_toothed_idler();
+  x_idler();
+
+  /*
+  translate([0,20,50]) {
+    x_idler();
+    translate([0,20,50]) {
+      original_x_idler();
+    }
   }
-  translate([-9,3,7.5]) {
-    rotate([90,0,0]) {
-      rotate([0,0,-90]) {
-        % color("lightblue") import("./walter/X-Idler.stl");
+  */
+
+  if (false) {
+    translate([7,-mgn9_rail_height/2,x_idler_on_z_pos_z+x_idler_bevel_height+gt2_toothed_idler_height/2]) {
+      % color("silver") gt2_toothed_idler();
+    }
+
+    translate([-9,3,7.5]) {
+      rotate([90,0,0]) {
+        rotate([0,0,-90]) {
+          % color("lightblue") import("./walter/X-Idler.stl");
+        }
       }
     }
   }
@@ -176,12 +191,12 @@ translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
 
   translate([40-3.3-mgn12_rail_width/2,0,0]) {
     leveling_screw_length = 18;
-    /*
-    //measure_height = 17.34;
-    translate([20,0,mgn12c_surface_above_surface+measure_height/2]) {
-      color("red") cube([10,10,measure_height],center=true);
+    if (false) {
+      measure_height = 17.34;
+      translate([20,0,mgn12c_surface_above_surface+measure_height/2]) {
+        color("red") cube([10,10,measure_height],center=true);
+      }
     }
-    */
 
     y_belt_clamp_assembly();
 
