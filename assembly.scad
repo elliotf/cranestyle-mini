@@ -126,7 +126,7 @@ translate([80/2-20/2,-150/2+mgn12c_surface_above_surface+40,-220/2-20/2]) {
 translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
   rotate([90,0,0]) {
     rotate([0,0,90]) {
-      % color("grey") mgn9c();
+      % mgn9c();
     }
   }
   walter_x_carriage();

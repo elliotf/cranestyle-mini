@@ -231,7 +231,7 @@ module z_nut() {
     }
   }
   rotate([90,0,0]) {
-    % color("darkgrey") mgn12c();
+    % mgn12c();
   }
 
   translate([0,leadscrew_pos_y,220/2-170/2-1]) {

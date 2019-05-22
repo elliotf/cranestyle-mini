@@ -668,13 +668,13 @@ mgn9c_hole_spacing_length = 10;
 module mgn9c() {
   difference() {
     translate([0,0,-mgn9c_height/2]) {
-      cube([mgn9c_width,mgn9c_length,mgn9c_height],center=true);
+      color("#aaa") cube([mgn9c_width,mgn9c_length,mgn9c_height],center=true);
     }
 
     for(x=[left,right]) {
       for(y=[front,rear]) {
         translate([x*mgn9c_hole_spacing_width/2,y*mgn9c_hole_spacing_length/2,0]) {
-          hole(3,8,resolution);
+          color("#555") hole(3,8,resolution);
         }
       }
     }
@@ -695,13 +695,13 @@ mgn12c_hole_spacing_length = 15;
 module mgn12c() {
   difference() {
     translate([0,0,-mgn12c_height/2]) {
-      cube([mgn12c_width,mgn12c_length,mgn12c_height],center=true);
+      color("#aaa") cube([mgn12c_width,mgn12c_length,mgn12c_height],center=true);
     }
 
     for(x=[left,right]) {
       for(y=[front,rear]) {
         translate([x*mgn12c_hole_spacing_width/2,y*mgn12c_hole_spacing_length/2,0]) {
-          hole(3,8,resolution);
+          color("#555") hole(3,8,resolution);
         }
       }
     }
