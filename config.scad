@@ -10,6 +10,7 @@ room_below_extrusion_for_electronics = 34;
 extrusion_mount_screw_diam = m5_diam;
 extrusion_mount_screw_head_diam = m5_nut_diam;
 
+m3_thread_into_hole_diam = 2.9;
 m3_loose_diam = m3_diam + tolerance;
 
 m5_thread_into_hole_diam = 4.9;
@@ -28,6 +29,9 @@ leadscrew_nut_mounting_hole_diam = 2.8; // from walter's -- threading m3 into pl
 rounded_diam = m3_nut_diam + tolerance*2 + wall_thickness*4;
 
 y_idler_in_endcap = true;
+
+duet_mount_thickness = 3;
+duet_mount_bevel_height = 2;
 
 end_cap_extrusion_width_to_cover = 100;
 end_cap_thickness = (y_idler_in_endcap) ? m5_thread_into_hole_diam + 2*(1.2*2) : 5;

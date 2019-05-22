@@ -6,7 +6,6 @@ use <./y-motor-mount.scad>;
 use <./y-belt-clamp.scad>;
 use <./z-motor-mount.scad>;
 use <./z-nut-mount.scad>;
-use <./duet-wifi-mount.scad>;
 use <./end-caps.scad>;
 use <./handle.scad>;
 
@@ -137,29 +136,6 @@ translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
 // X idler
 translate([-16+150,0,0]) {
   x_idler();
-
-  /*
-  translate([0,20,50]) {
-    x_idler();
-    translate([0,20,50]) {
-      original_x_idler();
-    }
-  }
-  */
-
-  if (false) {
-    translate([7,-mgn9_rail_height/2,x_idler_on_z_pos_z+x_idler_bevel_height+gt2_toothed_idler_height/2]) {
-      % color("silver") gt2_toothed_idler();
-    }
-
-    translate([-9,3,7.5]) {
-      rotate([90,0,0]) {
-        rotate([0,0,-90]) {
-          % color("lightblue") import("./walter/X-Idler.stl");
-        }
-      }
-    }
-  }
 }
 
 translate([0,-nema14_side*2-1,-220/2+10.5]) {
@@ -258,16 +234,6 @@ translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
     }
   }
 
-  /*
-  translate([-15+63,0,6+mgn12c_surface_above_surface]) {
-    rotate([0,0,0]) {
-      rotate([180,0,0]) {
-        % color("lightblue", 0.5) import("./walter/Bed Platform.stl");
-      }
-    }
-  }
-  */
-
   // Y idlers
   for(y=[front,rear]) {
     translate([y_idler_pos_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
@@ -275,18 +241,6 @@ translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
     }
   }
 
-  // end caps
-  translate([0,0,-20/2]) {
-    translate([0,150/2,0]) {
-      end_cap_rear();
-    }
-    translate([0,-150/2,0]) {
-      end_cap_front();
-    }
-  }
-
-  // duet wifi board underneath
-  translate([-40+duet_width/2,0,-20]) {
-    duet_assembly();
-  }
+  // end caps + duet wifi
+  end_cap_assembly();
 }

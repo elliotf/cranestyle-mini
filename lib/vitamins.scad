@@ -768,6 +768,8 @@ duet_overall_length = duet_length + 6; // wifi antenna sticks out
 duet_hole_spacing_x = 92;
 duet_hole_spacing_y = 115;
 
+duet_hole_from_end = duet_length/2-duet_hole_spacing_y/2;
+
 module duet_wifi() {
   linear_extrude(height=duet_board_thickness,convexity=3,center=true) {
     difference() {
