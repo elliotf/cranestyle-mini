@@ -112,9 +112,8 @@ if (x_motor_orientation == "b") {
 
 // z nut and leadscrew
 z_nut();
-translate([0,leadscrew_pos_y,-220/2]) {
-  z_motor_mount_front();
-  z_motor_mount_rear();
+translate([0,leadscrew_pos_y,-220/2+nema14_len]) {
+  z_motor_assembly();
 }
 
 // base extrusion plate

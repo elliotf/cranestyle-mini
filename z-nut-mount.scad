@@ -201,11 +201,13 @@ module z_nut() {
     }
   }
 
-  difference() {
-    body();
-    holes();
+  color("salmon") {
+    difference() {
+      body();
+      holes();
+    }
+    bridges();
   }
-  bridges();
 
   x_rail_len = 150;
   translate([-mgn12c_hole_spacing_width/2-5+x_rail_len/2,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {

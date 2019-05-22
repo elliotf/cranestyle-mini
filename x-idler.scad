@@ -124,7 +124,7 @@ module x_idler() {
     }
   }
 
-  translate([0,0,0]) {
+  color("salmon") {
     difference() {
       body();
       holes();
