@@ -173,7 +173,7 @@ module end_cap_rear() {
     duet_port_access_hole_width = 85; // wider to be able to see the activity lights?
     duet_port_access_hole_height = 8;
     duet_port_access_hole_offset_x = 10;
-    duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_port_access_hole_height/2;
+    duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_board_thickness/2-duet_port_access_hole_height/2;
 
     // hole to access duet wifi ports
     translate([duet_port_access_hole_offset_x,0,duet_port_access_hole_offset_z]) {

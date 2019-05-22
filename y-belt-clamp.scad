@@ -184,16 +184,6 @@ module belt_clamp() {
     }
   }
 
-  translate([y_belt_clamp_width/2+belt_thickness+mgn12c_width/2,0,y_belt_clamp_height/2+top_of_belt_below_mgn]) {
-    //% color("lightgrey") mgn12c();
-
-    translate([-10,0,-mgn12c_surface_above_surface-10]) {
-      rotate([90,0,0]) {
-        // % color("silver") extrusion_2080();
-      }
-    }
-  }
-
   difference() {
     body();
     holes();
