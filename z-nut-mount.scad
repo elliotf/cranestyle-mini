@@ -116,9 +116,25 @@ module z_nut() {
     for(x=[left,right]) {
       // mount nut to Z carriage
       translate([x*mgn12c_hole_spacing_width/2,-z_nut_mount_depth,-mgn12c_hole_spacing_length/2]) {
-        rotate([90,0,0]) {
-          hole(m3_loose_diam,z_nut_mount_depth*2+1,resolution);
-          hole(m3_socket_head_diam,m3_socket_head_height*2,resolution);
+        rotate([-90,0,0]) {
+          //if (countersink_all_the_things) {
+          if (false) {
+            echo("m3 FSC of length x ", z_nut_mount_depth+3);
+            hole(m3_loose_diam,z_nut_mount_depth*2+1,resolution);
+            translate([0,0,0.5]) {
+              hull() {
+                hole(m3_loose_diam,m3_fsc_head_diam-m3_loose_diam,resolution);
+                translate([0,0,-1]) {
+                  hole(m3_fsc_head_diam,2,resolution);
+                }
+              }
+            }
+          } else {
+            translate([0,0,z_nut_mount_depth/2+m3_socket_head_height+0.2]) {
+              hole(m3_loose_diam,z_nut_mount_depth,resolution);
+            }
+            hole(m3_socket_head_diam,m3_socket_head_height*2,resolution);
+          }
         }
       }
     }
@@ -190,26 +206,15 @@ module z_nut() {
     }
   }
 
-  module bridges() {
-    for(x=[left,right]) {
-      translate([x*mgn12c_hole_spacing_width/2,-z_nut_mount_depth+m3_socket_head_height+0.1,-mgn12c_hole_spacing_length/2]) {
-        rotate([90,0,0]) {
-          // print on back of part for now; don't need this bridges
-          hole(m3_socket_head_diam,0.2,resolution);
-        }
-      }
-    }
-  }
-
   color("salmon") {
     difference() {
       body();
       holes();
     }
-    bridges();
   }
 
   x_rail_len = 150;
+
   translate([-mgn12c_hole_spacing_width/2-5+x_rail_len/2,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {
     % difference() {
       color("lightgrey") cube([x_rail_len,mgn9_rail_height,mgn9_rail_width],center=true);

@@ -446,9 +446,9 @@ nema14_screw_diam = m3_diam;
 nema14_shaft_diam = 5;
 nema14_shaft_len = 20;
 
-module motor_nema17() {
+module motor_nema17(length=nema17_len) {
   difference() {
-    translate([0,0,-nema17_len/2]) cube([nema17_side,nema17_side,nema17_len],center=true);
+    translate([0,0,-length/2]) cube([nema17_side,nema17_side,length],center=true);
     for(end=[left,right]) {
       for(side=[front,rear]) {
         translate([nema17_hole_spacing/2*side,nema17_hole_spacing/2*end,0]) cylinder(r=nema17_screw_diam/2,h=100,center=true);
@@ -462,9 +462,9 @@ module motor_nema17() {
   }
 }
 
-module motor_nema14() {
+module motor_nema14(length=nema14_len) {
   difference() {
-    translate([0,0,-nema14_len/2]) cube([nema14_side,nema14_side,nema14_len],center=true);
+    translate([0,0,-length/2]) cube([nema14_side,nema14_side,length],center=true);
     for(end=[left,right]) {
       for(side=[front,rear]) {
         translate([nema14_hole_spacing/2*side,nema14_hole_spacing/2*end,0]) cylinder(r=nema14_screw_diam/2,h=100,center=true);

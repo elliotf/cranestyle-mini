@@ -1,43 +1,7 @@
 include <./config.scad>;
 include <./lib/util.scad>;
 
-module original_y_motor_mount() {
-  $fs = .2;
-  $fa = 2;
-
-  difference() {
-    linear_extrude(20, convexity = 5) {
-      difference() {
-        hull() {
-          offset(5) offset(-5) square([35, 35], center = true);
-          for(y = [1, -1]) translate([0, y * 20, 0]) circle(5);
-        }
-        for(x = [1, -1], y = [1, -1]) translate([x * 13, y * 13, 0]) circle(3/2);
-        for(y = [1, -1]) translate([0, y * 20, 0]) circle(5/2);
-        circle(11.1);
-      }
-    }
-    linear_extrude((20 - 5) * 2, center = true, convexity = 5) for(y = [1, -1]) hull() for(i = [0, 1]) translate([0, y * (20 + i * 20), 0]) circle(5);
-      
-    linear_extrude(8 * 2, center = true, convexity = 5) hull() for(i = [0, 1]) translate([i * 50, 0, 0]) circle(5);
-
-
-    translate([0, 0, 8]) linear_extrude(20, convexity = 5) {
-      for(x = [1, -1], y = [1, -1]) translate([x * 13, y * 13, 0]) circle(3/2);
-      hull() for(i = [-1:1]) translate([-abs(i) * 50, i * 50, 0]) circle(7);
-      translate([-20, 0, 0]) square([20, 100], center = true);
-    }
-
-    translate([0, 0, 5]) linear_extrude(20, convexity = 5) {
-      for(x = [1, -1], y = [1, -1]) translate([x * 13, y * 13, 0]) circle(3);
-    }
-  }
-
-  //linear_extrude(20 - 5 - .2, convexity = 5) for(y = [1, -1]) hull() for(i = [0, 1]) translate([0, y * (20 + i * 10), 0]) circle(5/2 + .5);
-    
-  //linear_extrude(8 - .2, convexity = 5) hull() for(i = [0, 1]) translate([10 + i * 10, 0, 0]) circle(3);
-}
-
+//countersink_all_the_things = false;
 
 module y_motor_mount() {
   resolution = 72;
@@ -68,18 +32,14 @@ module y_motor_mount() {
   belt_opening_angle = 90;
   motor_offset = nema14_side/2-y_motor_side/2;
 
-  extrusion_mount_screw_hole_diam = extrusion_mount_screw_diam + tolerance*2;
   extrusion_mount_hole_spacing = y_motor_side + extrusion_mount_screw_head_diam - 2;
   extrusion_mount_head_hole_diam = extrusion_mount_screw_head_diam + tolerance*3;
 
   length_to_screw_into_motor = 3;
-  length_to_screw_into_t_slot_nut = 5;
 
   open_side_m3_length = 5;
   closed_side_m3_length = 16;
   extrusion_anchor_screw_length = 20;
-
-  extrusion_anchor_shoulder_pos_z = -height/2-length_to_screw_into_t_slot_nut+extrusion_anchor_screw_length;
 
   meat_above_pulley = open_side_m3_length + m3_socket_head_height - length_to_screw_into_motor;
   echo("meat_above_pulley: ", meat_above_pulley);
@@ -106,7 +66,7 @@ module y_motor_mount() {
         for(x=[left,right]) {
           translate([x*extrusion_mount_hole_spacing/2,0,0]) {
             rounded_diam = 6;
-            rounded_square(extrusion_mount_screw_hole_diam+wall_thickness*4,extrusion_mount_head_hole_diam+rounded_diam+wall_thickness*2,rounded_diam,resolution);
+            rounded_square(extrusion_mount_screw_head_diam,extrusion_mount_head_hole_diam+rounded_diam+wall_thickness*2,rounded_diam,resolution);
           }
         }
       }
@@ -132,12 +92,6 @@ module y_motor_mount() {
               accurate_circle(motor_screw_hole_diam,16);
             }
           }
-        }
-      }
-
-      for(x=[left,right]) {
-        translate([x*extrusion_mount_hole_spacing/2,0,0]) {
-          accurate_circle(extrusion_mount_screw_hole_diam,screw_head_hole_resolution);
         }
       }
     }
@@ -218,46 +172,49 @@ module y_motor_mount() {
     }
 
     // extrusion mount screw heads
-    translate([0,0,extrusion_anchor_shoulder_pos_z]) {
-      for(x=[left,right]) {
-        translate([x*(extrusion_mount_hole_spacing/2+extrusion_mount_head_hole_diam/2),0,0]) {
+    for(x=[left,right]) {
+      translate([x*extrusion_mount_hole_spacing/2,0,0]) {
+        if (countersink_all_the_things) {
+          hole(m5_loose_diam,height*2,resolution);
+          translate([0,0,height/2-0.5]) {
+            hull() {
+              hole(m5_loose_diam,m5_fsc_head_diam-m5_loose_diam,resolution);
+              translate([0,0,1]) {
+                hole(m5_fsc_head_diam,2,resolution);
+              }
+            }
+          }
+        } else {
           translate([0,0,height/2]) {
-            rounded_cube(extrusion_mount_head_hole_diam*2,extrusion_mount_head_hole_diam,height,extrusion_mount_head_hole_diam,resolution);
-          }
-          translate([-x*(extrusion_mount_head_hole_diam/2),0,m5_socket_head_height/2]) {
-            % hole(m5_nut_diam,m5_socket_head_height,resolution);
+            translate([extrusion_mount_head_hole_diam/2,0,0]) {
+              rounded_cube(extrusion_mount_head_hole_diam*2,extrusion_mount_head_hole_diam,m5_socket_head_height*2,extrusion_mount_head_hole_diam,resolution);
+            }
+            translate([0,0,-m5_socket_head_height-height/2-0.2]) {
+              hole(m5_loose_diam+tolerance,height,resolution);
+            }
+            translate([0,0,-m5_socket_head_height/2]) {
+              % hole(m5_nut_diam,m5_socket_head_height,resolution);
+            }
           }
         }
       }
     }
   }
 
-  module bridges() {
-    translate([0,0,extrusion_anchor_shoulder_pos_z-0.1]) {
-      for(x=[left,right]) {
-        translate([x*(extrusion_mount_hole_spacing/2),0,0]) {
-          hole(extrusion_mount_screw_hole_diam+1,0.2,8);
-        }
-      }
-    }
-  }
-
-  difference() {
-    color("salmon") body();
+  color("salmon") difference() {
+    body();
     holes();
   }
 
   color("dimgrey") translate([0,motor_offset,height/2]) {
     rotate([180,0,0]) {
       if (y_motor_side == nema14_side) {
-        motor_nema14();
+        motor_nema14(y_motor_length);
       } else {
         motor_nema17();
       }
     }
   }
-
-  bridges();
 }
 
 module to_print() {

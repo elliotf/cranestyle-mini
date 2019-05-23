@@ -3,48 +3,16 @@ include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
 use <./duet-wifi-mount.scad>;
 
-module original_end_caps() {
-  rows = 4;
-
-  $fs = .2;
-  $fa = 2;
-
-  for(end = [0, 1]) mirror([0, end, 0]) translate([0, 14, 0]) difference() {
-    union() {
-      linear_extrude(6, convexity = 5) offset(1) offset(-1) union() {
-        square([20 * rows, 20], center = true);
-        for(i = [-1, 1]) translate([end ? 0 : i * 10 * rows, -10]) difference() {
-          circle(5);
-          circle(3);
-        }
-        translate([10 * rows - 15, 0, 0]) square([15, 15]);
-        if(!end) translate([-10 * rows, 0, 0]) square([20, 10 + 15 * 2]);
-      }
-      translate([10, 0, 3]) rotate([-90, 0, 0]) intersection() {
-        cylinder(r = 3 * sqrt(2), h = 100);
-        cube([20, 6, 22], center = true);
-      }
-    }
-    translate([10, 0, 3]) rotate([90, 0, 0]) {
-      cylinder(r = 3 / 2 / cos(180 / 6), h = 100, center = true, $fn = 6);
-      cube([6, 10, 3.5], center = true);
-    }
-    for(i = [.5:rows]) if(i != 2.5) translate([-rows * 10 + i * 20, 0, 0]) difference() {
-      union() {
-        cylinder(r = 5/2, h = 20, center = true);
-        cylinder(r = 5, h = 6, center = true);
-      }
-      cylinder(r = 5/2 + .5, h = 5.6, center = true);
-    }
-    for(i = [.5:2]) translate([-rows * 10 + 10, 10 + 15 * i, 0]) difference() {
-      union() {
-        cylinder(r = 5/2, h = 20, center = true);
-        cylinder(r = 5, h = 6, center = true);
-      }
-      cylinder(r = 5/2 + .5, h = 5.6, center = true);
-    }
-  }
-}
+// FIXME:
+//   * mount for 5.5x2.5 power input female plug
+//   * holes for wires
+//     * extruder motor
+//     * X motor
+//     * Y motor
+//     * Z motor
+//     * bed power/thermistor
+//     * X carriage bundle
+//   * anchors for wires
 
 y_idler_screw_hole_length = 28;
 duet_mounting_hole_offset_y = end_cap_thickness-duet_hole_from_end-(duet_overall_length-duet_length); // mounting hole relative to extrusion edge
@@ -85,44 +53,38 @@ module end_cap(end=front) {
     
     // end_cap_extrusion mounting holes
     for(x=[10,30,70,90]) {
-      translate([-40+x,-end_cap_thickness+0.5,0]) {
+      translate([-40+x,-end_cap_thickness,0]) {
         rotate([-90,0,0]) {
-          hole(m5_loose_diam,end_cap_thickness*2+1,resolution);
+          if (countersink_all_the_things) {
+            translate([0,0,0.5]) {
+              hole(m5_loose_diam,end_cap_thickness*2+1,resolution);
 
-          // countersink heads
-          hull() {
-            hole(m5_loose_diam,m5_fsc_head_diam-m5_loose_diam,resolution);
-            translate([0,0,-1]) {
-              hole(m5_fsc_head_diam,2,resolution);
+              // countersink heads
+              hull() {
+                hole(m5_loose_diam,m5_fsc_head_diam-m5_loose_diam,resolution);
+                translate([0,0,-1]) {
+                  hole(m5_fsc_head_diam,2,resolution);
+                }
+              }
             }
+          } else {
+            translate([0,0,end_cap_thickness/2+m5_socket_head_height+0.2]) {
+              hole(m5_loose_diam,end_cap_thickness,resolution);
+            }
+            hole(m5_nut_diam+tolerance,m5_socket_head_height*2,resolution);
           }
         }
       }
     }
 
-    // hollow out part of part.  Does not improve/reduce print time.  :(
-    /*
-    for (x=[left,right]) {
-      width = (end_cap_width-m5_thread_into_hole_diam)/2 - wall_thickness*4;
-      height = end_cap_height-20 - wall_thickness*2;
-      depth = end_cap_thickness - 0.6*2;
-      rounded = rounded_diam-wall_thickness*4;
-      translate([10+x*(end_cap_width/2-width/2-wall_thickness*2),0,20/2-end_cap_height+height/2+wall_thickness*2]) {
-        rotate([90,0,0]) {
-          rounded_cube(width,height,depth*2,rounded,resolution);
-        }
-      }
-    }
-    */
-    union() {
-      rounded = rounded_diam-wall_thickness*4;
-      translate([10,0,20/2-end_cap_height+cavity_height/2+wall_thickness*2]) {
-        rotate([90,0,0]) {
-          rounded_cube(cavity_width,cavity_height,cavity_depth*2,rounded,resolution);
-        }
+    rounded = rounded_diam-wall_thickness*4;
+    translate([10,0,20/2-end_cap_height+cavity_height/2+wall_thickness*2]) {
+      rotate([90,0,0]) {
+        rounded_cube(cavity_width,cavity_height,cavity_depth*2,rounded,resolution);
       }
     }
 
+    // trim the bottom to be able to see better
     translate([0,0,-10-end_cap_height/2]) {
       // cube([end_cap_width*2,end_cap_thickness*4,25],center=true);
     }

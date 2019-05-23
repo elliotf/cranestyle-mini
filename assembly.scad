@@ -53,7 +53,7 @@ if (x_motor_orientation == "h") {
           }
         }
       }
-      % color("dimgrey") motor_nema14();
+      % color("dimgrey") motor_nema14(x_motor_length);
     }
   }
 }
@@ -78,7 +78,7 @@ if (x_motor_orientation == "v") {
       if (nema17) {
         motor_nema17();
       } else {
-        motor_nema14();
+        motor_nema14(x_motor_length);
       }
     }
   }
@@ -98,7 +98,7 @@ if (x_motor_orientation == "b") {
       }
       */
     }
-    % color("dimgrey") motor_nema14();
+    % color("dimgrey") motor_nema14(x_motor_length);
     translate([-nema14_hole_spacing/2,nema14_hole_spacing/2,6.1]) {
       rotate([0,0,-90]) {
         % color("lightblue") import("./walter/Stabilizer Wheel Mount.stl");
