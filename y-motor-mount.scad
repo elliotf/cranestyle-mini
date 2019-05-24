@@ -201,7 +201,7 @@ module y_motor_mount() {
     }
   }
 
-  color("salmon") difference() {
+  difference() {
     body();
     holes();
   }

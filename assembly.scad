@@ -115,6 +115,11 @@ z_nut();
 translate([0,leadscrew_pos_y,-220/2+nema14_len]) {
   z_motor_assembly();
 }
+translate([left*(20/2+mech_endstop_tiny_width/2),rear*(mgn12c_surface_above_surface+20/2-mech_endstop_mounting_hole_spacing_y/2),-220/2+50]) {
+  rotate([0,0,180]) {
+    mech_endstop_tiny();
+  }
+}
 
 // base extrusion plate
 translate([80/2-20/2,-150/2+mgn12c_surface_above_surface+40,-220/2-20/2]) {

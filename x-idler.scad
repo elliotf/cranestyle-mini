@@ -124,11 +124,9 @@ module x_idler() {
     }
   }
 
-  color("salmon") {
-    difference() {
-      body();
-      holes();
-    }
+  difference() {
+    body();
+    holes();
   }
 
   translate([x_idler_pos_x,x_idler_pos_y,x_idler_on_z_pos_z+gt2_toothed_idler_height/2]) {

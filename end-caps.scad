@@ -3,8 +3,7 @@ include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
 use <./duet-wifi-mount.scad>;
 
-// FIXME:
-//   * mount for 5.5x2.5 power input female plug
+// FIXME/TODO:
 //   * holes for wires
 //     * extruder motor
 //     * X motor
@@ -18,9 +17,12 @@ y_idler_screw_hole_length = 28;
 duet_mounting_hole_offset_y = end_cap_thickness-duet_hole_from_end-(duet_overall_length-duet_length); // mounting hole relative to extrusion edge
 duet_mounting_hole_offset_z = -20/2-duet_mount_thickness-duet_mount_bevel_height-tolerance;
 
-cavity_width = end_cap_width - wall_thickness*4;
-cavity_height = abs(end_cap_height - 10 - wall_thickness*2) - abs(duet_mounting_hole_offset_z) + duet_mount_bevel_height;
+end_cap_rim_width = wall_thickness*2;
+
+cavity_width = end_cap_width - end_cap_rim_width*2;
+cavity_height = abs(end_cap_height - 10 - end_cap_rim_width) - abs(duet_mounting_hole_offset_z) + duet_mount_bevel_height;
 cavity_depth = end_cap_thickness - 0.2*6; // 6 extrusion layers thick?
+cavity_rounded = rounded_diam-(end_cap_width-cavity_width);
 
 module end_cap(end=front) {
   y_idler_screw_shoulder_pos_z = 20/2+y_idler_dist_z_from_extrusion+gt2_toothed_idler_height;
@@ -77,10 +79,9 @@ module end_cap(end=front) {
       }
     }
 
-    rounded = rounded_diam-wall_thickness*4;
     translate([10,0,20/2-end_cap_height+cavity_height/2+wall_thickness*2]) {
       rotate([90,0,0]) {
-        rounded_cube(cavity_width,cavity_height,cavity_depth*2,rounded,resolution);
+        rounded_cube(cavity_width,cavity_height,cavity_depth*2,cavity_rounded,resolution);
       }
     }
 
@@ -103,6 +104,17 @@ module end_cap_front() {
 }
 
 module end_cap_rear() {
+  power_plug_hole_diam = 11;
+  power_plug_bevel_height = 2;
+  power_plug_bevel_id = 13;
+  power_plug_bevel_od = 13;
+  power_plug_body_diameter = power_plug_hole_diam+extrude_width*8*2;
+  power_plug_area_thickness = 4;
+
+  power_plug_pos_x = 10+left*(end_cap_width/2-end_cap_rim_width-power_plug_body_diameter/2);
+  power_plug_pos_y = end_cap_thickness;
+  power_plug_pos_z = 10-end_cap_height+end_cap_rim_width+power_plug_body_diameter/2;
+
   module body() {
     mirror([0,1,0]) {
       end_cap();
@@ -129,6 +141,30 @@ module end_cap_rear() {
         }
       }
     }
+
+    // power plug area
+    translate([power_plug_pos_x,power_plug_pos_y,power_plug_pos_z]) {
+      translate([0,-power_plug_bevel_height/2-power_plug_area_thickness/2,0]) {
+        rotate([90,0,0]) {
+          linear_extrude(height=power_plug_area_thickness+power_plug_bevel_height,center=true,convexity=3) {
+            difference() {
+              square([power_plug_body_diameter,power_plug_body_diameter],center=true);
+              translate([power_plug_body_diameter/2,power_plug_body_diameter/2]) {
+                rotate([0,0,180]) {
+                  round_corner_filler_profile(power_plug_body_diameter,resolution);
+                }
+              }
+            }
+            translate([-power_plug_body_diameter/2,power_plug_body_diameter/2]) {
+              round_corner_filler_profile(cavity_rounded,resolution);
+            }
+            translate([power_plug_body_diameter/2,-power_plug_body_diameter/2]) {
+              round_corner_filler_profile(cavity_rounded,resolution);
+            }
+          }
+        }
+      }
+    }
   }
 
   module holes() {
@@ -147,6 +183,21 @@ module end_cap_rear() {
     for(x=[left,right]) {
       translate([10+x*duet_hole_spacing_x/2,duet_mounting_hole_offset_y,duet_mounting_hole_offset_z]) {
         hole(m3_thread_into_hole_diam,2*(duet_mount_bevel_height+duet_mount_thickness)-extrude_width*4,resolution);
+      }
+    }
+
+    translate([power_plug_pos_x,power_plug_pos_y,power_plug_pos_z]) {
+      rotate([-90,0,0]) {
+        translate([0,0,-end_cap_thickness/2-power_plug_bevel_height-0.2]) {
+          hole(power_plug_hole_diam,end_cap_thickness,resolution);
+        }
+
+        hull() {
+          hole(power_plug_bevel_id,power_plug_bevel_height*2,resolution);
+          translate([0,0,1]) {
+            hole(power_plug_bevel_od,2,resolution);
+          }
+        }
       }
     }
   }

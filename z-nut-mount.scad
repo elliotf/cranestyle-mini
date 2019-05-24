@@ -6,7 +6,7 @@ include <./lib/vitamins.scad>;
 
 TODO:
 * Z endstop solution (if not using piezo or IR probe)
-* X endstop solution (if not using walter's solution)
+* X endstop solution (if not using walter's solution, and/or make sure this design is compatible with walter's)
 
 */
 
@@ -206,11 +206,9 @@ module z_nut() {
     }
   }
 
-  color("salmon") {
-    difference() {
-      body();
-      holes();
-    }
+  difference() {
+    body();
+    holes();
   }
 
   x_rail_len = 150;

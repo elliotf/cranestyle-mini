@@ -153,11 +153,9 @@ module z_motor_mount() {
     }
   }
 
-  color("salmon") {
-    difference() {
-      body();
-      holes();
-    }
+  difference() {
+    body();
+    holes();
   }
 }
 
