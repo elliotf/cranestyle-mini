@@ -21,7 +21,7 @@ end_cap_rim_width = wall_thickness*2;
 
 cavity_width = end_cap_width - end_cap_rim_width*2;
 cavity_height = abs(end_cap_height - 10 - end_cap_rim_width) - abs(duet_mounting_hole_offset_z) + duet_mount_bevel_height;
-cavity_depth = end_cap_thickness - 0.2*6; // 6 extrusion layers thick?
+cavity_depth = end_cap_thickness - 0.2*6; // 6 extrusion layers 0.2 thick, or 4 extrusion layers 0.3 thick -- enough?
 cavity_rounded = rounded_diam-(end_cap_width-cavity_width);
 
 module end_cap(end=front) {
@@ -104,6 +104,11 @@ module end_cap_front() {
 }
 
 module end_cap_rear() {
+  duet_port_access_hole_width = 85; // wider to be able to see the activity lights?
+  duet_port_access_hole_height = 8;
+  duet_port_access_hole_offset_x = 10;
+  duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_board_thickness/2-duet_port_access_hole_height/2;
+
   power_plug_hole_diam = 11;
   power_plug_bevel_height = 2;
   power_plug_bevel_id = 13;
@@ -114,6 +119,15 @@ module end_cap_rear() {
   power_plug_pos_x = 10+left*(end_cap_width/2-end_cap_rim_width-power_plug_body_diameter/2);
   power_plug_pos_y = end_cap_thickness;
   power_plug_pos_z = 10-end_cap_height+end_cap_rim_width+power_plug_body_diameter/2;
+
+  wire_hole_wall_depth = 3;
+  wire_hole_wall_thickness = wall_thickness*2;
+  wire_hole_rounded_diam = 4;
+  wire_hole_width = 30;
+  wire_hole_height = 6.5;
+  wire_hole_pos_x = power_plug_pos_x + power_plug_body_diameter /2 + 8 + wire_hole_width/2;
+  wire_hole_pos_y = end_cap_thickness-wire_hole_wall_depth/2;
+  wire_hole_pos_z = power_plug_pos_z;
 
   module body() {
     mirror([0,1,0]) {
@@ -165,15 +179,17 @@ module end_cap_rear() {
         }
       }
     }
+
+    // wire holes for X stepper, extruder stepper, maybe Y endstop
+    translate([wire_hole_pos_x,wire_hole_pos_y,wire_hole_pos_z]) {
+      rotate([90,0,0]) {
+        rounded_cube(wire_hole_width+wire_hole_wall_thickness*2,wire_hole_height+wire_hole_wall_thickness*2,wire_hole_wall_depth,wire_hole_rounded_diam+wire_hole_wall_thickness*2);
+      }
+    }
   }
 
   module holes() {
-    duet_port_access_hole_width = 85; // wider to be able to see the activity lights?
-    duet_port_access_hole_height = 8;
-    duet_port_access_hole_offset_x = 10;
-    duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_board_thickness/2-duet_port_access_hole_height/2;
-
-    // hole to access duet wifi ports
+    // hole to access duet wifi ports, maybe too small for a usb cable, but useful for microSD card access in a bind
     translate([duet_port_access_hole_offset_x,0,duet_port_access_hole_offset_z]) {
       rotate([90,0,0]) {
         rounded_cube(duet_port_access_hole_width,duet_port_access_hole_height,end_cap_thickness*3,4,resolution);
@@ -198,6 +214,12 @@ module end_cap_rear() {
             hole(power_plug_bevel_od,2,resolution);
           }
         }
+      }
+    }
+
+    translate([wire_hole_pos_x,wire_hole_pos_y,wire_hole_pos_z]) {
+      rotate([90,0,0]) {
+        rounded_cube(wire_hole_width,wire_hole_height,wire_hole_wall_depth+1,wire_hole_rounded_diam);
       }
     }
   }

@@ -42,7 +42,7 @@ duet_mount_thickness = 3;
 duet_mount_bevel_height = 2;
 
 end_cap_extrusion_width_to_cover = 100;
-end_cap_thickness = (y_idler_in_endcap) ? m5_thread_into_hole_diam + 2*(1.2*2) : 5;
+end_cap_thickness = (y_idler_in_endcap) ? m5_thread_into_hole_diam + 2*(1.2*2)-0.2 : 5; // remove a 0.2mm layer because cura was printing an infill layer rather than solid
 end_cap_overhang = rounded_diam/2;
 end_cap_width = end_cap_extrusion_width_to_cover + end_cap_overhang*2;
 end_cap_height = 20+room_below_extrusion_for_electronics+1;
