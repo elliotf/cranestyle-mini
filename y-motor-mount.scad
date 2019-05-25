@@ -175,6 +175,7 @@ module y_motor_mount() {
     for(x=[left,right]) {
       translate([x*extrusion_mount_hole_spacing/2,0,0]) {
         if (countersink_all_the_things) {
+          echo("Y MOTOR MOUNT: FCS M5 x ", height+5);
           hole(m5_loose_diam,height*2,resolution);
           translate([0,0,height/2-0.5]) {
             hull() {

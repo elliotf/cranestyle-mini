@@ -5,7 +5,7 @@ tolerance = 0.2;
 extrude_width = 0.4;
 wall_thickness = extrude_width*3;
 
-countersink_all_the_things = 0;
+countersink_all_the_things = 1;
 
 room_below_extrusion_for_electronics = 34;
 

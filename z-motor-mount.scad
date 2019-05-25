@@ -125,7 +125,7 @@ module z_motor_mount() {
         rotate([0,90,0]) {
           hole(5+tolerance,60,resolution);
           if (countersink_all_the_things) {
-            echo("m5 screw length for mounting Z motor (countersunk): ", extrusion_mount_thickness+5);
+            echo("Z MOTOR MOUNT: FCS M5 x ", extrusion_mount_thickness+5);
             translate([0,0,0.5]) {
               hull() {
                 hole(m5_loose_diam,m5_fsc_head_diam-m5_loose_diam,resolution);
