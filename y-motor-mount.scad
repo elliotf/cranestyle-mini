@@ -207,7 +207,7 @@ module y_motor_mount() {
     holes();
   }
 
-  color("dimgrey") translate([0,motor_offset,height/2]) {
+  % color("dimgrey") translate([0,motor_offset,height/2]) {
     rotate([180,0,0]) {
       if (y_motor_side == nema14_side) {
         motor_nema14(y_motor_length);
