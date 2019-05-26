@@ -59,7 +59,7 @@ module end_cap(end=front) {
         rotate([-90,0,0]) {
           if (countersink_all_the_things) {
             echo("EXTRUSION MOTOR MOUNT: FCS M5 x ", end_cap_thickness+5);
-            translate([0,0,0.5]) {
+            translate([0,0,0.75]) {
               hole(m5_loose_diam,end_cap_thickness*2+1,resolution);
 
               // countersink heads
