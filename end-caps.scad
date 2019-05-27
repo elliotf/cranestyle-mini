@@ -22,7 +22,7 @@ end_cap_rim_width = wall_thickness*2;
 cavity_width = end_cap_width - end_cap_rim_width*2;
 cavity_height = abs(end_cap_height - 10 - end_cap_rim_width) - abs(duet_mounting_hole_offset_z) + duet_mount_bevel_height;
 cavity_depth = end_cap_thickness - 0.2*6; // 6 extrusion layers 0.2 thick, or 4 extrusion layers 0.3 thick -- enough?
-cavity_rounded = rounded_diam-(end_cap_width-cavity_width);
+cavity_rounded = end_cap_rounded_diam-(end_cap_width-cavity_width);
 
 module end_cap(end=front) {
   y_idler_screw_shoulder_pos_z = 20/2+y_idler_dist_z_from_extrusion+gt2_toothed_idler_height;
@@ -104,8 +104,6 @@ module end_cap(end=front) {
     holes();
   }
 }
-
-end_cap();
 
 module end_cap_front() {
   end_cap(front);
@@ -238,6 +236,186 @@ module end_cap_rear() {
   }
 }
 
+// TODO/FIXME: add some sort of peg/brace on the end caps for this cover to brace/index against?
+//   pins in the two bottom corners, or some sort of brace along the bottom along the entire width?
+cover_wall_thickness = 0.5*2; // FIXME: too thin?
+cover_inset_from_end_cap_dimensions = extrude_width*4;
+cover_rounded_diam = end_cap_rounded_diam-cover_inset_from_end_cap_dimensions*2;
+cover_width = end_cap_width-cover_inset_from_end_cap_dimensions*2;
+cover_top_pos = t_slot_opening/2; // FIXME: make it the top of the slot gap
+cover_bottom_pos = bottom*(end_cap_height-20/2-cover_inset_from_end_cap_dimensions);
+cover_height = cover_top_pos-cover_bottom_pos;
+cover_hook_height_inside = 2.25;
+cover_hook_height = cover_hook_height_inside+cover_wall_thickness;
+
+module electronics_cover() {
+  t_slot_depth = 6;
+  t_slot_flange_thickness = 2; // FIXME: measure IRL
+  hook_depth = t_slot_depth-1;
+  center_pos_x = -50+y_extrusion_width/2;
+
+  module electronics_cover_profile() {
+    inner_width = cover_width - cover_wall_thickness*2;
+    inner_height = cover_height - cover_wall_thickness*2;
+    inner_diam = cover_rounded_diam-cover_wall_thickness*2;
+
+    module body() {
+      translate([0,cover_top_pos-cover_height/2]) {
+        rounded_square(cover_width,cover_height,cover_rounded_diam,resolution);
+      }
+    }
+
+    module holes() {
+      hull() {
+        for(x=[left,right]) {
+          translate([center_pos_x-x*(y_extrusion_width/2-t_slot_flange_thickness-1-cover_wall_thickness/2),0,0]) {
+            square([2,20],center=true);
+          }
+        }
+      }
+
+      translate([0,cover_top_pos-cover_height/2]) {
+        rounded_square(inner_width,inner_height,inner_diam,resolution);
+      }
+    }
+
+    module bridges() {
+      // FIXME: make corrugations to improve stiffness
+      for (x=[left,right]) {
+        translate([center_pos_x+x*y_extrusion_width/2,cover_top_pos-cover_wall_thickness/2,0]) {
+          mirror([1-x,0,0]) {
+            hull() {
+              translate([left*(t_slot_flange_thickness+cover_wall_thickness/2),0,0]) {
+                translate([left*(cover_hook_height/2-cover_wall_thickness/2),0,0]) {
+                  rounded_square(cover_hook_height,cover_wall_thickness,cover_wall_thickness);
+                }
+                translate([0,cover_hook_height/2-cover_wall_thickness/2,0]) {
+                  rounded_square(cover_wall_thickness,cover_hook_height,cover_wall_thickness);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    difference() {
+      body();
+      holes();
+    }
+
+    bridges();
+  }
+
+  module body() {
+    rotate([90,0,0]) {
+      linear_extrude(height=150-tolerance*3,center=true,convexity=5) {
+        electronics_cover_profile();
+      }
+    }
+  }
+
+  module tapered_hook_hole(width) {
+    mult = 2.25;
+
+    trim_hook_tip_width = y_extrusion_width-t_slot_flange_thickness*2;
+    trim_hook_tip_depth = width;
+    trim_hook_tip_height = cover_hook_height_inside;
+
+    trim_hook_base_width = trim_hook_tip_width-cover_hook_height*2;
+    trim_hook_base_depth = trim_hook_tip_depth-trim_hook_tip_height*mult;
+    trim_hook_base_height = cover_hook_height;
+
+    end_cap_and_cover_rounded_difference = end_cap_rounded_diam - cover_rounded_diam;
+
+    trim_hook_entrance_height = cover_hook_height+end_cap_and_cover_rounded_difference/2+cover_wall_thickness;
+    trim_hook_entrance_width = trim_hook_base_width+trim_hook_entrance_height*2;
+    trim_hook_entrance_depth = trim_hook_base_depth-trim_hook_entrance_height*mult;
+
+    translate([0,0,cover_top_pos]) {
+      // trim hook tops
+      hull() {
+        translate([0,0,cover_hook_height_inside+1]) {
+          cube([trim_hook_tip_width+1,trim_hook_tip_depth,2],center=true);
+        }
+        translate([0,0,1]) {
+          cube([trim_hook_tip_width,trim_hook_base_depth,2],center=true);
+        }
+      }
+
+      translate([0,0,-cover_wall_thickness]) {
+        hull() {
+          cube([trim_hook_base_width,trim_hook_base_depth,2],center=true);
+          cube([trim_hook_entrance_width,trim_hook_entrance_depth,2],center=true);
+        }
+      }
+
+      rotated_base_depth = trim_hook_entrance_depth+0.8;
+      rotated_taper_dist = cover_rounded_diam/2*mult;
+      for(x=[right]) {
+        mirror([1-x,0,0]) {
+
+          translate([x*cover_width/2-cover_rounded_diam/2,0,-cover_rounded_diam/2]) {
+            num_steps = 15;
+            step_angle = 90 / num_steps;
+            rotate([90,0,0]) {
+              for(i=[0:num_steps-1]) {
+                hull() {
+                  rotate([0,0,-i*step_angle]) {
+                    cube([0.1,cover_rounded_diam+1,rotated_base_depth-i*(rotated_taper_dist/num_steps)],center=true);
+                  }
+
+                  next = i+1;
+                  rotate([0,0,-next*step_angle]) {
+                    cube([0.1,cover_rounded_diam+1,rotated_base_depth-next*(rotated_taper_dist/num_steps)],center=true);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      flat_side_taper_base_depth = rotated_base_depth-rotated_taper_dist+0.1;
+      flat_side_access_space = 4;
+      flat_side_access_taper_dist = flat_side_access_space*mult;
+      translate([0,0,-cover_rounded_diam/2]) {
+        hull() {
+          translate([0,0,1]) {
+            cube([cover_width+1,flat_side_taper_base_depth,2],center=true);
+          }
+          translate([0,0,-flat_side_access_space+1]) {
+            cube([cover_width+1,flat_side_taper_base_depth-flat_side_access_taper_dist,2],center=true);
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    num_hooks = 2;
+    hook_tab_depth = 30;
+
+    available_open_depth = 150 - hook_tab_depth*num_hooks;
+    per_open_depth = available_open_depth/(num_hooks-1);
+
+    for(x=[left,right]) {
+      mirror([1-x,0,0]) {
+        for(y=[1:(num_hooks-1)]) {
+          translate([center_pos_x,front*(150/2)-per_open_depth/2+y*(hook_tab_depth+per_open_depth),0]) {
+            tapered_hook_hole(per_open_depth);
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module end_cap_assembly() {
   translate([0,0,-20/2]) {
     translate([0,150/2,0]) {
@@ -259,5 +437,9 @@ module end_cap_assembly() {
         }
       }
     }
+
+    color("green") electronics_cover();
   }
 }
+
+electronics_cover();

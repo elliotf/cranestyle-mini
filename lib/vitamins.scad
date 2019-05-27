@@ -284,6 +284,8 @@ v_slot_width     = 9.5;
 v_slot_gap       = v_slot_width-v_slot_depth*2;
 v_slot_opening   = 6.2;
 
+t_slot_opening = 6; // slightly different from v slot? FIXME/TODO: measure IRL
+
 module openbuilds_groove_profile() {
   square([v_slot_depth*3,v_slot_opening],center=true);
   hull() {
