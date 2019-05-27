@@ -56,27 +56,32 @@ module end_cap(end=front) {
     
     // end_cap_extrusion mounting holes
     // FIXME: make this parametric based on the Y idler X position
-    for(x=[-60,-40,-20,20,40,60]) {
-      translate([-end_cap_pos_x+y_idler_pos_x+x,-end_cap_thickness,0]) {
-        rotate([-90,0,0]) {
-          if (countersink_all_the_things) {
-            echo("EXTRUSION END CAP MOUNT: FCS M5 x ", end_cap_thickness+5);
-            translate([0,0,0.75]) {
-              hole(m5_loose_diam,end_cap_thickness*2+1,resolution);
+    intersection() {
+      // avoid divots in positive X direction
+      cube([y_extrusion_width,30,30],center=true);
 
-              // countersink heads
-              hull() {
-                hole(m5_loose_diam,m5_fsc_head_diam-m5_loose_diam,resolution);
-                translate([0,0,-1]) {
-                  hole(m5_fsc_head_diam,2,resolution);
+      for(x=[-60,-40,-20,20,40,60]) {
+        translate([-end_cap_pos_x+y_idler_pos_x+x,-end_cap_thickness,0]) {
+          rotate([-90,0,0]) {
+            if (countersink_all_the_things) {
+              echo("EXTRUSION END CAP MOUNT: FCS M5 x ", end_cap_thickness+5);
+              translate([0,0,0.75]) {
+                hole(m5_loose_diam,end_cap_thickness*2+1,resolution);
+
+                // countersink heads
+                hull() {
+                  hole(m5_loose_diam,m5_fsc_head_diam-m5_loose_diam,resolution);
+                  translate([0,0,-1]) {
+                    hole(m5_fsc_head_diam,2,resolution);
+                  }
                 }
               }
+            } else {
+              translate([0,0,end_cap_thickness/2+m5_socket_head_height+0.2]) {
+                hole(m5_loose_diam,end_cap_thickness,resolution);
+              }
+              hole(m5_nut_diam+tolerance,m5_socket_head_height*2,resolution);
             }
-          } else {
-            translate([0,0,end_cap_thickness/2+m5_socket_head_height+0.2]) {
-              hole(m5_loose_diam,end_cap_thickness,resolution);
-            }
-            hole(m5_nut_diam+tolerance,m5_socket_head_height*2,resolution);
           }
         }
       }
