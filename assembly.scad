@@ -110,13 +110,6 @@ translate([left*(20/2+mech_endstop_tiny_width/2),rear*(mgn12c_surface_above_surf
   }
 }
 
-// base extrusion plate
-translate([80/2-20/2,-150/2+mgn12c_surface_above_surface+40,-220/2-20/2]) {
-  rotate([90,0,0]) {
-    % color("lightgrey") extrusion_2080(150);
-  }
-}
-
 translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
   rotate([90,0,0]) {
     rotate([0,0,90]) {
@@ -155,70 +148,82 @@ module heated_build_plate() {
   }
 }
 
-translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
-  // Y MGN carriage and rail
-
-  translate([40-3.3-mgn12_rail_width/2,0,0]) {
-    leveling_screw_length = 18;
-    if (false) {
-      measure_height = 17.34;
-      translate([20,0,mgn12c_surface_above_surface+measure_height/2]) {
-        color("red") cube([10,10,measure_height],center=true);
-      }
-    }
-
-    y_belt_clamp_assembly();
-
-    y_carriage_thickness = 3;
-    build_plate_thickness = 2;
-
-    translate([0,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
-      //color("silver") cube([100,100,2],center=true);
-      color("silver") {
-        linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
-          y_carriage_profile();
-        }
-      }
-
-      for(z=[top,bottom]) {
-        for (x=[left,right]) {
-          for (y=[front,rear]) {
-            translate([bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(y_carriage_thickness/2+mini_thumb_screw_thickness/2)*z]) {
-              rotate([0,90+z*90,0]) {
-                color("dimgrey") mini_thumb_screw();
-              }
-            }
+translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
+  translate([-10+y_extrusion_width/2,0,0]) {
+    // base extrusion plate
+    translate([0,0,-10]) {
+      rotate([90,0,0]) {
+        % color("lightgrey") {
+          linear_extrude(height=150,center=true,convexity=3) {
+            extrusion_20_profile(y_extrusion_width);
           }
         }
       }
+    }
 
-      m3_plain_nut_thickness = 2.5;
-      translate([bed_carriage_offset,0,y_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
-        heated_build_plate();
+    // Y MGN carriage and rail
+    translate([y_extrusion_width/2-3.3-mgn12_rail_width/2,0,0]) {
+      leveling_screw_length = 18;
+      if (false) {
+        measure_height = 17.34;
+        translate([20,0,mgn12c_surface_above_surface+measure_height/2]) {
+          color("red") cube([10,10,measure_height],center=true);
+        }
+      }
 
-        for (x=[left,right]) {
-          for (y=[front,rear]) {
-            translate([-bed_carriage_offset+bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-hbp_thickness/2-m3_plain_nut_thickness/2]) {
-              color("silver") {
-                difference() {
-                  hole(m3_nut_diam,m3_plain_nut_thickness,6);
+      y_belt_clamp_assembly();
+
+      y_carriage_thickness = 3;
+      build_plate_thickness = 2;
+
+      translate([0,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
+        //color("silver") cube([100,100,2],center=true);
+        color("silver") {
+          linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
+            y_carriage_profile();
+          }
+        }
+
+        for(z=[top,bottom]) {
+          for (x=[left,right]) {
+            for (y=[front,rear]) {
+              translate([bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(y_carriage_thickness/2+mini_thumb_screw_thickness/2)*z]) {
+                rotate([0,90+z*90,0]) {
+                  color("dimgrey") mini_thumb_screw();
                 }
               }
             }
           }
         }
 
-        translate([0,0,hbp_thickness/2+build_plate_thickness/2]) {
-          color("silver") {
-            linear_extrude(height=build_plate_thickness,center=true,convexity=2) {
-              build_plate();
-            }
-          }
+        m3_plain_nut_thickness = 2.5;
+        translate([bed_carriage_offset,0,y_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
+          heated_build_plate();
 
           for (x=[left,right]) {
             for (y=[front,rear]) {
-              translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-leveling_screw_length/2]) {
-                color("#ccc") hole(3,leveling_screw_length,resolution);
+              translate([-bed_carriage_offset+bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-hbp_thickness/2-m3_plain_nut_thickness/2]) {
+                color("silver") {
+                  difference() {
+                    hole(m3_nut_diam,m3_plain_nut_thickness,6);
+                  }
+                }
+              }
+            }
+          }
+
+          translate([0,0,hbp_thickness/2+build_plate_thickness/2]) {
+            color("silver") {
+              linear_extrude(height=build_plate_thickness,center=true,convexity=2) {
+                build_plate();
+              }
+            }
+
+            for (x=[left,right]) {
+              for (y=[front,rear]) {
+                translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-leveling_screw_length/2]) {
+                  color("#ccc") hole(3,leveling_screw_length,resolution);
+                }
               }
             }
           }
@@ -227,13 +232,15 @@ translate([30,mgn12c_surface_above_surface+40-150/2,-220/2]) {
     }
   }
 
-  // Y idlers
-  for(y=[front,rear]) {
-    translate([y_idler_pos_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
-      % color("lightgrey") gt2_toothed_idler();
+  // end caps + duet wifi
+  translate([-10+50,0,0]) {
+    end_cap_assembly();
+
+    // Y idlers
+    for(y=[front,rear]) {
+      translate([y_idler_offset_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
+        % color("lightgrey") gt2_toothed_idler();
+      }
     }
   }
-
-  // end caps + duet wifi
-  end_cap_assembly();
 }

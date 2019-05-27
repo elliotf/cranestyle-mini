@@ -26,15 +26,16 @@ cavity_rounded = rounded_diam-(end_cap_width-cavity_width);
 
 module end_cap(end=front) {
   y_idler_screw_shoulder_pos_z = 20/2+y_idler_dist_z_from_extrusion+gt2_toothed_idler_height;
+
   module body() {
-    translate([-40+end_cap_extrusion_width_to_cover/2,front*end_cap_thickness/2,-end_cap_height/2+20/2]) {
+    translate([0,front*end_cap_thickness/2,-end_cap_height/2+20/2]) {
       rotate([90,0,0]) {
         rounded_cube(end_cap_width,end_cap_height,end_cap_thickness,end_cap_overhang*2);
       }
     }
 
     if (y_idler_in_endcap) {
-      translate([y_idler_pos_x,y_idler_dist_y_from_extrusion,20/2]) {
+      translate([y_idler_offset_x,y_idler_dist_y_from_extrusion,20/2]) {
         hull() {
           hole(m5_thread_into_hole_diam+extrude_width*2,y_idler_dist_z_from_extrusion*2,resolution);
           translate([0,0,-1]) {
@@ -48,17 +49,18 @@ module end_cap(end=front) {
   module holes() {
     // idler hole
     if (y_idler_in_endcap) {
-      translate([-40+50,-end_cap_thickness/2,y_idler_screw_shoulder_pos_z-y_idler_screw_hole_length/2]) {
+      translate([y_idler_offset_x,-end_cap_thickness/2,y_idler_screw_shoulder_pos_z-y_idler_screw_hole_length/2]) {
         hole(m5_thread_into_hole_diam,y_idler_screw_hole_length+1,resolution);
       }
     }
     
     // end_cap_extrusion mounting holes
-    for(x=[10,30,70,90]) {
-      translate([-40+x,-end_cap_thickness,0]) {
+    // FIXME: make this parametric based on the Y idler X position
+    for(x=[-40,-20,20,40]) {
+      translate([x,-end_cap_thickness,0]) {
         rotate([-90,0,0]) {
           if (countersink_all_the_things) {
-            echo("EXTRUSION MOTOR MOUNT: FCS M5 x ", end_cap_thickness+5);
+            echo("EXTRUSION END CAP MOUNT: FCS M5 x ", end_cap_thickness+5);
             translate([0,0,0.75]) {
               hole(m5_loose_diam,end_cap_thickness*2+1,resolution);
 
@@ -80,7 +82,7 @@ module end_cap(end=front) {
       }
     }
 
-    translate([10,0,20/2-end_cap_height+cavity_height/2+wall_thickness*2]) {
+    translate([0,0,20/2-end_cap_height+cavity_height/2+wall_thickness*2]) {
       rotate([90,0,0]) {
         rounded_cube(cavity_width,cavity_height,cavity_depth*2,cavity_rounded,resolution);
       }
@@ -107,7 +109,7 @@ module end_cap_front() {
 module end_cap_rear() {
   duet_port_access_hole_width = 85; // wider to be able to see the activity lights?
   duet_port_access_hole_height = 8;
-  duet_port_access_hole_offset_x = 10;
+  duet_port_access_hole_offset_x = 0;
   duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_board_thickness/2-duet_port_access_hole_height/2;
 
   power_plug_hole_diam = 11;
@@ -117,7 +119,7 @@ module end_cap_rear() {
   power_plug_body_diameter = power_plug_hole_diam+extrude_width*8*2;
   power_plug_area_thickness = 4;
 
-  power_plug_pos_x = 10+left*(end_cap_width/2-end_cap_rim_width-power_plug_body_diameter/2);
+  power_plug_pos_x = left*(end_cap_width/2-end_cap_rim_width-power_plug_body_diameter/2);
   power_plug_pos_y = end_cap_thickness;
   power_plug_pos_z = 10-end_cap_height+end_cap_rim_width+power_plug_body_diameter/2;
 
@@ -138,7 +140,7 @@ module end_cap_rear() {
     mount_body_diam = m3_thread_into_hole_diam+wall_thickness*4;
 
     for(x=[left,right]) {
-      translate([10+x*duet_hole_spacing_x/2,0,duet_mounting_hole_offset_z+duet_mount_bevel_height+duet_mount_thickness/2]) {
+      translate([x*duet_hole_spacing_x/2,0,duet_mounting_hole_offset_z+duet_mount_bevel_height+duet_mount_thickness/2]) {
         hull() {
           cube([mount_body_diam,1,duet_mount_thickness],center=true);
           translate([0,duet_mounting_hole_offset_y,0]) {
@@ -198,7 +200,7 @@ module end_cap_rear() {
     }
 
     for(x=[left,right]) {
-      translate([10+x*duet_hole_spacing_x/2,duet_mounting_hole_offset_y,duet_mounting_hole_offset_z]) {
+      translate([x*duet_hole_spacing_x/2,duet_mounting_hole_offset_y,duet_mounting_hole_offset_z]) {
         hole(m3_thread_into_hole_diam,2*(duet_mount_bevel_height+duet_mount_thickness)-extrude_width*4,resolution);
       }
     }
@@ -241,7 +243,7 @@ module end_cap_assembly() {
     }
 
     // duet wifi
-    translate([10,150/2-duet_hole_spacing_y/2+duet_mounting_hole_offset_y,duet_mounting_hole_offset_z-duet_board_thickness/2]) {
+    translate([0,150/2-duet_hole_spacing_y/2+duet_mounting_hole_offset_y,duet_mounting_hole_offset_z-duet_board_thickness/2]) {
       rotate([180,0,0]) {
         color("#3d526d") duet_wifi();
       }

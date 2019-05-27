@@ -47,17 +47,18 @@ end_cap_overhang = rounded_diam/2;
 end_cap_width = end_cap_extrusion_width_to_cover + end_cap_overhang*2;
 end_cap_height = 20+room_below_extrusion_for_electronics+1;
 
-y_idler_pos_x = -40 + 50;
+y_extrusion_width = 80;
+
+y_idler_offset_x = -40+y_extrusion_width/2;
 y_idler_dist_y_from_extrusion = (y_idler_in_endcap) ? -end_cap_thickness/2 : gt2_toothed_idler_id;
 y_idler_dist_z_from_extrusion = 1;
 
-bed_offset_from_mgn12 = 15;
 extra_clearance_for_leveling_screws_and_y_idlers = 3;
 
 heated_bed_hole_spacing = 92;
 // using what walter is doing, as I don't understand whosawhatsis' version, but he's using something like -24
 // I like the idea of a less-cantilevered platform.
-bed_carriage_offset = 15;
+bed_carriage_offset = 15; // FIXME: make this dependent on Y extrusion width
 build_plate_len = 130;
 
 //leadscrew_pos_y = -leadscrew_nut_flange_diam/2-1;

@@ -391,6 +391,75 @@ module extrusion_2080_profile() {
   }
 }
 
+module extrusion_20_profile(width) {
+  height = 20;
+  base_units = width / 20;
+
+  base_unit = 20;
+  open_space_between_sides = base_unit-v_slot_depth*2;
+  module body() {
+    square([width,height],center=true);
+  }
+
+  module holes() {
+    for(x=[-width/2,width/2]) {
+      translate([x,0,0]) {
+        rotate([0,0,0]) {
+          openbuilds_groove_profile();
+        }
+      }
+    }
+
+    translate([-width/2,0]) {
+      for(x=[0:base_units-1]) {
+        translate([10+20*x,0,0]) {
+          // screw hole
+          accurate_circle(4.2,16);
+
+          for (y=[top,bottom]) {
+            // top/bottom slots
+            translate([0,y*height/2,0]) {
+              rotate([0,0,90]) {
+                openbuilds_groove_profile();
+              }
+            }
+          }
+        }
+      }
+
+      if (base_units > 1) {
+        for(x=[0:base_units-2]) {
+          // gaps between screw holes
+          translate([20+20*x,0,0]) {
+            square([5.4,open_space_between_sides],center=true);
+            hull() {
+              square([5.4,open_space_between_sides-1.96*2],center=true);
+              square([12.2,5.68],center=true);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+if (false) {
+  extrusion_widths=[20,40,60,80,100,120,140];
+  for(i=[0:len(extrusion_widths)-1]) {
+    w = extrusion_widths[i];
+    translate([0,25*i,20*i]) {
+      color("lightgrey") linear_extrude(height=20,center=true,convexity=3) {
+        extrusion_20_profile(w);
+      }
+    }
+  }
+}
+
 module extrusion_2040(len) {
   linear_extrude(height=len,center=true,convexity=2) {
     extrusion_2040_profile();
