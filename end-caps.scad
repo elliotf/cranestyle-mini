@@ -35,7 +35,7 @@ module end_cap(end=front) {
     }
 
     if (y_idler_in_endcap) {
-      translate([y_idler_offset_x,y_idler_dist_y_from_extrusion,20/2]) {
+      translate([-end_cap_pos_x+y_idler_pos_x,y_idler_dist_y_from_extrusion,20/2]) {
         hull() {
           hole(m5_thread_into_hole_diam+extrude_width*2,y_idler_dist_z_from_extrusion*2,resolution);
           translate([0,0,-1]) {
@@ -49,15 +49,15 @@ module end_cap(end=front) {
   module holes() {
     // idler hole
     if (y_idler_in_endcap) {
-      translate([y_idler_offset_x,-end_cap_thickness/2,y_idler_screw_shoulder_pos_z-y_idler_screw_hole_length/2]) {
+      translate([-end_cap_pos_x+y_idler_pos_x,-end_cap_thickness/2,y_idler_screw_shoulder_pos_z-y_idler_screw_hole_length/2]) {
         hole(m5_thread_into_hole_diam,y_idler_screw_hole_length+1,resolution);
       }
     }
     
     // end_cap_extrusion mounting holes
     // FIXME: make this parametric based on the Y idler X position
-    for(x=[-40,-20,20,40]) {
-      translate([x,-end_cap_thickness,0]) {
+    for(x=[-60,-40,-20,20,40,60]) {
+      translate([-end_cap_pos_x+y_idler_pos_x+x,-end_cap_thickness,0]) {
         rotate([-90,0,0]) {
           if (countersink_all_the_things) {
             echo("EXTRUSION END CAP MOUNT: FCS M5 x ", end_cap_thickness+5);

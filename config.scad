@@ -41,15 +41,16 @@ y_idler_in_endcap = true;
 duet_mount_thickness = 3;
 duet_mount_bevel_height = 2;
 
+end_cap_pos_x = 40;
 end_cap_extrusion_width_to_cover = 100;
 end_cap_thickness = (y_idler_in_endcap) ? m5_thread_into_hole_diam + 2*(1.2*2)-0.2 : 5; // remove a 0.2mm layer because cura was printing an infill layer rather than solid
 end_cap_overhang = rounded_diam/2;
 end_cap_width = end_cap_extrusion_width_to_cover + end_cap_overhang*2;
 end_cap_height = 20+room_below_extrusion_for_electronics+1;
 
-y_extrusion_width = 80;
+y_extrusion_width = (true) ? 100 : 80;
 
-y_idler_offset_x = -40+y_extrusion_width/2;
+y_idler_pos_x = -10+y_extrusion_width-30;
 y_idler_dist_y_from_extrusion = (y_idler_in_endcap) ? -end_cap_thickness/2 : gt2_toothed_idler_id;
 y_idler_dist_z_from_extrusion = 1;
 
@@ -58,7 +59,10 @@ extra_clearance_for_leveling_screws_and_y_idlers = 3;
 heated_bed_hole_spacing = 92;
 // using what walter is doing, as I don't understand whosawhatsis' version, but he's using something like -24
 // I like the idea of a less-cantilevered platform.
-bed_carriage_offset = 15; // FIXME: make this dependent on Y extrusion width
+y_carriage_pos_x = -10+85;
+y_rail_pos_x = -10+y_extrusion_width-10;
+
+bed_carriage_offset = y_carriage_pos_x-y_rail_pos_x;
 build_plate_len = 130;
 
 //leadscrew_pos_y = -leadscrew_nut_flange_diam/2-1;
