@@ -249,9 +249,7 @@ module y_belt_clamp_assembly() {
   translate([0,0,mgn12c_surface_above_surface]) {
     % mgn12c();
   }
-  translate([0,0,mgn12_rail_height/2]) {
-    color("lightgrey") cube([mgn12_rail_width,150,mgn12_rail_height],center=true);
-  }
+  mgn12_rail(150);
 }
 
 y_belt_clamp_assembly();

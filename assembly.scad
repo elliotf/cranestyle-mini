@@ -18,7 +18,7 @@ translate([0,20+mgn12c_surface_above_surface,0]) {
     translate([20,0,0]) {
       rotate([0,0,-90]) {
         rotate([-30+90,0,0]) {
-          handle();
+          color("firebrick", 0.8) handle();
         }
       }
     }
@@ -120,7 +120,7 @@ translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
 }
 
 // X idler
-translate([-16+150,0,0]) {
+translate([-mgn12c_width/2+150-1.5,0,0]) { // no idea where the -1.5 comes from, but probably has to do with the mgn9 hole spacing excess
   x_idler();
 }
 

@@ -2,8 +2,10 @@ include <../lib/util.scad>;
 
 m3_diam = 3;
 m3_socket_head_height = 3.25;
+m3_socket_head_diam = 5.6;
 m3_nut_diam = 5.5;
 m3_fsc_head_diam = 6;
+
 m5_diam = 5;
 m5_socket_head_height = 6;
 m5_nut_diam = 9;
@@ -784,6 +786,43 @@ mgn12_rail_hole_spacing = 25;
 mgn9_rail_width = 9;
 mgn9_rail_height = 6.5;
 mgn9_rail_hole_spacing = 20;
+
+module mgn_rail(width,length,height,hole_spacing,hole_offset_input) {
+  num_holes = floor((length-m3_socket_head_diam)/hole_spacing);
+  extra_length = length-((num_holes)*hole_spacing);
+  hole_offset = (hole_offset_input > -1) ? hole_offset_input : extra_length/2;
+
+  translate([0,0,height/2]) {
+    difference() {
+      color("lightgrey") cube([width,length,height],center=true);
+      for (y=[0:hole_spacing:length]) {
+        color("#444") translate([0,-length/2+hole_offset+y,height/2]) {
+          hole(3.5,40,resolution);
+
+          hole(m3_socket_head_diam,3.5*2,resolution);
+        }
+      }
+    }
+  }
+}
+
+module mgn9_rail(length,hole_offset=-1) {
+  mgn_rail(mgn9_rail_width,length,mgn9_rail_height,mgn9_rail_hole_spacing,hole_offset);
+}
+
+module mgn12_rail(length,hole_offset=-1) {
+  mgn_rail(mgn12_rail_width,length,mgn12_rail_height,mgn12_rail_hole_spacing,hole_offset);
+}
+
+if (false) {
+  translate([-mgn9_rail_width/2-5,0,0]) {
+    mgn9_rail(150);
+  }
+
+  translate([mgn12_rail_width/2+5,0,0]) {
+    mgn12_rail(150);
+  }
+}
 
 //gt2_toothed_idler_id = 3; // walter and whosawhatsis
 gt2_toothed_idler_id = 5; // use a toothed idler with more meat

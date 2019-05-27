@@ -65,9 +65,6 @@ build_plate_len = 130;
 //leadscrew_pos_y = -11; // we could move it closer with a printed bracket, but it would interfere with the X idler without redefining the X idler Y pos
 leadscrew_pos_y = -13; // what walter is using
 
-m3_socket_head_diam = 5.6;
-m3_socket_head_height = 3;
-
 z_nut_base_height = mgn12c_length/2 - mgn12c_hole_spacing_length/2 + m3_socket_head_diam/2 + extrude_width*2;
 
 gt2_toothed_idler_id_hole = gt2_toothed_idler_id-0.15; // thread the idler pulley shaft into plastic

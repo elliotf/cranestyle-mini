@@ -215,22 +215,17 @@ module z_nut() {
 
   translate([-mgn12c_hole_spacing_width/2-5+x_rail_len/2,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {
     % difference() {
-      color("lightgrey") cube([x_rail_len,mgn9_rail_height,mgn9_rail_width],center=true);
-      for (x=[0:30]) {
-        color("#444") translate([-150/2+5+20*x,-mgn9_rail_height/2,0]) {
-          rotate([-90,0,0]) {
-            hole(3.5,40,resolution);
-
-            hole(m3_socket_head_diam,3.5*2,resolution);
-          }
+      rotate([0,0,90]) {
+        rotate([0,-90,0]) {
+          mgn9_rail(x_rail_len);
         }
       }
     }
   }
 
-  translate([0,0,0]) {
-    translate([0,mgn12c_surface_above_surface-mgn12_rail_height/2,+220/2-170/2-10.5]) {
-      % color("silver") cube([mgn12_rail_width,mgn12_rail_height,170],center=true);
+  translate([0,mgn12c_surface_above_surface,+220/2-170/2-10.5]) {
+    rotate([90,0,0]) {
+      mgn12_rail(170);
     }
   }
   rotate([90,0,0]) {
