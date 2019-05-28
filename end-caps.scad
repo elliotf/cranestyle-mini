@@ -54,8 +54,7 @@ module end_cap(end=front) {
       }
     }
     
-    // end_cap_extrusion mounting holes
-    // FIXME: make this parametric based on the Y idler X position
+    // end cap extrusion mounting holes
     intersection() {
       // avoid divots in positive X direction
       cube([y_extrusion_width,30,30],center=true);
@@ -238,6 +237,7 @@ module end_cap_rear() {
 
 // TODO/FIXME: add some sort of peg/brace on the end caps for this cover to brace/index against?
 //   pins in the two bottom corners, or some sort of brace along the bottom along the entire width?
+t_slot_opening = 6.1; // slightly different from v slot
 cover_wall_thickness = 0.5*2; // FIXME: too thin?
 cover_inset_from_end_cap_dimensions = extrude_width*4;
 cover_rounded_diam = end_cap_rounded_diam-cover_inset_from_end_cap_dimensions*2;
@@ -251,7 +251,7 @@ cover_hook_height = cover_hook_height_inside+cover_wall_thickness;
 module electronics_cover() {
   t_slot_depth = 6;
   t_slot_flange_thickness = 2; // FIXME: measure IRL
-  hook_depth = t_slot_depth-1;
+
   center_pos_x = -50+y_extrusion_width/2;
 
   module electronics_cover_profile() {
@@ -286,8 +286,8 @@ module electronics_cover() {
           mirror([1-x,0,0]) {
             hull() {
               translate([left*(t_slot_flange_thickness+cover_wall_thickness/2),0,0]) {
-                translate([left*(cover_hook_height/2-cover_wall_thickness/2),0,0]) {
-                  rounded_square(cover_hook_height,cover_wall_thickness,cover_wall_thickness);
+                translate([left*((t_slot_depth-t_slot_flange_thickness)/2-cover_wall_thickness/2),0,0]) {
+                  rounded_square(t_slot_depth-t_slot_flange_thickness,cover_wall_thickness,cover_wall_thickness);
                 }
                 translate([0,cover_hook_height/2-cover_wall_thickness/2,0]) {
                   rounded_square(cover_wall_thickness,cover_hook_height,cover_wall_thickness);
@@ -322,13 +322,12 @@ module electronics_cover() {
     trim_hook_tip_depth = width;
     trim_hook_tip_height = cover_hook_height_inside;
 
-    trim_hook_base_width = trim_hook_tip_width-cover_hook_height*2;
-    trim_hook_base_depth = trim_hook_tip_depth-trim_hook_tip_height*mult;
-    trim_hook_base_height = cover_hook_height;
+    trim_hook_base_width = y_extrusion_width-t_slot_depth*2;
+    trim_hook_base_depth = trim_hook_tip_depth-(t_slot_depth-t_slot_flange_thickness)*mult;
 
     end_cap_and_cover_rounded_difference = end_cap_rounded_diam - cover_rounded_diam;
 
-    trim_hook_entrance_height = cover_hook_height+end_cap_and_cover_rounded_difference/2+cover_wall_thickness;
+    trim_hook_entrance_height = t_slot_depth;
     trim_hook_entrance_width = trim_hook_base_width+trim_hook_entrance_height*2;
     trim_hook_entrance_depth = trim_hook_base_depth-trim_hook_entrance_height*mult;
 
@@ -350,7 +349,7 @@ module electronics_cover() {
         }
       }
 
-      rotated_base_depth = trim_hook_entrance_depth+0.8;
+      rotated_base_depth = trim_hook_entrance_depth;
       rotated_taper_dist = cover_rounded_diam/2*mult;
       for(x=[right]) {
         mirror([1-x,0,0]) {
@@ -442,4 +441,7 @@ module end_cap_assembly() {
   }
 }
 
+rotate([90,0,0]) {
+  extrusion_20_profile(100);
+}
 electronics_cover();

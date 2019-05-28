@@ -1,4 +1,4 @@
-resolution = 64;
+resolution = (true) ? 64 : 16; // switch to res of 16 for better preview performance
 
 pi = 3.141592;
 

@@ -76,8 +76,6 @@ module stepper28BYJ(shaft_angle) {
   cable_sample_len = 5;
   cable_opening_width = 7.3;
 
-  resolution = 32;
-
   module position_at_flange_centers() {
     for(side=[left,right]) {
       translate([side*(byj_hole_spacing/2),0,0]) {
@@ -283,8 +281,6 @@ v_slot_depth     = 1.80;
 v_slot_width     = 9.5;
 v_slot_gap       = v_slot_width-v_slot_depth*2;
 v_slot_opening   = 6.2;
-
-t_slot_opening = 6; // slightly different from v slot? FIXME/TODO: measure IRL
 
 module openbuilds_groove_profile() {
   square([v_slot_depth*3,v_slot_opening],center=true);
