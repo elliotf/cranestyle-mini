@@ -240,16 +240,15 @@ module mgn_clamp_mount() {
 
 module y_belt_clamp_assembly() {
   translate([-mgn12c_width/2-y_belt_clamp_width/2-belt_thickness,0,mgn12c_surface_above_surface-top_of_belt_below_mgn-y_belt_clamp_height/2]) {
-    belt_clamp();
+    //belt_clamp();
 
     translate([0,0,y_belt_clamp_height/2+mgn_clamp_mount_height/2+0.1]) {
-      mgn_clamp_mount();
+      //mgn_clamp_mount();
     }
   }
   translate([0,0,mgn12c_surface_above_surface]) {
     % mgn12c();
   }
-  mgn12_rail(150);
 }
 
 y_belt_clamp_assembly();

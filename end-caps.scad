@@ -405,16 +405,16 @@ module electronics_cover() {
 module end_cap_assembly() {
   translate([0,0,-20/2]) {
     translate([0,150/2,0]) {
-      end_cap_rear();
+      //end_cap_rear();
     }
     translate([0,-150/2,0]) {
-      end_cap_front();
+      //end_cap_front();
     }
 
     // duet wifi
     translate([0,150/2-duet_hole_spacing_y/2+duet_mounting_hole_offset_y,duet_mounting_hole_offset_z-duet_board_thickness/2]) {
       rotate([180,0,0]) {
-        color("#3d526d") duet_wifi();
+        // color("#3d526d") duet_wifi();
       }
 
       translate([0,-duet_hole_spacing_y/2,duet_mount_thickness+duet_mount_bevel_height]) {
@@ -424,7 +424,7 @@ module end_cap_assembly() {
       }
     }
 
-    color("green") electronics_cover();
+    // color("green") electronics_cover();
   }
 }
 

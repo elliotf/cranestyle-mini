@@ -51,7 +51,7 @@ end_cap_overhang = end_cap_rounded_diam/2;
 end_cap_width = end_cap_extrusion_width_to_cover + end_cap_overhang*2;
 end_cap_height = 20+room_below_extrusion_for_electronics+1;
 
-y_extrusion_width = (true) ? 100 : 80;
+y_extrusion_width = (false) ? 100 : 80;
 
 y_idler_pos_x = -10+y_extrusion_width-30;
 y_idler_dist_y_from_extrusion = (y_idler_in_endcap) ? -end_cap_thickness/2 : gt2_toothed_idler_id;

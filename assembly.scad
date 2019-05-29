@@ -124,7 +124,7 @@ translate([-mgn12c_width/2+150-1.5,0,0]) { // no idea where the -1.5 comes from,
 
 translate([0,-nema14_side*2-1,-220/2+10.5]) {
   rotate([0,0,-90]) {
-    y_motor_mount();
+    // y_motor_mount();
   }
 }
 
@@ -146,6 +146,96 @@ module heated_build_plate() {
   }
 }
 
+belt_thickness = 1;
+y_idler_stack_screw_head_clearance = 2.5;
+y_idler_stack_height = 8;
+y_idler_stack_diam = 10;
+y_idler_stack_flange_diam = 12;
+y_motor_beneath_bed_offset_x = 1;
+y_motor_mount_beneath_bed_dist_from_y_rail = mgn12c_width/2+belt_thickness*2+y_idler_stack_diam/2+nema14_hole_spacing/2+y_motor_beneath_bed_offset_x;
+
+module y_motor_mount_beneath_bed() {
+  //idler_pos_z = nema14_shaft_len- y_idler_stack_height/2 - y_idler_stack_screw_head_clearance; 
+  idler_bevel_height = 1;
+  idler_pos_z = mgn12c_surface_above_surface - y_idler_stack_screw_head_clearance - y_idler_stack_height/2 ;
+  motor_pos_z = idler_pos_z + y_idler_stack_height/2 - nema14_shaft_len;
+  y_idler_stack_flange_height = 1;
+  belt_clearance = 2;
+
+  plate_height = idler_pos_z - y_idler_stack_height/2 - motor_pos_z - idler_bevel_height;
+  plate_width = y_motor_mount_beneath_bed_dist_from_y_rail + nema14_side/2 - 10;
+  mount_height = 20;
+  mount_thickness = plate_width - nema14_side - 0.5;
+  mount_hole_spacing = nema14_side + 2*(m5_fsc_head_diam/2 + 2);
+  mount_width = mount_hole_spacing + 2*(m5_fsc_head_diam/2 + mount_thickness/2 + wall_thickness*2);
+
+  rounded_diam = nema14_side-nema14_hole_spacing;
+
+  translate([mgn12c_width/2+belt_clearance+y_idler_stack_diam/2+nema14_hole_spacing/2+y_motor_beneath_bed_offset_x,0,0]) {
+    translate([0,0,motor_pos_z]) {
+      % color("dimgrey") motor_nema14();
+    }
+
+    for (y=[front,rear]) {
+      translate([-nema14_hole_spacing/2,y*nema14_hole_spacing/2,idler_pos_z]) {
+        % color("lightgrey") {
+          difference() {
+            union() {
+              hole(y_idler_stack_diam,8,resolution);
+
+              for(z=[top,bottom]) {
+                translate([0,0,z*(y_idler_stack_height/2-y_idler_stack_flange_height/2)]) {
+                  hole(y_idler_stack_flange_diam,y_idler_stack_flange_height,resolution);
+                }
+              }
+            }
+
+            hole(m3_diam,y_idler_stack_height+1,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  module body() {
+    translate([extrusion_width/2,0,motor_pos_z+plate_height]) {
+      translate([plate_width/2,0,-plate_height/2]) {
+        rounded_cube(plate_width,nema14_side,plate_height,rounded_diam);
+      }
+      translate([mount_thickness/2,0,-mount_height/2]) {
+        rounded_cube(mount_thickness,mount_width,mount_height,mount_thickness);
+      }
+    }
+  }
+
+  module holes() {
+    translate([y_motor_mount_beneath_bed_dist_from_y_rail,0,motor_pos_z+plate_height]) {
+      hole(nema14_shoulder_diam,plate_height*2,resolution);
+
+      for(x=[left,right]) {
+        for(y=[front,rear]) {
+          translate([x*nema14_hole_spacing/2,y*nema14_hole_spacing/2,0]) {
+            hole(m3_loose_diam,plate_height*2,resolution);
+          }
+        }
+      }
+    }
+
+    for (y=[front,rear]) {
+      translate([10+mount_thickness,y*mount_hole_spacing/2,-mount_height/2]) {
+        rotate([0,90,0]) {
+          m5_countersink_screw(mount_thickness+5);
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
   translate([-10+y_extrusion_width/2,0,0]) {
     // base extrusion plate
@@ -159,8 +249,15 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
       }
     }
 
+    translate([-8+y_motor_beneath_bed_offset_x,0,-25]) {
+      rotate([180,0,0]) {
+        color("#3d526d") duet_wifi();
+      }
+    }
+
     // Y MGN carriage and rail
-    translate([y_extrusion_width/2-3.3-mgn12_rail_width/2,0,0]) {
+    //translate([y_extrusion_width/2-3.3-mgn12_rail_width/2,0,0]) {
+    translate([y_extrusion_width/2-10,0,0]) {
       leveling_screw_length = 18;
       if (false) {
         measure_height = 17.34;
@@ -169,58 +266,66 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
         }
       }
 
-      y_belt_clamp_assembly();
+      y_motor_mount_beneath_bed();
 
-      y_carriage_thickness = 3;
-      build_plate_thickness = 2;
+      if (true) {
+        y_carriage_thickness = 3;
+        build_plate_thickness = 2;
 
-      translate([0,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
-        //color("silver") cube([100,100,2],center=true);
-        color("silver") {
-          linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
-            y_carriage_profile();
-          }
-        }
+        % mgn12_rail(150);
 
-        for(z=[top,bottom]) {
-          for (x=[left,right]) {
-            for (y=[front,rear]) {
-              translate([bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(y_carriage_thickness/2+mini_thumb_screw_thickness/2)*z]) {
-                rotate([0,90+z*90,0]) {
-                  color("dimgrey") mini_thumb_screw();
-                }
+        translate([0,-50,0]) {
+          y_belt_clamp_assembly();
+
+          translate([0,0,mgn12c_surface_above_surface + y_carriage_thickness/2 + 0.2]) {
+            //color("silver") cube([100,100,2],center=true);
+            color("silver") {
+              linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
+                y_carriage_profile();
               }
             }
-          }
-        }
 
-        m3_plain_nut_thickness = 2.5;
-        translate([bed_carriage_offset,0,y_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
-          heated_build_plate();
-
-          for (x=[left,right]) {
-            for (y=[front,rear]) {
-              translate([-bed_carriage_offset+bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-hbp_thickness/2-m3_plain_nut_thickness/2]) {
-                color("silver") {
-                  difference() {
-                    hole(m3_nut_diam,m3_plain_nut_thickness,6);
+            for(z=[top,bottom]) {
+              for (x=[left,right]) {
+                for (y=[front,rear]) {
+                  translate([bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(y_carriage_thickness/2+mini_thumb_screw_thickness/2)*z]) {
+                    rotate([0,90+z*90,0]) {
+                      color("dimgrey") mini_thumb_screw();
+                    }
                   }
                 }
               }
             }
-          }
 
-          translate([0,0,hbp_thickness/2+build_plate_thickness/2]) {
-            color("silver") {
-              linear_extrude(height=build_plate_thickness,center=true,convexity=2) {
-                build_plate();
+            m3_plain_nut_thickness = 2.5;
+            translate([bed_carriage_offset,0,y_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
+              heated_build_plate();
+
+              for (x=[left,right]) {
+                for (y=[front,rear]) {
+                  translate([-bed_carriage_offset+bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-hbp_thickness/2-m3_plain_nut_thickness/2]) {
+                    color("silver") {
+                      difference() {
+                        hole(m3_nut_diam,m3_plain_nut_thickness,6);
+                      }
+                    }
+                  }
+                }
               }
-            }
 
-            for (x=[left,right]) {
-              for (y=[front,rear]) {
-                translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-leveling_screw_length/2]) {
-                  color("#ccc") hole(3,leveling_screw_length,resolution);
+              translate([0,0,hbp_thickness/2+build_plate_thickness/2]) {
+                color("silver") {
+                  linear_extrude(height=build_plate_thickness,center=true,convexity=2) {
+                    build_plate();
+                  }
+                }
+
+                for (x=[left,right]) {
+                  for (y=[front,rear]) {
+                    translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-leveling_screw_length/2]) {
+                      color("#ccc") hole(3,leveling_screw_length,resolution);
+                    }
+                  }
                 }
               }
             }
@@ -233,7 +338,7 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
   // Y idlers
   for(y=[front,rear]) {
     translate([y_idler_pos_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
-      % color("lightgrey") gt2_toothed_idler();
+      // % color("lightgrey") gt2_toothed_idler();
     }
   }
 
