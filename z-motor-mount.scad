@@ -18,8 +18,8 @@ side_support_length = motor_opening_side + extrusion_side_thickness;
 side_support_pos_x = left*(motor_opening_side/2+side_support_thickness/2);
 side_support_pos_y = -motor_opening_side/2+side_support_length/2;
 
-between_motor_and_extrusion_width = motor_opening_side/2+extrusion_width/2+side_support_thickness;
-extrusion_mount_thickness = between_motor_and_extrusion_width-extrusion_width;
+between_motor_and_extrusion_width = motor_opening_side+side_support_thickness;
+extrusion_mount_thickness = motor_opening_side/2-extrusion_width/2+side_support_thickness;
 
 overall_height = z_motor_mount_rear_height + plate_thickness;
 
@@ -32,7 +32,7 @@ module z_motor_mount() {
       ];
 
       hull() {
-        translate([left*(between_motor_and_extrusion_width/2-extrusion_width/2),motor_opening_side/2+extrusion_side_thickness/2,0]) {
+        translate([left*(motor_opening_side/2+side_support_thickness-between_motor_and_extrusion_width/2),motor_opening_side/2+extrusion_side_thickness/2,0]) {
           rounded_square(between_motor_and_extrusion_width,extrusion_side_thickness,side_support_thickness);
         }
         translate([side_support_pos_x,side_support_pos_y,0]) {
@@ -102,7 +102,7 @@ module z_motor_mount() {
     // between motor and extrusion
     translate([0,motor_opening_side/2+extrusion_side_thickness/2,0]) {
       hull() {
-        translate([extrusion_width/2-between_motor_and_extrusion_width/2,0,plate_thickness/2]) {
+        translate([left*(motor_opening_side/2+side_support_thickness-between_motor_and_extrusion_width/2),0,plate_thickness/2]) {
           rounded_cube(between_motor_and_extrusion_width,extrusion_side_thickness,plate_thickness,side_support_thickness);
         }
         translate([-extrusion_width/2-extrusion_mount_thickness/2,0,-z_motor_mount_rear_height+1]) {
@@ -123,19 +123,12 @@ module z_motor_mount() {
     for(z=[top,bottom]) {
       translate([left*(extrusion_width/2+extrusion_mount_thickness),dist_to_extrusion+extrusion_width/2,plate_thickness-overall_height/2+z*overall_height/4]) {
         rotate([0,90,0]) {
-          hole(5+tolerance,60,resolution);
           if (countersink_all_the_things) {
+            m5_countersink_screw(16);
             echo("Z MOTOR MOUNT: FCS M5 x ", extrusion_mount_thickness+5);
-            translate([0,0,0.5]) {
-              hull() {
-                hole(m5_loose_diam,m5_fsc_head_diam-m5_loose_diam,resolution);
-                translate([0,0,-1]) {
-                  hole(m5_fsc_head_diam,2,resolution);
-                }
-              }
-            }
           } else {
             echo("m5 screw length for mounting Z motor (socket head): ", extrusion_mount_thickness-m5_socket_head_height+5);
+            hole(5+tolerance,60,resolution);
             hole(m5_nut_diam+tolerance,m5_socket_head_height*2,resolution);
           }
         }

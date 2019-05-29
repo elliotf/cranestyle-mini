@@ -11,6 +11,11 @@ m5_socket_head_height = 6;
 m5_nut_diam = 9;
 m5_fsc_head_diam = 10;
 
+m6_diam = 6;
+m6_socket_head_height = 7;
+m6_nut_diam = 0;
+m6_fsc_head_diam = 12;
+
 m2_threaded_insert_diam = 3.4;
 m2_5_threaded_insert_diam = 3.6;
 m3_threaded_insert_diam = 5.4;
@@ -38,6 +43,26 @@ byj_shoulder_height = 1.7; // what drawings say.  Actual measurement is 1.6
 byj_hump_height = 16.8;
 byj_hump_width = 15;
 byj_hump_depth = 17-byj_body_diam/2;
+
+module countersink_screw(actual_shaft_diam,head_diam,head_depth,length) {
+  loose_tolerance = 0.4;
+  shaft_hole_diam = actual_shaft_diam + loose_tolerance;
+
+  hole(shaft_hole_diam,length*2,resolution);
+  diff = head_diam-shaft_hole_diam;
+  hull() {
+    hole(shaft_hole_diam,diff+head_depth*2,resolution);
+    hole(head_diam,head_depth*2,resolution);
+  }
+}
+
+module m5_countersink_screw(length) {
+  countersink_screw(5,m5_fsc_head_diam,1.5,length);
+}
+
+module m6_countersink_screw(length) {
+  countersink_screw(6,m6_fsc_head_diam,1.5,length);
+}
 
 module line_bearing(resolution=16) {
   module profile() {
