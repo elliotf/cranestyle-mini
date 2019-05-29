@@ -18,6 +18,8 @@ m3_loose_diam = m3_diam + tolerance;
 m5_thread_into_hole_diam = 4.9;
 m5_loose_diam = 5+tolerance;
 
+extrusion_width = 20;
+
 leadscrew_diam = 5;
 leadscrew_hole_diam = 6.5;
 leadscrew_nut_shaft_diam = 8.5;

@@ -1,8 +1,6 @@
 include <./config.scad>;
 include <./lib/util.scad>;
 
-//countersink_all_the_things = false;
-
 module y_motor_mount() {
   /*
   */

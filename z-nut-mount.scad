@@ -60,6 +60,9 @@ module original_z_nut() {
 
 module z_nut() {
   rounded_diam = 4;
+
+  endstop_adjustment_screw_pos_x = left*(extrusion_width/2+mech_endstop_tiny_width/2);
+  endstop_adjustment_screw_pos_y = rear*(mgn12c_surface_above_surface+extrusion_width/2)-1.2;
   module profile() {
     translate([z_nut_body_pos_x,z_nut_body_pos_z,0]) {
       translate([0,-z_nut_mount_height/2+z_nut_base_height/2]) {
@@ -105,8 +108,11 @@ module z_nut() {
     // endstop mount
     hull() {
       translate([z_nut_body_pos_x-z_nut_mount_width/4,0,z_nut_body_pos_z-z_nut_mount_height/4]) {
-        translate([0,carriage_opening/2+5,0]) {
-          cube([z_nut_mount_width/2,carriage_opening+10,z_nut_mount_height/2],center=true);
+        depth = abs(endstop_adjustment_screw_pos_y) + 3;
+        translate([0,depth/2,0]) {
+          hull() {
+            cube([z_nut_mount_width/2,depth,z_nut_mount_height/2],center=true);
+          }
         }
       }
     }
@@ -191,13 +197,19 @@ module z_nut() {
     }
 
     // endstop trigger
-    translate([left*12.5,rear*17.45,0]) {
-      # hole(1.9,50,16);
+    translate([endstop_adjustment_screw_pos_x,endstop_adjustment_screw_pos_y,-10]) {
+      hole(1.9,50,8);
+      % hole(1.9,30,8);
     }
 
     // carriage room
     translate([0,carriage_opening/2,0]) {
-      cube([mgn12c_width+tolerance*2,carriage_opening,100],center=true);
+      hull() {
+        cube([mgn12c_width+tolerance*2,carriage_opening,100],center=true);
+        translate([0,carriage_opening/2+mgn12c_width/2,0]) {
+          cube([1,mgn12c_width/2,100],center=true);
+        }
+      }
     }
 
     // extrusion_room
@@ -213,19 +225,17 @@ module z_nut() {
 
   x_rail_len = 150;
 
-  translate([-mgn12c_hole_spacing_width/2-5+x_rail_len/2,-mgn9_rail_height/2,mgn12c_hole_spacing_length/2]) {
-    % difference() {
-      rotate([0,0,90]) {
-        rotate([0,-90,0]) {
-          mgn9_rail(x_rail_len);
-        }
+  translate([-mgn12c_hole_spacing_width/2-5+x_rail_len/2,0,mgn12c_hole_spacing_length/2]) {
+    rotate([0,0,90]) {
+      rotate([0,-90,0]) {
+        % mgn9_rail(x_rail_len);
       }
     }
   }
 
   translate([0,mgn12c_surface_above_surface,+220/2-170/2-10.5]) {
     rotate([90,0,0]) {
-      mgn12_rail(170);
+      % mgn12_rail(170);
     }
   }
   rotate([90,0,0]) {
@@ -242,7 +252,7 @@ module z_nut() {
 }
 
 module to_print() {
-  rotate([-90,0,0]) {
+  rotate([90,0,0]) {
     z_nut();
   }
 }

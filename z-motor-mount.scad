@@ -7,7 +7,6 @@ motor_screw_hole_diam = nema14_screw_diam+2; // extra slop to adjust Z motor
 motor_screw_mount_width = motor_screw_hole_diam+2*(extrude_width*8);
 shoulder_opening_diam = sqrt(2*pow(nema14_hole_spacing,2)) - motor_screw_mount_width;
 dist_to_extrusion = abs(leadscrew_pos_y) + mgn12c_surface_above_surface;
-extrusion_width = 20;
 
 z_motor_mount_rear_height = 32; // nema14 motor with leadscrew body is 33.5
 
