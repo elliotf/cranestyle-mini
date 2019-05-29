@@ -56,8 +56,6 @@ module end_cap(end=front) {
     
     // end cap extrusion mounting holes
     intersection() {
-      // avoid divots in positive X direction
-      cube([y_extrusion_width,30,30],center=true);
 
       for(x=[-60,-40,-20,20,40,60]) {
         translate([-end_cap_pos_x+y_idler_pos_x+x,-end_cap_thickness,0]) {
@@ -424,7 +422,7 @@ module end_cap_assembly() {
       }
     }
 
-    color("green") electronics_cover();
+    // color("green") electronics_cover();
   }
 }
 

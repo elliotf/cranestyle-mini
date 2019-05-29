@@ -2,14 +2,6 @@ include <./config.scad>;
 include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
 
-/*
-
-TODO:
-* Z endstop solution (if not using piezo or IR probe)
-* X endstop solution (if not using walter's solution, and/or make sure this design is compatible with walter's)
-
-*/
-
 module original_z_nut() {
   h = 13.5;
 
@@ -61,13 +53,10 @@ module original_z_nut() {
 module z_nut() {
   rounded_diam = 4;
 
-  endstop_adjustment_screw_pos_x = left*(extrusion_width/2+mech_endstop_tiny_width/2);
-  endstop_adjustment_screw_pos_y = rear*(mgn12c_surface_above_surface+extrusion_width/2)-1.2;
   module profile() {
     translate([z_nut_body_pos_x,z_nut_body_pos_z,0]) {
       translate([0,-z_nut_mount_height/2+z_nut_base_height/2]) {
-        //rounded_square(z_nut_mount_width,z_nut_base_height,m3_socket_head_diam+extrude_width*4,resolution);
-        square([z_nut_mount_width,z_nut_base_height],center=true);
+        rounded_square(z_nut_mount_width,z_nut_base_height,m3_socket_head_diam+extrude_width*4);
 
         translate([-z_nut_mount_width/2+idler_shaft_body_width,z_nut_base_height/2,0]) {
           round_corner_filler_profile(rounded_diam,resolution);
@@ -75,15 +64,18 @@ module z_nut() {
       }
 
       translate([-z_nut_mount_width/2+idler_shaft_body_width/2,0,0]) {
-        //rounded_square(idler_shaft_body_width,z_nut_mount_height,rounded_diam,resolution);
-        square([idler_shaft_body_width,z_nut_mount_height],center=true);
+        rounded_square(idler_shaft_body_width,z_nut_mount_height,rounded_diam);
       }
     }
   }
 
   carriage_opening = mgn12c_height + tolerance;
-  z_endstop_adjustment_screw_pos_x = -20 + tolerance;
-  z_endstop_adjustment_screw_pos_y = 0;
+
+  endstop_adjustment_screw_pos_x = left*(extrusion_width/2+mech_endstop_tiny_width/2);
+  endstop_adjustment_screw_pos_y = rear*(mgn12c_surface_above_surface+extrusion_width/2)-1.2;
+  endstop_mount_narrow_width = abs(z_nut_body_pos_x-z_nut_mount_width/2) - mgn12c_width/2;
+  endstop_mount_wide_width = abs(z_nut_body_pos_x-z_nut_mount_width/2) - extrusion_width/2 - tolerance;
+  endstop_mount_height = z_nut_base_height;
 
   module body() {
     translate([0,-z_nut_mount_depth/2,0]) {
@@ -106,12 +98,27 @@ module z_nut() {
     }
 
     // endstop mount
-    hull() {
-      translate([z_nut_body_pos_x-z_nut_mount_width/4,0,z_nut_body_pos_z-z_nut_mount_height/4]) {
-        depth = abs(endstop_adjustment_screw_pos_y) + 3;
-        translate([0,depth/2,0]) {
-          hull() {
-            cube([z_nut_mount_width/2,depth,z_nut_mount_height/2],center=true);
+    endstop_mount_screw_body_area = 6;
+    depth = abs(endstop_adjustment_screw_pos_y) + endstop_mount_screw_body_area/2;
+
+    translate([z_nut_body_pos_x-z_nut_mount_width/2+endstop_mount_narrow_width/2,0,z_nut_body_pos_z-z_nut_mount_height/2+endstop_mount_height/2]) {
+      translate([0,0,0]) {
+        rotate([90,0,0]) {
+          rounded_cube(endstop_mount_narrow_width,endstop_mount_height,z_nut_mount_depth*2,rounded_diam);
+        }
+      }
+
+      hull() {
+        translate([-endstop_mount_narrow_width/2,0,0]) {
+          translate([endstop_mount_wide_width/2,depth-endstop_mount_screw_body_area/2,0]) {
+            rotate([90,0,0]) {
+              rounded_cube(endstop_mount_wide_width,endstop_mount_height,endstop_mount_screw_body_area,rounded_diam);
+            }
+          }
+          translate([endstop_mount_narrow_width/2,mgn12c_height+1+tolerance*2,0]) {
+            rotate([90,0,0]) {
+              rounded_cube(endstop_mount_narrow_width,endstop_mount_height,2,rounded_diam);
+            }
           }
         }
       }

@@ -96,7 +96,8 @@ x_idler_on_z_pos_y = leadscrew_pos_y-3;
 x_idler_on_z_pos_z = z_nut_body_pos_z + z_nut_mount_height/2 + x_idler_bevel_height;
 
 meat_on_far_side_of_idler = gt2_toothed_idler_id_hole/2 + wall_thickness*3;
-idler_shaft_body_width = meat_on_far_side_of_idler + abs(x_idler_on_z_pos_x) - leadscrew_hole_diam/2 - 1.75; // fatter to be same as walter's
+leadscrew_clearance = 1;
+idler_shaft_body_width = meat_on_far_side_of_idler + abs(x_idler_on_z_pos_x) - leadscrew_hole_diam/2 - leadscrew_clearance;
 z_nut_mount_width = meat_on_far_side_of_idler + abs(x_idler_on_z_pos_x) + mgn12c_hole_spacing_width/2 + m3_socket_head_diam/2 + extrude_width*2;
 z_nut_body_pos_x = x_idler_on_z_pos_x-meat_on_far_side_of_idler+z_nut_mount_width/2;
 

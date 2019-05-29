@@ -39,7 +39,14 @@ module original_x_carriage() {
 
 module walter_x_carriage() {
   rotate([90,0,0]) {
-    % color("lightblue") import("./walter/X-Carriage.stl");
+    color("lightblue") import("./walter/X-Carriage.stl");
+  }
+  translate([-27,-13+mech_endstop_tiny_width/2,mech_endstop_mounting_hole_spacing_y/2+0.5]) {
+    rotate([0,0,-90]) {
+      rotate([90,0,0]) {
+        % mech_endstop_tiny();
+      }
+    }
   }
 }
 
@@ -47,14 +54,13 @@ module x_carriage() {
 }
 
 module to_print() {
-  rotate([-90,0,0]) {
-    x_carriage();
+  rotate([0,180,0]) {
+    walter_x_carriage();
   }
 }
 
-debug = 1;
-if (debug) {
-  x_carriage();
+if (true) {
+  walter_x_carriage();
 
   translate([-50,0,0]) {
     rotate([0,0,0]) {

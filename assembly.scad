@@ -109,12 +109,14 @@ translate([left*(20/2+mech_endstop_tiny_width/2),rear*(mgn12c_surface_above_surf
 }
 
 translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
-  rotate([90,0,0]) {
-    rotate([0,0,90]) {
-      % mgn9c();
+  translate([-50,0,0]) {
+    rotate([90,0,0]) {
+      rotate([0,0,90]) {
+        % mgn9c();
+      }
     }
+    % walter_x_carriage();
   }
-  walter_x_carriage();
 }
 
 // X idler
