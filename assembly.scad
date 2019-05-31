@@ -115,7 +115,7 @@ translate([left*(20/2),rear*(mgn12c_surface_above_surface+20/2),-220/2+50]) {
 }
 
 translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
-  translate([-50,0,0]) {
+  translate([0,0,0]) {
     rotate([90,0,0]) {
       rotate([0,0,90]) {
         % mgn9c();
@@ -181,9 +181,10 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
 
       y_carriage_thickness = 3;
       build_plate_thickness = 2;
+      m3_plain_nut_thickness = 2.5;
 
-      translate([0,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
-        //color("silver") cube([100,100,2],center=true);
+      translate([bed_carriage_offset,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
+
         color("silver") {
           linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
             y_carriage_profile();
@@ -193,7 +194,7 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
         for(z=[top,bottom]) {
           for (x=[left,right]) {
             for (y=[front,rear]) {
-              translate([bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(y_carriage_thickness/2+mini_thumb_screw_thickness/2)*z]) {
+              translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(y_carriage_thickness/2+mini_thumb_screw_thickness/2)*z]) {
                 rotate([0,90+z*90,0]) {
                   color("dimgrey") mini_thumb_screw();
                 }
@@ -202,17 +203,14 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
           }
         }
 
-        m3_plain_nut_thickness = 2.5;
-        translate([bed_carriage_offset,0,y_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
+        translate([0,0,y_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
           heated_build_plate();
 
           for (x=[left,right]) {
             for (y=[front,rear]) {
               translate([-bed_carriage_offset+bed_carriage_offset+x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,-hbp_thickness/2-m3_plain_nut_thickness/2]) {
                 color("silver") {
-                  difference() {
-                    hole(m3_nut_diam,m3_plain_nut_thickness,6);
-                  }
+                  hole(m3_nut_diam,m3_plain_nut_thickness,6);
                 }
               }
             }

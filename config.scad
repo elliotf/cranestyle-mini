@@ -65,6 +65,7 @@ heated_bed_hole_spacing = 92;
 // I like the idea of a less-cantilevered platform.
 y_carriage_pos_x = -10+85;
 y_rail_pos_x = -10+y_extrusion_width-10;
+y_belt_clamp_hole_dist_from_mgn = 7;
 
 bed_carriage_offset = y_carriage_pos_x-y_rail_pos_x;
 build_plate_len = 130;

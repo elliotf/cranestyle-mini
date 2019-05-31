@@ -57,7 +57,6 @@ top_of_belt_below_mgn = 3.5;
 bottom_of_belt_below_mgn = 10.5;
 belt_opening_height = abs(bottom_of_belt_below_mgn - top_of_belt_below_mgn);
 
-clamp_hole_dist_from_mgn = 7;
 belt_thickness = 0.9;
 
 mgn_clamp_mount_width = 12;
@@ -158,7 +157,7 @@ module belt_clamp() {
 
   module holes() {
     for(y=[front,rear]) {
-      translate([y_belt_clamp_width/2+belt_thickness-clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,0]) {
+      translate([y_belt_clamp_width/2+belt_thickness-y_belt_clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,0]) {
         translate([0,0,m3_threaded_insert_len+1+0.2]) {
           hole(m3_loose_diam,y_belt_clamp_height,resolution);
         }
@@ -213,7 +212,7 @@ module mgn_clamp_mount() {
   module holes() {
     for(y=[front,rear]) {
       m3_fsc_head_rim = 0.5;
-      translate([y_belt_clamp_width/2+belt_thickness-clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,mgn_clamp_mount_height/2-m3_fsc_head_rim]) {
+      translate([y_belt_clamp_width/2+belt_thickness-y_belt_clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,mgn_clamp_mount_height/2-m3_fsc_head_rim]) {
         hole(m3_loose_diam,mgn_clamp_mount_height*2+1,resolution);
         // room for screw head
         hull() {
