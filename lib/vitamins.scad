@@ -45,7 +45,7 @@ byj_hump_width = 15;
 byj_hump_depth = 17-byj_body_diam/2;
 
 module countersink_screw(actual_shaft_diam,head_diam,head_depth,length) {
-  loose_tolerance = 0.4;
+  loose_tolerance = 0.2;
   shaft_hole_diam = actual_shaft_diam + loose_tolerance;
 
   hole(shaft_hole_diam,length*2,resolution);
@@ -57,11 +57,11 @@ module countersink_screw(actual_shaft_diam,head_diam,head_depth,length) {
 }
 
 module m5_countersink_screw(length) {
-  countersink_screw(5,m5_fsc_head_diam,1.5,length);
+  countersink_screw(5,m5_fsc_head_diam,1,length);
 }
 
 module m6_countersink_screw(length) {
-  countersink_screw(6,m6_fsc_head_diam,1.5,length);
+  countersink_screw(6,m6_fsc_head_diam,1,length);
 }
 
 module line_bearing(resolution=16) {
@@ -545,7 +545,9 @@ module motor_nema17(length=nema17_len) {
     translate([0,0,-length/2]) cube([nema17_side,nema17_side,length],center=true);
     for(end=[left,right]) {
       for(side=[front,rear]) {
-        translate([nema17_hole_spacing/2*side,nema17_hole_spacing/2*end,0]) cylinder(r=nema17_screw_diam/2,h=100,center=true);
+        translate([nema17_hole_spacing/2*side,nema17_hole_spacing/2*end,0]) {
+          hole(nema17_screw_diam,100,resolution/2);
+        }
       }
     }
   }
@@ -561,7 +563,9 @@ module motor_nema14(length=nema14_len) {
     translate([0,0,-length/2]) cube([nema14_side,nema14_side,length],center=true);
     for(end=[left,right]) {
       for(side=[front,rear]) {
-        translate([nema14_hole_spacing/2*side,nema14_hole_spacing/2*end,0]) cylinder(r=nema14_screw_diam/2,h=100,center=true);
+        translate([nema14_hole_spacing/2*side,nema14_hole_spacing/2*end,0]) {
+          hole(nema14_screw_diam,100,resolution/2);
+        }
       }
     }
   }
