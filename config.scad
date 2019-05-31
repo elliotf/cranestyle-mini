@@ -40,6 +40,7 @@ t_slot_nut_length = 11;
 
 y_idler_in_endcap = true;
 
+// FIXME: adjust these to fit an aluminum heatspreader between the aluminum extrusion and the duet wifi board to provide a passive heatsink for the drivers -- An idea I got from Walter.
 duet_mount_thickness = 3;
 duet_mount_bevel_height = 2;
 
