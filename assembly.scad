@@ -8,6 +8,7 @@ use <./z-motor-mount.scad>;
 use <./z-nut-mount.scad>;
 use <./end-caps.scad>;
 use <./handle.scad>;
+use <./tnuts.scad>;
 
 translate([0,20+mgn12c_surface_above_surface,0]) {
   rotate([0,0,90]) {
@@ -104,8 +105,13 @@ z_nut();
 translate([0,leadscrew_pos_y,-220/2+nema14_len]) {
   z_motor_assembly();
 }
-translate([left*(20/2+mech_endstop_tiny_width/2),rear*(mgn12c_surface_above_surface+20/2-mech_endstop_mounting_hole_spacing_y/2),-220/2+50]) {
-  mech_endstop_tiny();
+translate([left*(20/2),rear*(mgn12c_surface_above_surface+20/2),-220/2+50]) {
+  translate([left*(mech_endstop_tiny_width/2),front*(mech_endstop_mounting_hole_spacing_y/2),mech_endstop_tiny_mounting_hole_from_top]) {
+    mech_endstop_tiny();
+  }
+  rotate([0,0,-90]) {
+    m2_tnut();
+  }
 }
 
 translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
