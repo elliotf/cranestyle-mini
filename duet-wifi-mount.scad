@@ -26,7 +26,7 @@ module long_clamp() {
         hull() {
           hole(hole_body_diam,duet_mount_thickness,resolution);
           translate([0,0,-duet_mount_thickness/2-duet_mount_bevel_height/2]) {
-            hole(3+extrude_width*2,duet_mount_bevel_height,resolution);
+            hole(hole_body_diam,duet_mount_bevel_height,resolution);
           }
         }
         translate([0,cross_brace_width/2,0]) {

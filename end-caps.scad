@@ -97,7 +97,7 @@ module end_cap_rear() {
   duet_port_access_hole_width = 85; // wider to be able to see the activity lights?
   duet_port_access_hole_height = 8;
   duet_port_access_hole_offset_x = 0;
-  duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_board_thickness/2-duet_port_access_hole_height/2;
+  duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_port_access_hole_height/2;
 
   power_plug_hole_diam = 11;
   power_plug_bevel_height = 2;
@@ -139,7 +139,7 @@ module end_cap_rear() {
           hull() {
             hole(mount_body_diam,duet_mount_thickness,resolution);
             translate([0,0,-duet_mount_bevel_height/2-duet_mount_thickness/2]) {
-              hole(m3_thread_into_hole_diam+extrude_width*2,duet_mount_bevel_height,resolution);
+              hole(mount_body_diam,duet_mount_bevel_height,resolution);
             }
           }
         }
