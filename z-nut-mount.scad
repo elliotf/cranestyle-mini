@@ -23,11 +23,13 @@ module z_nut() {
 
   carriage_opening = mgn12c_height + tolerance;
 
-  endstop_adjustment_screw_pos_x = left*(extrusion_width/2+mech_endstop_tiny_width/2);
-  endstop_adjustment_screw_pos_y = rear*(mgn12c_surface_above_surface+extrusion_width/2)-1.2;
   endstop_mount_narrow_width = abs(z_nut_body_pos_x-z_nut_mount_width/2) - mgn12c_width/2;
   endstop_mount_wide_width = abs(z_nut_body_pos_x-z_nut_mount_width/2) - extrusion_width/2 - tolerance;
-  endstop_mount_height = z_nut_base_height;
+  endstop_mount_height = 12;
+
+  endstop_adjustment_screw_pos_x = left*(extrusion_width/2+mech_endstop_tiny_width/2);
+  endstop_adjustment_screw_pos_y = rear*(mgn12c_surface_above_surface+extrusion_width/2)-1.2;
+  endstop_adjustment_screw_pos_z = mgn12c_hole_spacing_length/2-mgn9_rail_width_allowance/2-endstop_mount_height/2;
 
   module body() {
     translate([0,-z_nut_mount_depth/2,0]) {
@@ -53,7 +55,7 @@ module z_nut() {
     endstop_mount_screw_body_area = 6;
     depth = abs(endstop_adjustment_screw_pos_y) + endstop_mount_screw_body_area/2;
 
-    translate([z_nut_body_pos_x-z_nut_mount_width/2+endstop_mount_narrow_width/2,0,z_nut_body_pos_z-z_nut_mount_height/2+endstop_mount_height/2]) {
+    translate([z_nut_body_pos_x-z_nut_mount_width/2+endstop_mount_narrow_width/2,0,endstop_adjustment_screw_pos_z]) {
       translate([0,0,0]) {
         rotate([90,0,0]) {
           rounded_cube(endstop_mount_narrow_width,endstop_mount_height,z_nut_mount_depth*2,rounded_diam);
@@ -156,7 +158,7 @@ module z_nut() {
     }
 
     // endstop trigger
-    translate([endstop_adjustment_screw_pos_x,endstop_adjustment_screw_pos_y,-10]) {
+    translate([endstop_adjustment_screw_pos_x,endstop_adjustment_screw_pos_y,endstop_adjustment_screw_pos_z]) {
       hole(1.9,50,8);
       % hole(1.9,30,8);
     }
