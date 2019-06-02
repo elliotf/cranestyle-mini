@@ -1,4 +1,5 @@
 include <./config.scad>;
+use <./extruder-mount.scad>;
 use <./x-carriage.scad>;
 use <./x-idler.scad>;
 use <./y-carriage.scad>;
@@ -114,6 +115,10 @@ translate([left*(20/2),rear*(mgn12c_surface_above_surface+20/2),-220/2+50]) {
   }
 }
 
+translate([-mgn12c_hole_spacing_width/2+mgn9_rail_hole_spacing*5,0,mgn12c_hole_spacing_length/2]) {
+  extruder_assembly();
+}
+
 translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
   translate([0,0,0]) {
     rotate([90,0,0]) {
@@ -184,7 +189,6 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
       m3_plain_nut_thickness = 2.5;
 
       translate([bed_carriage_offset,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
-
         color("silver") {
           linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
             y_carriage_profile();

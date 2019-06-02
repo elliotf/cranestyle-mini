@@ -56,7 +56,6 @@ module end_cap(end=front) {
     
     // end cap extrusion mounting holes
     intersection() {
-
       for(x=[-60,-40,-20,20,40,60]) {
         translate([-end_cap_pos_x+y_idler_pos_x+x,-end_cap_thickness,0]) {
           rotate([-90,0,0]) {
@@ -412,7 +411,9 @@ module end_cap_assembly() {
     // duet wifi
     translate([0,150/2-duet_hole_spacing_y/2+duet_mounting_hole_offset_y,duet_mounting_hole_offset_z-duet_board_thickness/2]) {
       rotate([180,0,0]) {
-        color("#3d526d") duet_wifi();
+        rotate([90,0,90]) {
+          % color("#3d526d") import("./lib/duet-pcb-binary-format.stl");
+        }
       }
 
       translate([0,-duet_hole_spacing_y/2,duet_mount_thickness+duet_mount_bevel_height]) {
