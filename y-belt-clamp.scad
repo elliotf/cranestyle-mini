@@ -3,56 +3,6 @@ include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
 use <./lib/gt2-pulley-profile.scad>;
 
-//if ( profile == 12 ) { pulley ( "GT2 2mm" , GT2_2mm_pulley_dia , 0.764 , 1.494 ); }
-
-module original_y_belt_clamp() {
-  B = 20;
-  C = 15;
-  L = 35;
-  L1 = 22;
-  W = 27; // MGN carriage width
-  h = 12;
-
-  trigger = 10 + 3;
-
-  $fs = .2;
-  $fa = 2;
-
-  difference() {
-    linear_extrude(4, convexity = 5) difference() {
-      offset(1) offset(-2) offset(1) {
-        square([W, L], center = true);
-        translate([-5, 0, 0]) square([W + 10, L1], center = true);
-        //translate([-W/2 - 10 - 17, -L/2 + trigger, 0]) square([W/2 + 10 + 17, L/2 + L1/2 - trigger]);
-      }
-      for(x = [1, -1], y = [1, -1]) translate([x * B/2, y * C/2, 0]) circle(3 / 2);
-      translate([-20, 0, 0]) circle(3 / 2);
-    }
-  }
-
-  module profile() {
-    difference() {
-      offset(1) offset(-2) offset(1) {
-        translate([-5, 0, 0]) square([W + 10, L1], center = true);
-      }
-      translate([-20, 0, 0]) circle(3 / 2);
-      offset(-.4) offset(.4) {
-        square([W + 2, L + 2], center = true);
-        for(i = [.5:10], j = [1, -1]) translate([0, 2 * i * j, 0]) square([W + 5, 1], center = true);
-      }
-    }
-  }
-
-  translate([0,0,30]) {
-    profile();
-  }
-
-  difference() {
-    linear_extrude(2 + h, convexity = 5) profile();
-    translate([-20, 0, h]) rotate(90) cylinder(r = 6.5/2, h = 10, $fn = 6);
-  }
-}
-
 top_of_belt_below_mgn = 3.5;
 bottom_of_belt_below_mgn = 10.5;
 belt_opening_height = abs(bottom_of_belt_below_mgn - top_of_belt_below_mgn);
@@ -252,7 +202,3 @@ module y_belt_clamp_assembly() {
 }
 
 y_belt_clamp_assembly();
-
-translate([mgn12c_width/2+0.8+4,35,0]) {
-  // original_y_belt_clamp();
-}

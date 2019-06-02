@@ -217,12 +217,6 @@ module to_print() {
 debug = 0;
 if (debug) {
   y_motor_mount();
-
-  translate([0,50,0]) {
-    rotate([0,0,-90]) {
-      original_y_motor_mount();
-    }
-  }
 } else {
   to_print();
 }
