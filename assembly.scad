@@ -126,7 +126,7 @@ translate([75,-mgn9c_surface_above_surface,mgn12c_hole_spacing_length/2]) {
         % mgn9c();
       }
     }
-    % walter_x_carriage();
+    % x_carriage();
   }
 }
 
