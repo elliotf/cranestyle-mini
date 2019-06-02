@@ -1,7 +1,7 @@
 include <./config.scad>;
 include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
-use <./Pulley_T-MXL-XL-HTD-GT2_N-tooth.scad>;
+use <./lib/gt2-pulley-profile.scad>;
 
 //if ( profile == 12 ) { pulley ( "GT2 2mm" , GT2_2mm_pulley_dia , 0.764 , 1.494 ); }
 
