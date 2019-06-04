@@ -1,5 +1,6 @@
 include <./config.scad>;
 use <./extruder-mount.scad>;
+use <./hotend-fan-mount.scad>;
 use <./x-carriage.scad>;
 use <./x-idler.scad>;
 use <./y-carriage.scad>;
@@ -10,6 +11,7 @@ use <./z-nut-mount.scad>;
 use <./end-caps.scad>;
 use <./handle.scad>;
 use <./tnuts.scad>;
+include <./lib/cr8-hotend.scad>;
 
 translate([0,20+mgn12c_surface_above_surface,0]) {
   rotate([0,0,90]) {
@@ -110,6 +112,11 @@ translate([0,0,-45]) {
         rotate([0,0,90]) {
           % mgn9c();
         }
+      }
+      translate([-mgn9c_hole_spacing_length/2+cr8_hotend_outer_hole_spacing/2,front*(cr8_hotend_heatsink_thickness/2+4),mgn9c_hole_spacing_width/2]) {
+        cr8_hotend();
+
+        hotend_fan_mount();
       }
       % x_carriage();
     }

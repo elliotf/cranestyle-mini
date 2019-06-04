@@ -769,6 +769,10 @@ module mgn9c() {
       color("#aaa") cube([mgn9c_width,mgn9c_length,mgn9c_height],center=true);
     }
 
+    translate([0,0,-mgn9c_surface_above_surface]) {
+      cube([mgn9_rail_width+0.4,mgn9c_length+1,mgn9_rail_height*2+0.4],center=true);
+    }
+
     for(x=[left,right]) {
       for(y=[front,rear]) {
         translate([x*mgn9c_hole_spacing_width/2,y*mgn9c_hole_spacing_length/2,0]) {
