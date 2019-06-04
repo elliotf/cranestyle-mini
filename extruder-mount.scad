@@ -10,6 +10,8 @@ bracket_divot_angle = 28.5;
 bracket_divot_diam = 12;
 bracket_divot_depth = 3;
 
+extruder_motor_len = 33.3;
+extruder_motor_len_to_leave_to_screw_into = 5;
 
 // swivel_divot_angle = 30; // what walter has; a purposeful difference from bracket's angle?
 swivel_divot_angle = bracket_divot_angle;
@@ -28,10 +30,10 @@ swivel_bearing_hole = swivel_bearing_od + tolerance*2;
 // * should be influenced by the height of a captive nut
 // * should be influenced by the length of the motor and available screw lengths
 m5_bolt_head_height = m5_socket_head_height;
+motor_plate_screw_length = 30; // MAYBE EVENTUALLY: somehow determine this based on the extruder motor length
 motor_plate_thickness = 4;
 motor_plate_clearance_bevel_height = 5;
 motor_plate_pivot_screw_diam = swivel_bearing_id+tolerance;
-motor_plate_screw_hole_recess_height = 1; // FIXME: be based on length of motor and available screw lengths
 
 module divot(large_diam,depth,angle) {
   small_diam = large_diam - 2*(depth*(tan(angle)));
@@ -68,22 +70,43 @@ module extruder_motor_plate() {
       }
     }
 
-    for(x=[left,right]) {
-      for(y=[front,rear]) {
-        translate([x*(nema17_hole_spacing/2),y*(nema17_hole_spacing/2),bottom*motor_plate_thickness/2]) {
-          hole(m3_socket_head_diam,motor_plate_screw_hole_recess_height*2,resolution);
-          hole(m3_loose_diam,motor_plate_thickness*3,resolution);
+    echo("extruder_motor_len: ", extruder_motor_len);
+    echo("extruder_motor_len+motor_plate_thickness: ", extruder_motor_len+motor_plate_thickness);
+    echo("extruder_motor_len+motor_plate_thickness-extruder_motor_len_to_leave_to_screw_into: ", extruder_motor_len+motor_plate_thickness-extruder_motor_len_to_leave_to_screw_into);
+
+    translate([0,0,motor_plate_thickness/2]) {
+      % debug_axes();
+      translate([0,0,extruder_motor_len-motor_plate_screw_length-extruder_motor_len_to_leave_to_screw_into]) {
+        for(x=[left,right]) {
+          for(y=[front,rear]) {
+            translate([x*(nema17_hole_spacing/2),y*(nema17_hole_spacing/2),0]) {
+              translate([0,0,-motor_plate_thickness/2]) {
+                hole(m3_socket_head_diam,motor_plate_thickness,resolution);
+                hole(m3_loose_diam,motor_plate_screw_length*2,resolution);
+              }
+              translate([0,0,motor_plate_screw_length/2]) {
+                % color("red", 0.3) {
+                  hole(m3_diam,motor_plate_screw_length,resolution);
+                }
+              }
+            }
+          }
         }
       }
     }
   }
 
   m5_nut_height = 6;
-  echo("Need an M5 screw/bolt with a thread length of : ", motor_plate_thickness + motor_plate_clearance_bevel_height - m5_bolt_head_height + swivel_height + m5_nut_height);
+  echo("BOM\tEXTRUDER:\t M5_bolt head height: ", m5_bolt_head_height);
+  echo("BOM\tEXTRUDER:\t Need an M5 screw/bolt with a thread length of : ", motor_plate_thickness + motor_plate_clearance_bevel_height - m5_bolt_head_height + swivel_height + m5_nut_height);
 
   difference() {
     body();
     holes();
+  }
+
+  translate([0,0,extruder_motor_len+motor_plate_thickness/2]) {
+    % color("dimgrey",0.6) motor_nema17(extruder_motor_len);
   }
 }
 
@@ -193,8 +216,8 @@ module extruder_assembly() {
             translate([0,0,swivel_height/2+motor_plate_clearance_bevel_height+motor_plate_thickness/2-swivel_bearing_recess_height]) {
               extruder_motor_plate();
 
-              translate([0,0,nema17_len + motor_plate_thickness/2 + 0.5]) {
-                color("dimgrey") motor_nema17();
+              translate([0,0,extruder_motor_len + motor_plate_thickness/2 + 0.1]) {
+                color("dimgrey") motor_nema17(extruder_motor_len);
               }
             }
           }

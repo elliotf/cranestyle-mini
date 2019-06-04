@@ -27,7 +27,7 @@ module y_motor_mount() {
   belt_opening_angle = 90;
   motor_offset = nema14_side/2-y_motor_side/2;
 
-  extrusion_mount_hole_spacing = y_motor_side + m5_nut_diam - ((countersink_all_the_things) ? 3 : 2);
+  extrusion_mount_hole_spacing = y_motor_side + m5_socket_head_diam - ((countersink_all_the_things) ? 3 : 2);
   extrusion_mount_head_hole_diam = extrusion_mount_screw_head_diam + tolerance*3;
 
   length_to_screw_into_motor = 3;
@@ -184,7 +184,7 @@ module y_motor_mount() {
               hole(m5_loose_diam+tolerance,height,resolution);
             }
             translate([0,0,-m5_socket_head_height/2]) {
-              % hole(m5_nut_diam,m5_socket_head_height,resolution);
+              % hole(m5_socket_head_diam,m5_socket_head_height,resolution);
             }
           }
         }

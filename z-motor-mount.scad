@@ -126,7 +126,7 @@ module z_motor_mount() {
             } else {
               echo("m5 screw length for mounting Z motor (socket head): ", extrusion_mount_thickness-m5_socket_head_height+5);
               hole(5+tolerance,60,resolution);
-              hole(m5_nut_diam+tolerance,m5_socket_head_height*2,resolution);
+              hole(m5_socket_head_diam_diam+tolerance,m5_socket_head_height*2,resolution);
             }
           }
         }

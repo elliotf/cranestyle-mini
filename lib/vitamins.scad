@@ -8,7 +8,8 @@ m3_fsc_head_diam = 6;
 
 m5_diam = 5;
 m5_socket_head_height = 6;
-m5_nut_diam = 9;
+m5_socket_head_diam = 9;
+m5_nut_diam = 8;
 m5_fsc_head_diam = 10;
 
 m6_diam = 6;
