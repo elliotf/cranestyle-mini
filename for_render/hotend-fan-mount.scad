@@ -1,5 +1,3 @@
-use <../x-carriage.scad>;
+use <../hotend-fan-mount.scad>;
 
 hotend_fan_mount_to_print();
-
-color("lightblue") import("../walter/Cooling Duct.stl");
