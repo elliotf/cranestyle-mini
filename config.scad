@@ -42,15 +42,16 @@ y_idler_in_endcap = true;
 
 // FIXME: adjust these to fit an aluminum heatspreader between the aluminum extrusion and the duet wifi board to provide a passive heatsink for the drivers -- An idea I got from Walter.
 duet_mount_thickness = 3;
-duet_mount_bevel_height = 2;
+duet_mount_bevel_height = 1;
 
 end_cap_rounded_diam = 3+wall_thickness*4;
 end_cap_pos_x = 40;
 end_cap_extrusion_width_to_cover = 100;
 end_cap_thickness = (y_idler_in_endcap) ? m5_thread_into_hole_diam + 2*(1.2*2)-0.2 : 5; // remove a 0.2mm layer because cura was printing an infill layer rather than solid
+end_cap_offset_x = -4;
 end_cap_overhang = end_cap_rounded_diam/2;
-end_cap_width = end_cap_extrusion_width_to_cover + end_cap_overhang*2;
-end_cap_height = 20+room_below_extrusion_for_electronics+1;
+end_cap_width = end_cap_extrusion_width_to_cover + abs(end_cap_offset_x)*2 + end_cap_overhang*2;
+end_cap_height = extrusion_width+room_below_extrusion_for_electronics+wall_thickness;
 
 y_extrusion_width = (true) ? 100 : 80;
 

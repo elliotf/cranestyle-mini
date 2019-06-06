@@ -18,6 +18,7 @@ m6_nut_diam = 0;
 m6_fsc_head_diam = 12;
 
 m2_threaded_insert_diam = 3.4;
+m2_threaded_insert_height = 3;
 m2_5_threaded_insert_diam = 3.6;
 m3_threaded_insert_diam = 5.4;
 m3_threaded_insert_len = 4;
@@ -57,12 +58,16 @@ module countersink_screw(actual_shaft_diam,head_diam,head_depth,length) {
   }
 }
 
+module m3_countersink_screw(length) {
+  countersink_screw(3,m3_fsc_head_diam,0.5,length);
+}
+
 module m5_countersink_screw(length) {
-  countersink_screw(5,m5_fsc_head_diam,1,length);
+  countersink_screw(5,m5_fsc_head_diam,0.5,length);
 }
 
 module m6_countersink_screw(length) {
-  countersink_screw(6,m6_fsc_head_diam,1,length);
+  countersink_screw(6,m6_fsc_head_diam,0.5,length);
 }
 
 module line_bearing(resolution=16) {
@@ -335,88 +340,6 @@ module openbuilds_groove_profile() {
   }
 }
 
-module extrusion_2040_profile() {
-  width = 40;
-  height = 20;
-
-  base_unit = 20;
-  open_space_between_sides = base_unit-v_slot_depth*2;
-  difference() {
-    square([width,height],center=true);
-
-    square([5.4,open_space_between_sides],center=true);
-
-    hull() {
-      square([5.4,open_space_between_sides-1.96*2],center=true);
-      square([12.2,5.68],center=true);
-    }
-
-    for(x=[left,right]) {
-      translate([x*width/4,0]) {
-        accurate_circle(4.2,16);
-
-        for(y=[top,bottom]) {
-          translate([0,y*height/2,0]) {
-            rotate([0,0,90]) {
-              openbuilds_groove_profile();
-            }
-          }
-        }
-      }
-
-      translate([x*width/2,0]) {
-        rotate([0,0,0]) {
-          openbuilds_groove_profile();
-        }
-      }
-    }
-  }
-}
-
-module extrusion_2080_profile() {
-  width = 80;
-  height = 20;
-
-  base_unit = 20;
-  open_space_between_sides = base_unit-v_slot_depth*2;
-  difference() {
-    square([width,height],center=true);
-
-    square([5.4,open_space_between_sides],center=true);
-
-    for(x=[left,right,0]) {
-      translate([x*20,0,0]) {
-        hull() {
-          square([5.4,open_space_between_sides-1.96*2],center=true);
-          square([12.2,5.68],center=true);
-        }
-      }
-    }
-
-    for(x=[left,right]) {
-      for(dist=[10,30]) {
-        translate([x*dist,0]) {
-          accurate_circle(4.2,16);
-
-          for(y=[top,bottom]) {
-            translate([0,y*height/2,0]) {
-              rotate([0,0,90]) {
-                openbuilds_groove_profile();
-              }
-            }
-          }
-        }
-      }
-
-      translate([x*width/2,0]) {
-        rotate([0,0,0]) {
-          openbuilds_groove_profile();
-        }
-      }
-    }
-  }
-}
-
 module extrusion_20_profile(width) {
   height = 20;
   base_units = width / 20;
@@ -486,15 +409,9 @@ if (false) {
   }
 }
 
-module extrusion_2040(len) {
+module extrusion(height,width,len) {
   linear_extrude(height=len,center=true,convexity=2) {
-    extrusion_2040_profile();
-  }
-}
-
-module extrusion_2080(len) {
-  linear_extrude(height=len,center=true,convexity=2) {
-    extrusion_2080_profile();
+    extrusion_20_profile(width);
   }
 }
 

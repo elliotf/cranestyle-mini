@@ -78,7 +78,7 @@ module duet_assembly() {
 
 translate([-duet_width/2+80/2,0,duet_mount_thickness/2+10]) {
   rotate([90,0,0]) {
-    % extrusion_2080(150);
+    % extrusion(20,80,150);
   }
 }
 

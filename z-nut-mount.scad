@@ -222,7 +222,7 @@ debug = 1;
 if (debug) {
   translate([0,20+mgn12c_surface_above_surface,0]) {
     rotate([0,0,90]) {
-      % color("lightgrey") extrusion_2040(220);
+      % color("lightgrey") extrusion(20,40,220);
     }
   }
   z_nut();

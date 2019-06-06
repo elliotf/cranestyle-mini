@@ -1,5 +1,6 @@
 include <./config.scad>;
 include <./lib/util.scad>;
+include <./lib/vitamins.scad>;
 
 nut_depth = 5.25;
 nut_width = 11;
@@ -29,18 +30,16 @@ module tnut_body(length=10) {
   }
 }
 
-module m2_tnut(hole_offset=0) {
+module tnut_m2(hole_offset=0) {
   module body() {
     tnut_body();
   }
 
   module holes() {
     rotate([90,0,0]) {
-      threaded_insert_height = 3;
-
       hole(1.9,nut_depth+1,resolution);
       translate([0,0,-nut_depth]) {
-        hole(m2_threaded_insert_diam,threaded_insert_height*2,resolution);
+        hole(m2_threaded_insert_diam,m2_threaded_insert_height*2,resolution);
       }
     }
   }
@@ -51,4 +50,108 @@ module m2_tnut(hole_offset=0) {
   }
 }
 
-m2_tnut();
+module tnut_zip_tie_anchor() {
+  thickness = 4;
+  body_diam = 12;
+  zip_tie_hole_width = 2 + tolerance;
+  zip_tie_hole_height = 2 + tolerance;
+  zip_tie_hole_diam = body_diam*2.5;
+  zip_tie_pos_y = m3_diam/2 + wall_thickness*2 + tolerance + zip_tie_hole_width/2;
+
+  zip_tie_dongle_length = wall_thickness*4 + zip_tie_hole_width;
+
+  module body() {
+    translate([0,0,thickness/2]) {
+      linear_extrude(height=thickness,center=true,convexity=3) {
+        hull() {
+          translate([0,0,thickness/2]) {
+            accurate_circle(body_diam,resolution);
+
+            translate([0,zip_tie_pos_y,0]) {
+              rounded_square(body_diam,zip_tie_dongle_length,2);
+            }
+          }
+        }
+      }
+      translate([0,zip_tie_pos_y,thickness/2-zip_tie_hole_height/2]) {
+        % cube([20,zip_tie_hole_width,zip_tie_hole_height],center=true);
+      }
+    }
+  }
+
+  module holes() {
+    m3_countersink_screw(thickness+1);
+
+    translate([0,zip_tie_pos_y,thickness-zip_tie_hole_height]) {
+      // cube([body_diam+2,zip_tie_hole_width,zip_tie_hole_height],center=true);
+
+      translate([0,0,-zip_tie_hole_diam/2]) {
+        rotate([90,0,0]) {
+          difference() {
+            hole(zip_tie_hole_diam+10,zip_tie_hole_width,resolution);
+            hole(zip_tie_hole_diam,zip_tie_hole_width+1,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module tnut_cable_anchor(cable_diam) {
+  thickness = cable_diam + 1;
+  body_diam = 15;
+  anchor_pos_y = m3_diam/2 + extrude_width*4 + tolerance + cable_diam/2;
+
+  anchor_length = 2*(extrude_width*4) + cable_diam;
+
+  module body() {
+    translate([0,0,thickness/2]) {
+      linear_extrude(height=thickness,center=true,convexity=3) {
+        hull() {
+          translate([0,0,thickness/2]) {
+            accurate_circle(body_diam,resolution);
+
+            translate([0,anchor_pos_y,0]) {
+              rounded_square(body_diam,anchor_length,2);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    m3_countersink_screw(thickness+1);
+
+    translate([0,anchor_pos_y,thickness-cable_diam/2]) {
+      rotate([0,-90,0]) {
+        linear_extrude(height=body_diam+2,center=true,convexity=3) {
+          hull() {
+            accurate_circle(cable_diam,resolution);
+            translate([cable_diam/2,0,0]) {
+              square([cable_diam,cable_diam],center=true);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+rotate([0,0,45]) {
+  // tnut_cable_anchor(4);
+  tnut_zip_tie_anchor();
+}
+translate([0,0,-1]) {
+  % cube([20,20,2],center=true);
+}

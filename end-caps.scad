@@ -3,32 +3,24 @@ include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
 use <./duet-wifi-mount.scad>;
 
-// FIXME/TODO:
-//   * holes for wires
-//     * extruder motor
-//     * X motor
-//     * Y motor
-//     * Z motor
-//     * bed power/thermistor
-//     * X carriage bundle
-//   * anchors for wires
+end_cap_thickness_to_leave_from_cavity = 0.2*6; // 6 extrusion layers 0.2 thick, or 4 extrusion layers 0.3 thick -- enough?
 
 y_idler_screw_hole_length = 28;
-duet_mounting_hole_offset_y = end_cap_thickness-duet_hole_from_end-(duet_overall_length-duet_length); // mounting hole relative to extrusion edge
-duet_mounting_hole_offset_z = -20/2-duet_mount_thickness-duet_mount_bevel_height-tolerance;
+duet_mounting_hole_offset_y = end_cap_thickness-duet_hole_from_end-(duet_overall_length-duet_length)-end_cap_thickness_to_leave_from_cavity-1; // mounting hole relative to extrusion edge
+duet_mounting_hole_offset_z = -20/2-duet_mount_thickness-duet_mount_bevel_height-tolerance/2;
 
 end_cap_rim_width = wall_thickness*2;
 
 cavity_width = end_cap_width - end_cap_rim_width*2;
-cavity_height = abs(end_cap_height - 10 - end_cap_rim_width) - abs(duet_mounting_hole_offset_z) + duet_mount_bevel_height;
-cavity_depth = end_cap_thickness - 0.2*6; // 6 extrusion layers 0.2 thick, or 4 extrusion layers 0.3 thick -- enough?
+cavity_height = abs(end_cap_height - extrusion_width/2 - end_cap_rim_width) - abs(duet_mounting_hole_offset_z);
+cavity_depth = end_cap_thickness - end_cap_thickness_to_leave_from_cavity;
 cavity_rounded = end_cap_rounded_diam-(end_cap_width-cavity_width);
 
 module end_cap(end=front) {
   y_idler_screw_shoulder_pos_z = 20/2+y_idler_dist_z_from_extrusion+gt2_toothed_idler_height;
 
   module body() {
-    translate([0,front*end_cap_thickness/2,-end_cap_height/2+20/2]) {
+    translate([end_cap_offset_x,front*end_cap_thickness/2,-end_cap_height/2+20/2]) {
       rotate([90,0,0]) {
         rounded_cube(end_cap_width,end_cap_height,end_cap_thickness,end_cap_overhang*2);
       }
@@ -70,14 +62,14 @@ module end_cap(end=front) {
       }
     }
 
-    translate([0,0,20/2-end_cap_height+cavity_height/2+wall_thickness*2]) {
+    translate([end_cap_offset_x,0,20/2-end_cap_height+cavity_height/2+wall_thickness*2]) {
       rotate([90,0,0]) {
         rounded_cube(cavity_width,cavity_height,cavity_depth*2,cavity_rounded,resolution);
       }
     }
 
     // trim the bottom to be able to see better
-    translate([0,0,-10-end_cap_height/2]) {
+    translate([end_cap_offset_x,0,-10-end_cap_height/2]) {
       // cube([end_cap_width*2,end_cap_thickness*4,25],center=true);
     }
   }
@@ -93,30 +85,29 @@ module end_cap_front() {
 }
 
 module end_cap_rear() {
-  duet_port_access_hole_width = 85; // wider to be able to see the activity lights?
-  duet_port_access_hole_height = 8;
-  duet_port_access_hole_offset_x = 0;
-  duet_port_access_hole_offset_z = duet_mounting_hole_offset_z-duet_port_access_hole_height/2;
+  duet_port_access_hole_width = 40;
+  duet_port_access_hole_height = 11;
+  duet_port_access_hole_offset_x = -duet_width/2+duet_port_access_hole_width/2+33;
 
   power_plug_hole_diam = 11;
   power_plug_bevel_height = 2;
-  power_plug_bevel_id = 13;
-  power_plug_bevel_od = 13;
-  power_plug_body_diameter = power_plug_hole_diam+extrude_width*8*2;
+  power_plug_bevel_id = 13.5;
+  power_plug_bevel_od = power_plug_bevel_id;
+  power_plug_body_diameter = power_plug_hole_diam+extrude_width*4*2 + 6; // make it easier to screw hex nut on // FIXME: make this based on the max OD of the hex nut?
   power_plug_area_thickness = 4;
 
-  power_plug_pos_x = left*(end_cap_width/2-end_cap_rim_width-power_plug_body_diameter/2);
+  power_plug_pos_x = left*(end_cap_width/2-end_cap_rim_width-power_plug_body_diameter/2)+end_cap_offset_x;
   power_plug_pos_y = end_cap_thickness;
   power_plug_pos_z = 10-end_cap_height+end_cap_rim_width+power_plug_body_diameter/2;
 
   wire_hole_wall_depth = 3;
   wire_hole_wall_thickness = wall_thickness*2;
-  wire_hole_rounded_diam = 4;
-  wire_hole_width = 30;
-  wire_hole_height = 6.5;
-  wire_hole_pos_x = power_plug_pos_x + power_plug_body_diameter /2 + 8 + wire_hole_width/2;
+  wire_hole_width = duet_port_access_hole_width;
+  wire_hole_height = 6; // silicone rectangular tubing is 14mm wide by ~4.5mm thick
+  wire_hole_pos_x = duet_port_access_hole_offset_x;
   wire_hole_pos_y = end_cap_thickness-wire_hole_wall_depth/2;
   wire_hole_pos_z = power_plug_pos_z;
+  wire_hole_strain_relief_post_height = end_cap_thickness*1.5;
 
   module body() {
     mirror([0,1,0]) {
@@ -124,25 +115,10 @@ module end_cap_rear() {
     }
 
     mount_body_diam = m3_thread_into_hole_diam+wall_thickness*4;
+    mount_height = duet_mount_thickness + duet_mount_bevel_height;
 
-    for(x=[left,right]) {
-      translate([x*duet_hole_spacing_x/2,0,duet_mounting_hole_offset_z+duet_mount_bevel_height+duet_mount_thickness/2]) {
-        hull() {
-          cube([mount_body_diam,1,duet_mount_thickness],center=true);
-          translate([0,duet_mounting_hole_offset_y,0]) {
-            hole(mount_body_diam,duet_mount_thickness,resolution);
-          }
-        }
-
-        translate([0,duet_mounting_hole_offset_y,0]) {
-          hull() {
-            hole(mount_body_diam,duet_mount_thickness,resolution);
-            translate([0,0,-duet_mount_bevel_height/2-duet_mount_thickness/2]) {
-              hole(mount_body_diam,duet_mount_bevel_height,resolution);
-            }
-          }
-        }
-      }
+    translate([0,0,duet_mounting_hole_offset_z+mount_height/2]) {
+      rounded_cube(duet_hole_spacing_x+mount_body_diam,abs(duet_mounting_hole_offset_y*2)+mount_body_diam,mount_height,mount_body_diam);
     }
 
     // power plug area
@@ -170,18 +146,51 @@ module end_cap_rear() {
     }
 
     // wire holes for X stepper, extruder stepper, maybe Y endstop
-    translate([wire_hole_pos_x,wire_hole_pos_y,wire_hole_pos_z]) {
-      rotate([90,0,0]) {
-        rounded_cube(wire_hole_width+wire_hole_wall_thickness*2,wire_hole_height+wire_hole_wall_thickness*2,wire_hole_wall_depth,wire_hole_rounded_diam+wire_hole_wall_thickness*2);
+    translate([wire_hole_pos_x,0,wire_hole_pos_z]) {
+      translate([0,wire_hole_pos_y,0]) {
+        rotate([90,0,0]) {
+          rounded_cube(wire_hole_width+wire_hole_wall_thickness*2,wire_hole_height+wire_hole_wall_thickness*2,wire_hole_wall_depth,wire_hole_wall_thickness);
+        }
+      }
+      // brace to zip tie things against for strain relief
+      num_posts = 5;
+      space_between_posts = 2;
+      post_width = (wire_hole_width+wire_hole_wall_thickness*2-space_between_posts*(num_posts-1)) / num_posts;
+      translate([0,rear*(end_cap_thickness-wire_hole_strain_relief_post_height),wire_hole_height/2+wire_hole_wall_thickness/2]) {
+        translate([0,1,0]) {
+          rotate([90,0,0]) {
+            rounded_cube(wire_hole_width+wire_hole_wall_thickness*2,wire_hole_wall_thickness,2,wire_hole_wall_thickness);
+          }
+        }
+        translate([left*(wire_hole_width/2+wire_hole_wall_thickness),rear*(wire_hole_strain_relief_post_height/2),0]) {
+          for(x=[0:num_posts-1]) {
+            translate([post_width/2+x*(post_width+space_between_posts),0,0]) {
+              rotate([90,0,0]) {
+                rounded_cube(post_width,wire_hole_wall_thickness,wire_hole_strain_relief_post_height,wire_hole_wall_thickness);
+              }
+            }
+          }
+        }
       }
     }
   }
 
   module holes() {
     // hole to access duet wifi ports, maybe too small for a usb cable, but useful for microSD card access in a bind
-    translate([duet_port_access_hole_offset_x,0,duet_port_access_hole_offset_z]) {
-      rotate([90,0,0]) {
-        rounded_cube(duet_port_access_hole_width,duet_port_access_hole_height,end_cap_thickness*3,4,resolution);
+    hull() {
+      rounded_diam = 4;
+      bottom_of_board_to_center_of_usb = 3.1;
+      height_difference = duet_port_access_hole_height/2-bottom_of_board_to_center_of_usb; // try to center on usb connector
+      translate([duet_port_access_hole_offset_x,duet_mounting_hole_offset_y+duet_hole_from_end,duet_mounting_hole_offset_z-bottom_of_board_to_center_of_usb]) {
+        rotate([90,0,0]) {
+          rounded_cube(duet_port_access_hole_width-bottom_of_board_to_center_of_usb*2,bottom_of_board_to_center_of_usb*2,height_difference*2,1,resolution);
+        }
+
+        translate([0,end_cap_thickness/2,0]) {
+          rotate([90,0,0]) {
+            rounded_cube(duet_port_access_hole_width,duet_port_access_hole_height,end_cap_thickness,duet_port_access_hole_height,resolution);
+          }
+        }
       }
     }
 
@@ -206,10 +215,13 @@ module end_cap_rear() {
       }
     }
 
-    translate([wire_hole_pos_x,wire_hole_pos_y,wire_hole_pos_z]) {
-      rotate([90,0,0]) {
-        rounded_cube(wire_hole_width,wire_hole_height,wire_hole_wall_depth+1,wire_hole_rounded_diam);
-      }
+    // cut off half to see cross section
+    translate([-y_extrusion_width/2+10+y_idler_pos_x+end_cap_width/2,0,0]) {
+      // color("red") cube([end_cap_width,end_cap_width,end_cap_width],center=true);
+    }
+
+    translate([wire_hole_pos_x,end_cap_thickness-wire_hole_strain_relief_post_height/2,wire_hole_pos_z]) {
+      cube([wire_hole_width,end_cap_thickness*3,wire_hole_height],center=true);
     }
   }
 
@@ -409,14 +421,14 @@ module end_cap_assembly() {
     }
 
     // duet wifi
-    translate([0,150/2-duet_hole_spacing_y/2+duet_mounting_hole_offset_y,duet_mounting_hole_offset_z-duet_board_thickness/2]) {
+    translate([0,150/2-duet_hole_spacing_y/2+duet_mounting_hole_offset_y,duet_mounting_hole_offset_z-0.1]) {
       rotate([180,0,0]) {
         rotate([90,0,90]) {
           % color("#3d526d") import("./lib/duet-pcb-binary-format.stl");
         }
       }
 
-      translate([0,-duet_hole_spacing_y/2,duet_mount_thickness+duet_mount_bevel_height]) {
+      translate([0,-duet_hole_spacing_y/2,duet_mount_thickness/2+duet_mount_bevel_height+0.2]) {
         mirror([0,1,0]) {
           long_clamp();
         }
@@ -427,7 +439,10 @@ module end_cap_assembly() {
   }
 }
 
-rotate([90,0,0]) {
-  extrusion_20_profile(100);
+translate([0,0,-10]) {
+  rotate([90,0,0]) {
+    % color("lightgrey") extrusion(20,y_extrusion_width,150);
+  }
 }
-electronics_cover();
+
+end_cap_assembly();

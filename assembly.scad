@@ -15,7 +15,7 @@ include <./lib/cr8-hotend.scad>;
 
 translate([0,20+mgn12c_surface_above_surface,0]) {
   rotate([0,0,90]) {
-    % color("lightgrey") extrusion_2040(220);
+    % color("lightgrey") extrusion(20,40,220);
   }
 
   translate([-20/2,40/2,220/2]) {
@@ -142,7 +142,7 @@ translate([left*(20/2),rear*(mgn12c_surface_above_surface+20/2),-220/2+44]) {
     mech_endstop_tiny();
   }
   rotate([0,0,-90]) {
-    m2_tnut();
+    tnut_m2();
   }
 }
 
@@ -175,11 +175,7 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
     // base extrusion plate
     translate([0,0,-10]) {
       rotate([90,0,0]) {
-        % color("lightgrey") {
-          linear_extrude(height=150,center=true,convexity=3) {
-            extrusion_20_profile(y_extrusion_width);
-          }
-        }
+        % color("lightgrey") extrusion(20,y_extrusion_width,150);
       }
     }
 

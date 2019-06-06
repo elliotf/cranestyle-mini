@@ -90,9 +90,6 @@ module belt_clamp() {
 
   module body() {
     rounded_cube(y_belt_clamp_width,y_belt_clamp_length,y_belt_clamp_height,2);
-    translate([y_belt_clamp_width/2+belt_thickness/2,0,y_belt_clamp_height/2-belt_opening_height/2]) {
-      % color("dimgrey", 0.7) cube([belt_thickness,30,6],center=true);
-    }
 
     translate([-y_belt_clamp_width/2-1,0,y_belt_clamp_height/2]) {
       translate([0,0,1]) {

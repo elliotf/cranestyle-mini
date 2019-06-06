@@ -1,3 +1,3 @@
 use <../tnuts.scad>;
 
-m2_tnut();
+tnut_m2();
