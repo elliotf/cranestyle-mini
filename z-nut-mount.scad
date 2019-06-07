@@ -194,11 +194,6 @@ module z_nut() {
     }
   }
 
-  translate([0,mgn12c_surface_above_surface,+220/2-170/2-10.5]) {
-    rotate([90,0,0]) {
-      % mgn12_rail(170);
-    }
-  }
   rotate([90,0,0]) {
     % mgn12c();
   }

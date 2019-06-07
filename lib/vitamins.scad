@@ -47,7 +47,7 @@ byj_hump_width = 15;
 byj_hump_depth = 17-byj_body_diam/2;
 
 module countersink_screw(actual_shaft_diam,head_diam,head_depth,length) {
-  loose_tolerance = 0.2;
+  loose_tolerance = 0.4;
   shaft_hole_diam = actual_shaft_diam + loose_tolerance;
 
   hole(shaft_hole_diam,length*2,resolution);
