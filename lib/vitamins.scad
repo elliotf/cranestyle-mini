@@ -602,7 +602,7 @@ module position_mech_endstop_tiny_mount_holes() {
   }
 }
 
-module mech_endstop_tiny() {
+module mech_endstop_tiny(include_spring=false) {
   spring_angle = 20;
   spring_length = mech_endstop_tiny_length+1;
   button_from_spring_hinge_end = 4.5;
@@ -632,19 +632,21 @@ module mech_endstop_tiny() {
         }
       }
 
-      translate([0,-1,0]) {
-        rotate([-spring_angle,0,0]) {
-          translate([0,-spring_length/2,0]) {
-            color("silver") {
-              difference() {
-                cube([mech_endstop_tiny_width-1,spring_length,0.2],center=true);
-                hole_diam = mech_endstop_tiny_width-1-2.5;
-                hull() {
-                  translate([0,spring_length/2-hole_diam/2,0]) {
-                    hole(hole_diam,1,12);
-                  }
-                  translate([0,-2,0]) {
-                    hole(hole_diam,1,12);
+      if (include_spring) {
+        translate([0,-1,0]) {
+          rotate([-spring_angle,0,0]) {
+            translate([0,-spring_length/2,0]) {
+              color("silver") {
+                difference() {
+                  cube([mech_endstop_tiny_width-1,spring_length,0.2],center=true);
+                  hole_diam = mech_endstop_tiny_width-1-2.5;
+                  hull() {
+                    translate([0,spring_length/2-hole_diam/2,0]) {
+                      hole(hole_diam,1,12);
+                    }
+                    translate([0,-2,0]) {
+                      hole(hole_diam,1,12);
+                    }
                   }
                 }
               }

@@ -12,6 +12,10 @@ room_below_extrusion_for_electronics = 34;
 extrusion_mount_screw_diam = m5_diam;
 extrusion_mount_screw_head_diam = (countersink_all_the_things) ? m5_fsc_head_diam : m5_nut_diam;
 
+m2_diam = 2;
+m2_thread_into_hole_diam = 1.8;
+m2_loose_diam = m2_diam + tolerance*1.5;
+
 m3_thread_into_hole_diam = 2.9;
 m3_loose_diam = m3_diam + tolerance;
 

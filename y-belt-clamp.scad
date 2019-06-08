@@ -1,6 +1,7 @@
 include <./config.scad>;
 include <./lib/util.scad>;
 include <./lib/vitamins.scad>;
+use <./y-carriage.scad>;
 use <./lib/gt2-pulley-profile.scad>;
 
 top_of_belt_below_mgn = 3.5;
@@ -195,7 +196,6 @@ module y_belt_clamp_assembly() {
   translate([0,0,mgn12c_surface_above_surface]) {
     % mgn12c();
   }
-  mgn12_rail(150);
 }
 
 y_belt_clamp_assembly();
