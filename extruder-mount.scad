@@ -44,9 +44,22 @@ module divot(large_diam,depth,angle) {
 
 module extruder_motor_plate() {
   rounded_diam = nema17_side - nema17_hole_spacing;
+  strain_relief_width = 5;
+  strain_relief_length = nema17_side*0.5;
 
   module body() {
     rounded_cube(nema17_side,nema17_side,motor_plate_thickness,rounded_diam);
+    translate([0,(nema17_side/2+strain_relief_length)/2,0]) {
+      rounded_cube(strain_relief_width,nema17_side/2+strain_relief_length,motor_plate_thickness,strain_relief_width);
+
+    }
+    for(x=[left,right]) {
+      translate([x*strain_relief_width/2,nema17_side/2,0]) {
+        rotate([0,0,45-x*45]) {
+          round_corner_filler(strain_relief_width*2,motor_plate_thickness);
+        }
+      }
+    }
 
     hull() {
       bevel_smaller_diam = motor_plate_pivot_screw_diam+extrude_width*2*2;
@@ -196,10 +209,12 @@ module extruder_assembly() {
 
         translate([0,0,walter_bracket_pivot_height]) {
           rotate([-compensation_angle,0,0]) {
-            extruder_swivel();
+            rotate([0,0,180]) {
+              extruder_swivel();
 
-            translate([0,0,swivel_height/2+motor_plate_clearance_bevel_height+motor_plate_thickness/2-swivel_bearing_recess_height]) {
-              extruder_motor_plate();
+              translate([0,0,swivel_height/2+motor_plate_clearance_bevel_height+motor_plate_thickness/2-swivel_bearing_recess_height]) {
+                extruder_motor_plate();
+              }
             }
           }
         }
