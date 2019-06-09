@@ -8,7 +8,7 @@ module y_endstop_mount() {
   endstop_pos_y = -mech_endstop_tiny_height/4;
   endstop_pos_z = endstop_mount_pos_z + endstop_mount_thickness/2 + mech_endstop_tiny_width/2 + 0.05;
 
-  extrusion_mount_width = m3_fsc_head_diam+wall_thickness*4;
+  extrusion_mount_width = m3_fsc_head_diam+wall_thickness*6;
   extrusion_mount_height = endstop_mount_pos_z+endstop_mount_thickness/2+extrusion_width/2+extrusion_mount_width/2+endstop_mount_thickness/2;
   extrusion_mount_thickness = 4;
 

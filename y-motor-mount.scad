@@ -27,7 +27,7 @@ module y_motor_mount() {
   belt_opening_angle = 90;
   motor_offset = nema14_side/2-y_motor_side/2;
 
-  extrusion_mount_hole_spacing = y_motor_side + m5_socket_head_diam - ((countersink_all_the_things) ? 3 : 2);
+  extrusion_mount_hole_spacing = y_motor_side + m5_socket_head_diam - 3;
   extrusion_mount_head_hole_diam = extrusion_mount_screw_head_diam + tolerance*3;
 
   length_to_screw_into_motor = 3;
@@ -61,7 +61,7 @@ module y_motor_mount() {
         for(x=[left,right]) {
           translate([x*extrusion_mount_hole_spacing/2,0,0]) {
             rounded_diam = 6;
-            rounded_square(extrusion_mount_screw_head_diam+extrude_width*4,extrusion_mount_head_hole_diam+rounded_diam+wall_thickness*2,rounded_diam,resolution);
+            accurate_circle(extrusion_mount_screw_head_diam+extrude_width*4,resolution);
           }
         }
       }
@@ -168,25 +168,11 @@ module y_motor_mount() {
 
     // extrusion mount screw heads
     for(x=[left,right]) {
-      translate([x*extrusion_mount_hole_spacing/2,0,0]) {
-        if (countersink_all_the_things) {
-          echo("Y MOTOR MOUNT: FCS M5 x ", height+5);
-          hole(m5_loose_diam,height*2,resolution);
-          translate([0,0,height/2]) {
-            m5_countersink_screw(height+2);
-          }
-        } else {
-          translate([0,0,height/2]) {
-            translate([x*extrusion_mount_head_hole_diam/2,0,0]) {
-              rounded_cube(extrusion_mount_head_hole_diam*2,extrusion_mount_head_hole_diam,m5_socket_head_height*2,extrusion_mount_head_hole_diam,resolution);
-            }
-            translate([0,0,-m5_socket_head_height-height/2-0.2]) {
-              hole(m5_loose_diam+tolerance,height,resolution);
-            }
-            translate([0,0,-m5_socket_head_height/2]) {
-              % hole(m5_socket_head_diam,m5_socket_head_height,resolution);
-            }
-          }
+      translate([x*extrusion_mount_hole_spacing/2,0,-0.3]) {
+        echo("Y MOTOR MOUNT: FCS M5 x ", height+5);
+        hole(m5_loose_diam,height*2,resolution);
+        translate([0,0,height/2]) {
+          m5_countersink_screw(height+2);
         }
       }
     }
