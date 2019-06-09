@@ -34,33 +34,52 @@ module cr8_hotend() {
 
   module body() {
     top_heatsink_chunk_height = 10;
-    translate([0,0,cr8_hotend_hole_spacing_from_top]) {
-      translate([0,0,-top_heatsink_chunk_height/2]) {
-        linear_extrude(height=top_heatsink_chunk_height,center=true,convexity=3) {
-          heatsink_profile();
-        }
+    color("#eee") {
+      translate([0,0,cr8_hotend_hole_spacing_from_top]) {
+        translate([0,0,-top_heatsink_chunk_height/2]) {
+          linear_extrude(height=top_heatsink_chunk_height,center=true,convexity=3) {
+            heatsink_profile();
+          }
 
-        space_between_top_chunk_and_first_fin = 3;
+          space_between_top_chunk_and_first_fin = 3;
 
-        translate([0,0,-top_heatsink_chunk_height/2-space_between_top_chunk_and_first_fin-cr8_hotend_heatsink_fin_thickness/2]) {
-          for(i=[0:5]) {
-            translate([0,0,-i*cr8_hotend_heatsink_fin_spacing]) {
-              linear_extrude(height=cr8_hotend_heatsink_fin_thickness,center=true,convexity=3) {
-                heatsink_profile();
+          translate([0,0,-top_heatsink_chunk_height/2-space_between_top_chunk_and_first_fin-cr8_hotend_heatsink_fin_thickness/2]) {
+            for(i=[0:5]) {
+              translate([0,0,-i*cr8_hotend_heatsink_fin_spacing]) {
+                linear_extrude(height=cr8_hotend_heatsink_fin_thickness,center=true,convexity=3) {
+                  heatsink_profile();
+                }
               }
             }
           }
         }
-      }
 
-      translate([0,0,-cr8_hotend_heatsink_height]) {
+        // tapered shaft
+        translate([0,0,-cr8_hotend_heatsink_height]) {
+          hull() {
+            translate([0,0,0.1]) {
+              hole(cr8_hotend_heatsink_thickness-0.2,0.2,resolution);
+            }
+            translate([0,0,20]) {
+              hole(cr8_hotend_heatsink_thickness-4.5,0.2,resolution);
+            }
+          }
+        }
+      }
+    }
+
+    // nozzle
+    color("gold") {
+      translate([0,0,cr8_hotend_hole_spacing_from_top-50]) {
         hull() {
-          translate([0,0,0.1]) {
-            hole(cr8_hotend_heatsink_thickness-0.2,0.2,resolution);
+          hole(2,1,resolution);
+          translate([0,0,4]) {
+            hole(2+4,2,resolution);
           }
-          translate([0,0,20]) {
-            hole(cr8_hotend_heatsink_thickness-4.5,0.2,resolution);
-          }
+        }
+
+        translate([0,0,5]) {
+          hole(8,4,6);
         }
       }
     }
@@ -78,11 +97,9 @@ module cr8_hotend() {
     }
   }
 
-  color("#eee") {
-    difference() {
-      body();
-      holes();
-    }
+  difference() {
+    body();
+    holes();
   }
 }
 

@@ -160,7 +160,9 @@ module z_nut() {
     // endstop trigger
     translate([endstop_adjustment_screw_pos_x,endstop_adjustment_screw_pos_y,endstop_adjustment_screw_pos_z]) {
       hole(1.9,50,8);
-      % hole(1.9,30,8);
+      translate([0,0,7]) {
+        % hole(2,30,8);
+      }
     }
 
     // carriage room
