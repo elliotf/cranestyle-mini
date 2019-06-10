@@ -11,7 +11,7 @@ use <./z-motor-mount.scad>;
 use <./z-nut-mount.scad>;
 use <./end-caps.scad>;
 use <./handle.scad>;
-use <./tnuts.scad>;
+use <./tslot-stuff.scad>;
 include <./lib/cr8-hotend.scad>;
 
 translate([0,20+mgn12c_surface_above_surface,0]) {

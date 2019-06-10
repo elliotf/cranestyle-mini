@@ -1,3 +1,3 @@
 use <../tslot-stuff.scad>;
 
-tnut_m2();
+tslot_filler(150);

@@ -148,6 +148,43 @@ module tnut_cable_anchor(cable_diam) {
   }
 }
 
+module tslot_filler_profile() {
+  rim_thickness = 1.9;
+  inside_rim_height = 1.5;
+  inside_rim_width = 11-tolerance*2;
+  opening_depth = 6.1;
+  bottom_width = 5;
+
+  module body() {
+    hull() {
+      translate([0,-rim_thickness-wall_thickness/2-tolerance,0]) {
+        square([inside_rim_width,wall_thickness],center=true);
+      }
+      translate([0,-opening_depth+wall_thickness/2+tolerance,0]) {
+        square([bottom_width,wall_thickness],center=true);
+      }
+    }
+  }
+
+  module holes() {
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module tslot_filler(length) {
+  linear_extrude(height=length,center=true,convexity=1) {
+    tslot_filler_profile();
+  }
+}
+
+translate([30,0,0]) {
+  tslot_filler(150);
+}
+
 rotate([0,0,45]) {
   // tnut_cable_anchor(4);
   tnut_zip_tie_anchor();
