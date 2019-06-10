@@ -4,8 +4,6 @@
 * end plates
   * something to mount soft feet to?
     * because damn the printer is noisy with no damping and very quiet with it
-* y endstop
-  * print, install
 * wire hotend
 * wire heated build plate
 * Y carriage

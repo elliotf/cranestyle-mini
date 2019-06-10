@@ -45,7 +45,7 @@ module divot(large_diam,depth,angle) {
 module extruder_motor_plate() {
   rounded_diam = nema17_side - nema17_hole_spacing;
   strain_relief_width = 5;
-  strain_relief_length = nema17_side*0.5;
+  strain_relief_length = nema17_side*0.6;
 
   module body() {
     rounded_cube(nema17_side,nema17_side,motor_plate_thickness,rounded_diam);
@@ -92,6 +92,12 @@ module extruder_motor_plate() {
             }
           }
         }
+      }
+    }
+
+    for(y=[0.6,0.8]) {
+      translate([0,nema17_side/2+strain_relief_length*y,-motor_plate_thickness/2]) {
+        cube([strain_relief_width+1,3.2,1*2],center=true);
       }
     }
   }
