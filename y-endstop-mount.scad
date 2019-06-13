@@ -43,11 +43,6 @@ module y_endstop_mount() {
   }
 
   module body() {
-    translate([endstop_pos_x,endstop_pos_y,endstop_pos_z]) {
-      rotate([90,-90,0]) {
-        % mech_endstop_tiny();
-      }
-    }
 
     difference() {
       translate([0,endstop_mount_length/2-extrusion_mount_width,0]) {
@@ -87,8 +82,15 @@ module y_endstop_mount() {
   }
 
   difference() {
+    color("yellow")
     body();
     holes();
+  }
+
+  translate([endstop_pos_x,endstop_pos_y,endstop_pos_z]) {
+    rotate([90,-90,0]) {
+      % mech_endstop_tiny();
+    }
   }
 }
 

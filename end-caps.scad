@@ -265,11 +265,11 @@ module end_cap_rear() {
 
 // TODO/FIXME: add some sort of peg/brace on the end caps for this cover to brace/index against?
 //   pins in the two bottom corners, or some sort of brace along the bottom along the entire width?
-cover_wall_thickness = extrude_width*4; // FIXME: too thin?
-cover_inset_from_end_cap_dimensions = 1;
+cover_wall_thickness = end_cap_overhang;
+cover_inset_from_end_cap_dimensions = 0;
 cover_rounded_diam = end_cap_rounded_diam-cover_inset_from_end_cap_dimensions*2;
 cover_width = end_cap_width-cover_inset_from_end_cap_dimensions*2;
-cover_top_height = 15;
+cover_top_height = extrusion_width;
 cover_top_pos = cover_top_height/2;
 cover_bottom_pos = bottom*(end_cap_height-extrusion_width/2-cover_inset_from_end_cap_dimensions);
 cover_height = cover_top_pos-cover_bottom_pos;
@@ -284,6 +284,8 @@ module electronics_cover() {
   y_endstop_clearance_y = extrusion_width;
   y_endstop_clearance_z = extrusion_width-1.5;
 
+  extrusion_opening_width = y_extrusion_width+tolerance*2;
+
   screw_mount_width = m3_fsc_head_diam*3;
   wire_allowance = 4;
 
@@ -291,19 +293,18 @@ module electronics_cover() {
   inner_height = abs(cover_bottom_pos)-cover_wall_thickness-cover_top_height/2;
   inner_diam = cover_rounded_diam-cover_wall_thickness*2;
 
-  cover_left_width = cover_width/2-end_cap_offset_x - y_extrusion_width/2;
+  cover_left_width = cover_width/2-end_cap_offset_x - extrusion_opening_width/2;
 
   module wire_allowance_gap(length=wire_allowance,width=wire_allowance) {
     hull() {
       cube([width*2,length,extrusion_width*2],center=true);
-      translate([0,width/2,0]) {
-        cube([0.001,length+width,extrusion_width*2],center=true);
+      translate([20,width/2+5,0]) {
+        cube([20,length+width+10,extrusion_width*2],center=true);
       }
     }
   }
 
   module electronics_cover_profile() {
-
     module body() {
       translate([end_cap_offset_x,cover_top_pos-cover_height/2]) {
         rounded_square(cover_width,cover_height,cover_rounded_diam,resolution);
@@ -312,18 +313,41 @@ module electronics_cover() {
 
     module holes() {
       translate([center_pos_x,0,0]) {
-        square([y_extrusion_width,extrusion_width+1],center=true);
+        square([extrusion_opening_width,extrusion_width+5],center=true);
       }
 
       translate([end_cap_offset_x,cover_bottom_pos+cover_wall_thickness+inner_height/2]) {
-        rounded_square(inner_width,inner_height,inner_diam,resolution);
+        rounded_square(inner_width,inner_height,cover_wall_thickness/2,resolution);
       }
 
-      translate([center_pos_x-y_extrusion_width/2,cover_top_pos-cover_top_height/2,0]) {
+      translate([center_pos_x-extrusion_opening_width/2,cover_top_pos-cover_top_height/2,0]) {
         for(z=[top,bottom]) {
           translate([0,z*cover_top_height/2]) {
             rotate([0,0,135+z*45]) {
-              round_corner_filler_profile(inner_diam);
+              round_corner_filler_profile(cover_wall_thickness/2);
+            }
+          }
+        }
+      }
+    }
+
+    module bridges() {
+      for(x=[left,right]) {
+        rounded_diam = 3;
+        tab_depth = 4.25; // don't want to make it too long, because I don't know how much flex there is in the cover
+        tab_width = 5.6;
+        translate([center_pos_x+x*(extrusion_opening_width/2),0,0]) {
+          translate([x*(-tab_depth/2+rounded_diam/2),0,0]) {
+            rounded_square(tab_depth+rounded_diam,tab_width,rounded_diam,resolution);
+          }
+
+          for(z=[top,bottom]) {
+            translate([0,z*tab_width/2]) {
+              mirror([1-x,0,0]) {
+                rotate([0,0,135-z*45]) {
+                  round_corner_filler_profile(cover_wall_thickness/2);
+                }
+              }
             }
           }
         }
@@ -334,6 +358,7 @@ module electronics_cover() {
       body();
       holes();
     }
+    bridges();
   }
 
   module body() {
@@ -346,12 +371,12 @@ module electronics_cover() {
 
   module holes() {
     // y endstop clearance
-    translate([center_pos_x+y_extrusion_width/2,150/2,extrusion_width/2]) {
-      cube([y_extrusion_width,y_endstop_clearance_y*2,y_endstop_clearance_z*2],center=true);
+    translate([center_pos_x+extrusion_opening_width/2,150/2,extrusion_width/2]) {
+      cube([extrusion_opening_width,y_endstop_clearance_y*2,y_endstop_clearance_z*2],center=true);
     }
 
     // X- side wire passthroughs
-    translate([center_pos_x-y_extrusion_width/2,0,0]) {
+    translate([center_pos_x-extrusion_opening_width/2,0,0]) {
       // Z endstop, maybe X and E0 motors
       translate([0,150/2,0]) {
         wire_allowance_gap(2*25);
@@ -370,12 +395,24 @@ module electronics_cover() {
     }
 
     // X+ side mounting screws
-    translate([end_cap_offset_x+cover_width/2,0,0]) {
-      num_screws = 3;
+    num_screws = 3;
 
-      space_width = (cover_length - y_endstop_clearance_y - screw_mount_width*3) / (num_screws-1);
-      for(y=[0:num_screws-1]) {
-        translate([0,-cover_length/2+screw_mount_width/2+y*(space_width+screw_mount_width),0]) {
+    space_width = (cover_length - y_endstop_clearance_y - screw_mount_width*3) / (num_screws-1);
+    max_side_hole_positions = [
+      -150/2+screw_mount_width/2,
+      -150/2+screw_mount_width/2+1*(space_width+screw_mount_width),
+      -150/2+screw_mount_width/2+2*(space_width+screw_mount_width),
+    ];
+    for(y=max_side_hole_positions) {
+      translate([0,y,0]) {
+        translate([0,0,0]) {
+          translate([center_pos_x+extrusion_opening_width/2-wire_allowance,0,0]) {
+            mirror([1,0,0]) {
+              wire_allowance_gap(12);
+            }
+          }
+        }
+        translate([end_cap_offset_x+cover_width/2,0,0]) {
           rotate([0,90,0]) {
             m3_countersink_screw(10);
           }
@@ -384,14 +421,17 @@ module electronics_cover() {
     }
 
     // X- side mounting screws
-    translate([end_cap_offset_x-cover_width/2,0,0]) {
-      hole_positions = [
-        150/2-(extrusion_width*1.75),
-        10,
-        front*(150/2-nema14_side*0.75),
-      ];
-      for(y=hole_positions) {
-        translate([0,y,0]) {
+    min_side_hole_positions = [
+      150/2-(extrusion_width*1.75),
+      10,
+      front*(150/2-nema14_side*0.75),
+    ];
+    for(y=min_side_hole_positions) {
+      translate([0,y,0]) {
+        translate([center_pos_x-extrusion_opening_width/2+wire_allowance,0,0]) {
+          wire_allowance_gap(12);
+        }
+        translate([end_cap_offset_x-cover_width/2,0,0]) {
           rotate([0,90,0]) {
             m3_countersink_screw(cover_left_width+5);
           }

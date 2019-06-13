@@ -5,6 +5,7 @@
   * something to mount soft feet to?
     * because damn the printer is noisy with no damping and very quiet with it
 * wire hotend
+  * replace fan wiring with longer wires
 * wire heated build plate
 * Y carriage
   * print or cut out of aluminum
