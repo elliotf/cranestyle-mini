@@ -467,6 +467,41 @@ module electronics_cover() {
         }
       }
     }
+
+    // fan mounting screws
+    position_fan() {
+      hole_depth = cover_wall_thickness-extrude_width*4;
+      echo("hole_depth: ", hole_depth);
+      for(r=[0,45]) {
+        rotate([0,0,r]) {
+          for(x=[left,right]) {
+            for(y=[front,rear]) {
+              translate([x*(fan_2040_hole_spacing/2),y*(fan_2040_hole_spacing/2),0]) {
+                if (r == 45 && y == front && x == right) {
+                  // at the moment this conflicts with the damping channel, so skip it for now
+                } else {
+                  hole(m3_thread_into_hole_diam,2*hole_depth,resolution);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module position_fan() {
+    translate([duet_width/2-fan_2040_hole_spacing/2-10,150/2-15-fan_2040_hole_spacing/2,cover_top_pos-cover_height+cover_wall_thickness]) {
+      rotate([0,0,-0]) {
+        children();
+      }
+    }
+  }
+
+  position_fan() {
+    translate([0,0,fan_2040_thickness/2+0.2]) {
+      % fan_2040();
+    }
   }
 
   color("green") difference() {

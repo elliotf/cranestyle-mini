@@ -4,6 +4,7 @@
 * end plates
   * fan mount to cool electronics?
     * until I've mounted a heat spreader under the duet wifi
+* make Y belt clamp hold belts closer to extrusion
 * wire hotend
   * replace fan wiring with longer wires
 * wire heated build plate

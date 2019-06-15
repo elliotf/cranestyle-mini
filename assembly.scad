@@ -114,11 +114,8 @@ translate([0,0,-45]) {
           % mgn9c();
         }
       }
-      translate([-mgn9c_hole_spacing_length/2+cr8_hotend_outer_hole_spacing/2,front*(cr8_hotend_heatsink_thickness/2+4),mgn9c_hole_spacing_width/2]) {
-        cr8_hotend();
+      hotend_fan_mount_assembly();
 
-        hotend_fan_mount();
-      }
       % x_carriage();
     }
   }
