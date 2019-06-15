@@ -948,7 +948,7 @@ module fan_2040() {
   }
 
   difference() {
-    body();
-    holes();
+    color("#555") body();
+    color("orange") holes();
   }
 }

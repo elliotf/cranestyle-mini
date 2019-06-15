@@ -1,9 +1,27 @@
 include <./lib/util.scad>;
+include <./lib/vitamins.scad>;
 include <./lib/cr8-hotend.scad>;
 
 module hotend_fan_mount() {
   translate([0,0,cr8_hotend_hole_spacing_from_top-cr8_hotend_heatsink_height]) {
     color("lightblue") import("./walter/Extruder Fan Mount - Extruder Fan Mount.stl");
+
+    translate([0,0,fan_2040_side/2]) {
+      translate([-cr8_hotend_heatsink_width/2-fan_2040_side/2-0.2,front*(cr8_hotend_heatsink_thickness/2+fan_2040_thickness/2),0]) {
+        rotate([0,-90,0]) {
+          rotate([90,0,0]) {
+            % fan_2040();
+          }
+        }
+      }
+      translate([cr8_hotend_heatsink_width/2+fan_2040_side/2+1.26,rear*(cr8_hotend_heatsink_thickness/2-fan_2040_thickness/2),0]) {
+        rotate([0,0,0]) {
+          rotate([90,0,0]) {
+            % fan_2040();
+          }
+        }
+      }
+    }
   }
 }
 
