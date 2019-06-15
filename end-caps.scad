@@ -265,11 +265,11 @@ module end_cap_rear() {
 
 // TODO/FIXME: add some sort of peg/brace on the end caps for this cover to brace/index against?
 //   pins in the two bottom corners, or some sort of brace along the bottom along the entire width?
-cover_wall_thickness = end_cap_overhang;
 cover_inset_from_end_cap_dimensions = 0;
+cover_wall_thickness = end_cap_overhang-cover_inset_from_end_cap_dimensions;
 cover_rounded_diam = end_cap_rounded_diam-cover_inset_from_end_cap_dimensions*2;
 cover_width = end_cap_width-cover_inset_from_end_cap_dimensions*2;
-cover_top_height = extrusion_width;
+cover_top_height = extrusion_width - cover_inset_from_end_cap_dimensions*2;
 cover_top_pos = cover_top_height/2;
 cover_bottom_pos = bottom*(end_cap_height-extrusion_width/2-cover_inset_from_end_cap_dimensions);
 cover_height = cover_top_pos-cover_bottom_pos;
@@ -305,9 +305,32 @@ module electronics_cover() {
   }
 
   module electronics_cover_profile() {
+    damping_material_diam = 4;
+    damping_material_pos_z = cover_top_pos-cover_height+cover_wall_thickness-extrude_width*5-damping_material_diam/2;
+    damping_material_pct_to_expose = 0.22;
+    num_damping_channels = 2;
+    max_damping_spacing = inner_width-damping_material_diam*2;
+    module position_damping_tubes() {
+      translate([end_cap_offset_x,0]) {
+        spacing = max_damping_spacing / (num_damping_channels-1);
+
+        for(x=[0:num_damping_channels-1]) {
+          translate([-max_damping_spacing/2+x*spacing,0,0]) {
+            children();
+          }
+        }
+      }
+    }
+
     module body() {
       translate([end_cap_offset_x,cover_top_pos-cover_height/2]) {
         rounded_square(cover_width,cover_height,cover_rounded_diam,resolution);
+      }
+
+      position_damping_tubes() {
+        translate([0,damping_material_pos_z+damping_material_diam*damping_material_pct_to_expose]) {
+          rounded_square(damping_material_diam+wall_thickness*4,damping_material_diam,damping_material_diam-1);
+        }
       }
     }
 
@@ -327,6 +350,12 @@ module electronics_cover() {
               round_corner_filler_profile(cover_wall_thickness/2);
             }
           }
+        }
+      }
+
+      position_damping_tubes() {
+        translate([0,damping_material_pos_z]) {
+          accurate_circle(damping_material_diam,resolution);
         }
       }
     }
