@@ -880,3 +880,75 @@ module mini_thumb_screw() {
     holes();
   }
 }
+
+fan_2040_hole_spacing = 35;
+fan_2040_thickness = 20;
+fan_2040_side = 40; // there's a little bump-out on the side, but we'll model that when it matters
+
+module fan_2040() {
+  mouth_opening_width = 30;
+  intake_diam = 27;
+  screw_mount_height = 13;
+  screw_mount_diam = fan_2040_side-fan_2040_hole_spacing;
+  screw_mount_inner = 3.75;
+  wall_thickness = 1.25;
+
+  hole_coords = [
+    [left*fan_2040_hole_spacing/2,rear*fan_2040_hole_spacing/2,0],
+    [right*fan_2040_hole_spacing/2,rear*fan_2040_hole_spacing/2,0],
+    [right*fan_2040_hole_spacing/2,front*fan_2040_hole_spacing/2,0],
+  ];
+
+  module body() {
+    translate([0,0,-fan_2040_thickness/2+screw_mount_height/2]) {
+      for(coord=hole_coords) {
+        linear_extrude(height=screw_mount_height,center=true,convexity=3) {
+          hull() {
+            accurate_circle(15,resolution);
+            translate(coord) {
+              accurate_circle(screw_mount_diam,resolution);
+            }
+          }
+        }
+      }
+    }
+
+    linear_extrude(height=fan_2040_thickness,center=true,convexity=3) {
+      hull() {
+        accurate_circle(fan_2040_side,resolution);
+        translate([-fan_2040_side/2+mouth_opening_width/2,-fan_2040_side/2+1,0]) {
+          square([mouth_opening_width,2],center=true);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    for(coord=hole_coords) {
+      translate(coord) {
+        hole(screw_mount_inner,fan_2040_thickness+1,resolution);
+      }
+    }
+
+    translate([-fan_2040_side/2+mouth_opening_width/2,-fan_2040_side/2,0]) {
+      cube([mouth_opening_width-wall_thickness*2,2,fan_2040_thickness-wall_thickness*2],center=true);
+    }
+    linear_extrude(height=fan_2040_thickness-wall_thickness*2,center=true,convexity=3) {
+      hull() {
+        accurate_circle(fan_2040_side-wall_thickness*2,resolution);
+        translate([-fan_2040_side/2+mouth_opening_width/2,-fan_2040_side/2+1,0]) {
+          square([mouth_opening_width-wall_thickness*2,2],center=true);
+        }
+      }
+    }
+
+    translate([0,0,fan_2040_thickness/2]) {
+      hole(intake_diam,wall_thickness*3,resolution);
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
