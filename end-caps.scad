@@ -266,7 +266,7 @@ module end_cap_rear() {
 // TODO/FIXME: add some sort of peg/brace on the end caps for this cover to brace/index against?
 //   pins in the two bottom corners, or some sort of brace along the bottom along the entire width?
 cover_inset_from_end_cap_dimensions = 0;
-cover_wall_thickness = end_cap_overhang-cover_inset_from_end_cap_dimensions-tolerance;
+cover_wall_thickness = end_cap_overhang-cover_inset_from_end_cap_dimensions;
 cover_rounded_diam = end_cap_rounded_diam-cover_inset_from_end_cap_dimensions*2;
 cover_width = end_cap_width-cover_inset_from_end_cap_dimensions*2;
 cover_top_height = extrusion_width - cover_inset_from_end_cap_dimensions*2;
@@ -284,12 +284,12 @@ module electronics_cover() {
   y_endstop_clearance_y = extrusion_width;
   y_endstop_clearance_z = extrusion_width-1.5;
 
-  extrusion_opening_width = y_extrusion_width+tolerance*2;
+  extrusion_opening_width = y_extrusion_width+tolerance;
 
   screw_mount_width = m3_fsc_head_diam*3;
   wire_allowance = 4;
 
-  inner_width = cover_width - cover_wall_thickness*2;
+  inner_width = cover_width - cover_wall_thickness*2+tolerance;
   inner_height = abs(cover_bottom_pos)-cover_wall_thickness-cover_top_height/2;
   inner_diam = cover_rounded_diam-cover_wall_thickness*2;
 
