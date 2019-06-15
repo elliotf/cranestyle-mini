@@ -266,7 +266,7 @@ module end_cap_rear() {
 // TODO/FIXME: add some sort of peg/brace on the end caps for this cover to brace/index against?
 //   pins in the two bottom corners, or some sort of brace along the bottom along the entire width?
 cover_inset_from_end_cap_dimensions = 0;
-cover_wall_thickness = end_cap_overhang-cover_inset_from_end_cap_dimensions;
+cover_wall_thickness = end_cap_overhang-cover_inset_from_end_cap_dimensions-tolerance;
 cover_rounded_diam = end_cap_rounded_diam-cover_inset_from_end_cap_dimensions*2;
 cover_width = end_cap_width-cover_inset_from_end_cap_dimensions*2;
 cover_top_height = extrusion_width - cover_inset_from_end_cap_dimensions*2;
@@ -476,7 +476,7 @@ module electronics_cover() {
         rotate([0,0,r]) {
           for(x=[left,right]) {
             for(y=[front,rear]) {
-              translate([x*(fan_2040_hole_spacing/2),y*(fan_2040_hole_spacing/2),0]) {
+              translate([x*(fan_4020_hole_spacing/2),y*(fan_4020_hole_spacing/2),0]) {
                 if (r == 45 && y == front && x == right) {
                   // at the moment this conflicts with the damping channel, so skip it for now
                 } else {
@@ -491,7 +491,7 @@ module electronics_cover() {
   }
 
   module position_fan() {
-    translate([duet_width/2-fan_2040_hole_spacing/2-10,150/2-15-fan_2040_hole_spacing/2,cover_top_pos-cover_height+cover_wall_thickness]) {
+    translate([duet_width/2-fan_4020_hole_spacing/2-10,150/2-15-fan_4020_hole_spacing/2,cover_top_pos-cover_height+cover_wall_thickness]) {
       rotate([0,0,-0]) {
         children();
       }
@@ -499,8 +499,8 @@ module electronics_cover() {
   }
 
   position_fan() {
-    translate([0,0,fan_2040_thickness/2+0.2]) {
-      % fan_2040();
+    translate([0,0,fan_4020_thickness/2+0.2]) {
+      % fan_4020();
     }
   }
 

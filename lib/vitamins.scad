@@ -881,26 +881,26 @@ module mini_thumb_screw() {
   }
 }
 
-fan_2040_hole_spacing = 35;
-fan_2040_thickness = 20;
-fan_2040_side = 40; // there's a little bump-out on the side, but we'll model that when it matters
+fan_4020_hole_spacing = 35;
+fan_4020_thickness = 20;
+fan_4020_side = 40; // there's a little bump-out on the side, but we'll model that when it matters
 
-module fan_2040() {
+module fan_4020() {
   mouth_opening_width = 30;
   intake_diam = 27;
   screw_mount_height = 13;
-  screw_mount_diam = fan_2040_side-fan_2040_hole_spacing;
+  screw_mount_diam = fan_4020_side-fan_4020_hole_spacing;
   screw_mount_inner = 3.75;
   wall_thickness = 1.25;
 
   hole_coords = [
-    [left*fan_2040_hole_spacing/2,rear*fan_2040_hole_spacing/2,0],
-    [right*fan_2040_hole_spacing/2,rear*fan_2040_hole_spacing/2,0],
-    [right*fan_2040_hole_spacing/2,front*fan_2040_hole_spacing/2,0],
+    [left*fan_4020_hole_spacing/2,rear*fan_4020_hole_spacing/2,0],
+    [right*fan_4020_hole_spacing/2,rear*fan_4020_hole_spacing/2,0],
+    [right*fan_4020_hole_spacing/2,front*fan_4020_hole_spacing/2,0],
   ];
 
   module body() {
-    translate([0,0,-fan_2040_thickness/2+screw_mount_height/2]) {
+    translate([0,0,-fan_4020_thickness/2+screw_mount_height/2]) {
       for(coord=hole_coords) {
         linear_extrude(height=screw_mount_height,center=true,convexity=3) {
           hull() {
@@ -913,10 +913,10 @@ module fan_2040() {
       }
     }
 
-    linear_extrude(height=fan_2040_thickness,center=true,convexity=3) {
+    linear_extrude(height=fan_4020_thickness,center=true,convexity=3) {
       hull() {
-        accurate_circle(fan_2040_side,resolution);
-        translate([-fan_2040_side/2+mouth_opening_width/2,-fan_2040_side/2+1,0]) {
+        accurate_circle(fan_4020_side,resolution);
+        translate([-fan_4020_side/2+mouth_opening_width/2,-fan_4020_side/2+1,0]) {
           square([mouth_opening_width,2],center=true);
         }
       }
@@ -926,23 +926,23 @@ module fan_2040() {
   module holes() {
     for(coord=hole_coords) {
       translate(coord) {
-        hole(screw_mount_inner,fan_2040_thickness+1,resolution);
+        hole(screw_mount_inner,fan_4020_thickness+1,resolution);
       }
     }
 
-    translate([-fan_2040_side/2+mouth_opening_width/2,-fan_2040_side/2,0]) {
-      cube([mouth_opening_width-wall_thickness*2,2,fan_2040_thickness-wall_thickness*2],center=true);
+    translate([-fan_4020_side/2+mouth_opening_width/2,-fan_4020_side/2,0]) {
+      cube([mouth_opening_width-wall_thickness*2,2,fan_4020_thickness-wall_thickness*2],center=true);
     }
-    linear_extrude(height=fan_2040_thickness-wall_thickness*2,center=true,convexity=3) {
+    linear_extrude(height=fan_4020_thickness-wall_thickness*2,center=true,convexity=3) {
       hull() {
-        accurate_circle(fan_2040_side-wall_thickness*2,resolution);
-        translate([-fan_2040_side/2+mouth_opening_width/2,-fan_2040_side/2+1,0]) {
+        accurate_circle(fan_4020_side-wall_thickness*2,resolution);
+        translate([-fan_4020_side/2+mouth_opening_width/2,-fan_4020_side/2+1,0]) {
           square([mouth_opening_width-wall_thickness*2,2],center=true);
         }
       }
     }
 
-    translate([0,0,fan_2040_thickness/2]) {
+    translate([0,0,fan_4020_thickness/2]) {
       hole(intake_diam,wall_thickness*3,resolution);
     }
   }
@@ -950,5 +950,57 @@ module fan_2040() {
   difference() {
     color("#555") body();
     color("orange") holes();
+  }
+}
+
+fan_4010_hole_spacing = 35.5; // some disagreement on the webernets, so split the difference?
+fan_4010_thickness = 10;
+fan_4010_side = 40;
+
+module fan_4010() {
+  cutout_width = (40-28) / 2;
+  mouth_opening_width = 27;
+  intake_diam = 27;
+  screw_mount_inner = 3.75;
+  wall_thickness = 1;
+
+  module body() {
+    cube([fan_4010_side,fan_4010_side,fan_4010_thickness],center=true);
+  }
+
+  module holes() {
+    for(x=[left,right]) {
+      for(y=[front,rear]) {
+        translate([x*(fan_4010_hole_spacing/2),y*(fan_4010_hole_spacing/2),0]) {
+          hole(screw_mount_inner,fan_4010_thickness+1,resolution);
+        }
+        translate([x*(fan_4010_side/2),y*(fan_4010_side/2),fan_4010_thickness/2+wall_thickness]) {
+          rounded_cube(cutout_width*2,cutout_width*2,fan_4010_thickness*2,3,resolution);
+        }
+      }
+    }
+
+    translate([0,-fan_4010_side/2,0]) {
+      cube([mouth_opening_width-wall_thickness*2,2,fan_4010_thickness-wall_thickness*2],center=true);
+    }
+
+    translate([4,3,fan_4010_thickness/2]) {
+      hole(intake_diam,wall_thickness*3,resolution);
+    }
+  }
+
+  difference() {
+    color("#555") body();
+    color("orange") holes();
+  }
+
+  colors = ["lightblue","unused","yellow"];
+  wire_diam = 2;
+  for(z=[top,bottom]) {
+    translate([fan_4010_side/2,-5,-2+z*wire_diam/2]) {
+      rotate([0,90,0]) {
+        color(colors[z+1]) hole(wire_diam,5,resolution);
+      }
+    }
   }
 }
