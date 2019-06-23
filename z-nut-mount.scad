@@ -186,20 +186,6 @@ module z_nut() {
     holes();
   }
 
-  x_rail_len = 150;
-
-  translate([-mgn12c_hole_spacing_width/2-5+x_rail_len/2,0,mgn12c_hole_spacing_length/2]) {
-    rotate([0,0,90]) {
-      rotate([0,-90,0]) {
-        % mgn9_rail(x_rail_len);
-      }
-    }
-  }
-
-  rotate([90,0,0]) {
-    % mgn12c();
-  }
-
   translate([0,leadscrew_pos_y,220/2-170/2-1]) {
     % color("lightgrey") hole(leadscrew_diam,170,resolution);
   }
@@ -209,20 +195,19 @@ module z_nut() {
   }
 }
 
+module z_nut_assembly() {
+  z_nut();
+}
+
 module to_print() {
   rotate([90,0,0]) {
     z_nut();
   }
 }
 
-debug = 1;
-if (debug) {
-  translate([0,20+mgn12c_surface_above_surface,0]) {
-    rotate([0,0,90]) {
-      % color("lightgrey") extrusion(20,40,220);
-    }
+translate([0,20+mgn12c_surface_above_surface,0]) {
+  rotate([0,0,90]) {
+    % color("lightgrey") extrusion(20,40,220);
   }
-  z_nut();
-} else {
-  to_print();
 }
+z_nut();

@@ -128,7 +128,21 @@ translate([0,0,-45]) {
     extruder_assembly();
   }
 
-  z_nut();
+  z_nut_assembly();
+
+  rotate([90,0,0]) {
+    % mgn12c();
+  }
+
+  x_rail_len = 150;
+
+  translate([-mgn12c_hole_spacing_width/2-5+x_rail_len/2,0,mgn12c_hole_spacing_length/2]) {
+    rotate([0,0,90]) {
+      rotate([0,-90,0]) {
+        % mgn9_rail(x_rail_len);
+      }
+    }
+  }
 }
 
 translate([0,mgn12c_surface_above_surface,220/2-170/2-10.5]) {
