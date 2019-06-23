@@ -5,7 +5,6 @@ use <./x-carriage.scad>;
 use <./x-idler.scad>;
 use <./y-carriage.scad>;
 use <./y-motor-mount.scad>;
-use <./y-belt-clamp.scad>;
 use <./y-endstop-mount.scad>;
 use <./z-motor-mount.scad>;
 use <./z-nut-mount.scad>;

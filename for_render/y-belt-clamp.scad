@@ -1,3 +1,3 @@
-use <../y-belt-clamp.scad>;
+use <../y-carriage.scad>;
 
 belt_clamp();
