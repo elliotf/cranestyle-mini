@@ -188,15 +188,14 @@ translate([0,mgn12c_surface_above_surface+40-150/2,-220/2]) {
       % mgn12_rail(150);
 
       translate([0,54,0]) {
-        y_belt_clamp_assembly();
-        y_carriage_assembly();
+        y_axis_assembly();
       }
     }
   }
 
   // Y idlers
   for(y=[front,rear]) {
-    translate([y_idler_pos_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion+0.1]) {
+    translate([y_idler_pos_x,y*(150/2-y_idler_dist_y_from_extrusion),gt2_toothed_idler_height/2+y_idler_dist_z_from_extrusion]) {
       % color("lightgrey") gt2_toothed_idler();
     }
   }

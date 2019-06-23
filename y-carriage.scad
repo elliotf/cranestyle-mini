@@ -4,17 +4,25 @@ use <./y-carriage.scad>;
 use <./lib/gt2-pulley-profile.scad>;
 
 top_of_belt_below_mgn = 3.5;
-bottom_of_belt_below_mgn = 10.5;
+bottom_of_belt_below_mgn = 11.5;
 belt_opening_height = abs(bottom_of_belt_below_mgn - top_of_belt_below_mgn);
 
+belt_pos_z = y_idler_dist_z_from_extrusion;
+
 belt_thickness = 0.9;
+printed_carriage_thickness = 7;
 
 mgn_clamp_mount_width = 12;
 mgn_clamp_mount_height = top_of_belt_below_mgn+extra_clearance_for_leveling_screws_and_y_idlers;
 
+y_belt_clamp_base_thickness = 1;
 y_belt_clamp_width = mgn_clamp_mount_width-belt_thickness; // walter has 8
 y_belt_clamp_length = mgn12c_hole_spacing_length+10+wall_thickness*2; // walter has 22
-y_belt_clamp_height = belt_opening_height+0.6;
+y_belt_clamp_height = belt_opening_height+y_belt_clamp_base_thickness;
+
+y_carriage_side = 102;
+
+hbp_thickness = 1.6;
 
 module belt_clamp() {
   // on the X carriage, walter is making room for a 0.8mm tall tooth that is 0.5 at its peak, with 60deg sides, and belt of 0.8mm
@@ -90,16 +98,6 @@ module belt_clamp() {
 
   module body() {
     rounded_cube(y_belt_clamp_width,y_belt_clamp_length,y_belt_clamp_height,2);
-
-    translate([-y_belt_clamp_width/2-1,0,y_belt_clamp_height/2]) {
-      translate([0,0,1]) {
-        % cube([2,1,2],center=true);
-      }
-
-      translate([0,0,-y_belt_clamp_height-1.9]) {
-        % cube([2,1,0.1],center=true);
-      }
-    }
   }
 
   module holes() {
@@ -109,23 +107,14 @@ module belt_clamp() {
           hole(m3_loose_diam,y_belt_clamp_height,resolution);
         }
         translate([0,0,-y_belt_clamp_height/2]) {
-          hole(m3_threaded_insert_diam,(m3_threaded_insert_len+1)*2,resolution);
+          hole(m3_threaded_insert_diam,(m3_threaded_insert_len+1.5)*2,resolution);
         }
-        /*
-        translate([5,0,y_belt_clamp_height]) {
-          % color("red") cube([10,2,1],center=true);
-
-          translate([10,0,0]) {
-            % color("green") cube([10,2,1],center=true);
-          }
-        }
-        */
       }
     }
 
     translate([0,0,y_belt_clamp_height/2]) {
       linear_extrude(height=belt_opening_height*2,convexity=3,center=true) {
-        belt_profile();
+        # belt_profile();
       }
     }
   }
@@ -136,7 +125,14 @@ module belt_clamp() {
   }
 }
 
-module mgn_bed() {
+module printed_y_carriage() {
+  top_pos_z = mgn_clamp_mount_height/2 + printed_carriage_thickness;
+
+  bed_pos_x = mgn12c_width/2+y_belt_clamp_width/2+belt_thickness+bed_carriage_offset;
+  cable_strain_relief_length = 15;
+  cable_strain_relief_width = 10;
+  cable_strain_relief_pos_x = bed_pos_x+left*(y_carriage_side/2-cable_strain_relief_width/2-20);
+
   module body() {
     translate([-y_belt_clamp_width/2+mgn_clamp_mount_width/2,0,0]) {
       rounded_cube(mgn_clamp_mount_width-0.4,y_belt_clamp_length,mgn_clamp_mount_height,2);
@@ -153,25 +149,45 @@ module mgn_bed() {
         }
       }
     }
+    translate([0,0,top_pos_z-printed_carriage_thickness/2]) {
+      linear_extrude(height=printed_carriage_thickness,center=true,convexity=2) {
+        translate([mgn12c_width/2+y_belt_clamp_width/2+belt_thickness+bed_carriage_offset,0,0]) {
+          y_carriage_profile();
+        }
+
+        translate([cable_strain_relief_pos_x,y_carriage_side/2,0]) {
+          rounded_square(cable_strain_relief_width,cable_strain_relief_length*2,3);
+
+          for(x=[left,right]) {
+            translate([x*cable_strain_relief_width/2,0,0]) {
+              rotate([0,0,45-x*45]) {
+                round_corner_filler_profile(3);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   module holes() {
     for(y=[front,rear]) {
       m3_fsc_head_rim = 0.5;
-      translate([y_belt_clamp_width/2+belt_thickness-y_belt_clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,mgn_clamp_mount_height/2-m3_fsc_head_rim]) {
-        hole(m3_loose_diam,mgn_clamp_mount_height*2+1,resolution);
-        // room for screw head
-        hull() {
-          hole(m3_loose_diam,m3_fsc_head_diam-m3_loose_diam,resolution);
-          translate([0,0,1]) {
-            hole(m3_fsc_head_diam,2,resolution);
-          }
-        }
+      translate([y_belt_clamp_width/2+belt_thickness-y_belt_clamp_hole_dist_from_mgn,y*mgn12c_hole_spacing_length/2,top_pos_z]) {
+        m3_countersink_screw(mgn_clamp_mount_height+10);
 
         for(x=[10.5,30.5]) { // TODO: need to put this somewhere?
           translate([x,0,0]) {
-            hole(m3_loose_diam,mgn_clamp_mount_height*2+1,resolution);
+            m3_countersink_screw(mgn_clamp_mount_height*2+1);
           }
+        }
+      }
+    }
+
+    translate([cable_strain_relief_pos_x,y_carriage_side/2,top_pos_z-printed_carriage_thickness]) {
+      for(y=[4,10]) {
+        translate([0,y,0]) {
+          cube([cable_strain_relief_width+1,3,3],center=true);
         }
       }
     }
@@ -230,21 +246,6 @@ module mgn_clamp_mount() {
   }
 }
 
-module y_belt_clamp_assembly() {
-  translate([-mgn12c_width/2-y_belt_clamp_width/2-belt_thickness,0,mgn12c_surface_above_surface-top_of_belt_below_mgn-y_belt_clamp_height/2]) {
-    belt_clamp();
-
-    translate([0,0,y_belt_clamp_height/2+mgn_clamp_mount_height/2+0.1]) {
-      mgn_clamp_mount();
-    }
-  }
-  translate([0,0,mgn12c_surface_above_surface]) {
-    % mgn12c();
-  }
-}
-
-y_belt_clamp_assembly();
-
 module accurate_2d_marked_hole(diam) {
   difference() {
     accurate_circle(diam,resolution);
@@ -254,7 +255,7 @@ module accurate_2d_marked_hole(diam) {
 
 module y_carriage_profile() {
   module body() {
-    rounded_square(100,100,100-heated_bed_hole_spacing);
+    rounded_square(y_carriage_side,y_carriage_side,y_carriage_side-heated_bed_hole_spacing);
   }
 
   module holes() {
@@ -262,7 +263,7 @@ module y_carriage_profile() {
     for(x=[left,right]) {
       for(y=[front,rear]) {
         translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,0]) {
-          accurate_2d_marked_hole(m3_diam);
+          accurate_2d_marked_hole(m3_diam+0.4);
         }
       }
     }
@@ -320,8 +321,6 @@ module build_plate() {
   }
 }
 
-hbp_thickness = 1.6;
-
 module heated_build_plate() {
   color("#333") {
     difference() {
@@ -338,7 +337,7 @@ module heated_build_plate() {
   }
 }
 
-module y_carriage_assembly() {
+module y_axis_assembly() {
   y_carriage_thickness = 3;
   build_plate_thickness = 2;
   m3_plain_nut_thickness = 2.5;
@@ -351,17 +350,17 @@ module y_carriage_assembly() {
     }
   }
 
-  translate([bed_carriage_offset,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + y_carriage_thickness/2 + 0.2]) {
+  translate([bed_carriage_offset,0,mgn12c_surface_above_surface+extra_clearance_for_leveling_screws_and_y_idlers + printed_carriage_thickness/2]) {
     color("silver") {
       linear_extrude(height=y_carriage_thickness,center=true,convexity=2) {
-        y_carriage_profile();
+        // y_carriage_profile();
       }
     }
 
     for(z=[top,bottom]) {
       for (x=[left,right]) {
         for (y=[front,rear]) {
-          translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(y_carriage_thickness/2+mini_thumb_screw_thickness/2)*z]) {
+          translate([x*heated_bed_hole_spacing/2,y*heated_bed_hole_spacing/2,(printed_carriage_thickness/2+0.5+mini_thumb_screw_thickness/2)*z]) {
             rotate([0,90+z*90,0]) {
               color("dimgrey") mini_thumb_screw();
             }
@@ -370,7 +369,7 @@ module y_carriage_assembly() {
       }
     }
 
-    translate([0,0,y_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
+    translate([0,0,printed_carriage_thickness/2 + mini_thumb_screw_thickness + m3_plain_nut_thickness + 1 + hbp_thickness/2]) {
       heated_build_plate();
 
       for (x=[left,right]) {
@@ -400,4 +399,23 @@ module y_carriage_assembly() {
       }
     }
   }
+
+  translate([-mgn12c_width/2-y_belt_clamp_width/2-belt_thickness,0,mgn12c_surface_above_surface-top_of_belt_below_mgn-y_belt_clamp_height/2]) {
+    belt_clamp();
+
+    translate([0,0,y_belt_clamp_height/2+mgn_clamp_mount_height/2+0.1]) {
+      // mgn_clamp_mount();
+      printed_y_carriage();
+    }
+  }
+  translate([0,0,mgn12c_surface_above_surface]) {
+    % mgn12c();
+  }
+}
+
+y_axis_assembly();
+
+% mgn12_rail(150);
+translate([0,0,-0.5]) {
+  % cube([100,100,1],center=true);
 }
