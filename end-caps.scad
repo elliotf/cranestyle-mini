@@ -17,13 +17,26 @@ default_cavity_depth = end_cap_thickness - end_cap_thickness_to_leave_from_cavit
 cavity_rounded = end_cap_rounded_diam-(end_cap_width-cavity_width);
 cavity_pos_z = 20/2-end_cap_height+cavity_height/2+wall_thickness*2;
 
+hbp_cabling_position_x = 10; // TODO?  pull from the same place as the Y carriage tab
+hbp_cabling_position_z = -extrusion_width/2-15;
+hbp_cabling_hole_width = 14;
+hbp_cabling_hole_height = 8;
+
+attachment_screw_positions_x = [
+  -y_extrusion_width/2+0,
+  -y_extrusion_width/2+40,
+  -y_extrusion_width/2+80+2.5,
+];
+
 module end_cap(cavity_depth=default_cavity_depth) {
   y_idler_screw_shoulder_pos_z = 20/2+y_idler_dist_z_from_extrusion+gt2_toothed_idler_height;
 
   module body() {
     translate([end_cap_offset_x,front*end_cap_thickness/2,-end_cap_height/2+20/2]) {
       rotate([90,0,0]) {
-        rounded_cube(end_cap_width,end_cap_height,end_cap_thickness,end_cap_overhang*2);
+        linear_extrude(height=end_cap_thickness,center=true,convexity=1) {
+          rounded_square(end_cap_width,end_cap_height,end_cap_overhang*2);
+        }
       }
     }
 
@@ -63,15 +76,16 @@ module end_cap(cavity_depth=default_cavity_depth) {
       }
     }
 
-    translate([end_cap_offset_x,0,cavity_pos_z]) {
-      rotate([90,0,0]) {
-        rounded_cube(cavity_width,cavity_height,cavity_depth*2,cavity_rounded,resolution);
-      }
+    // cut endcap in half to show all the vertical holes
+    translate([0,front*end_cap_thickness,0]) {
+      //cube([200,end_cap_thickness,200],center=true);
     }
 
-    // trim the bottom to be able to see better
-    translate([end_cap_offset_x,0,-10-end_cap_height/2]) {
-      // cube([end_cap_width*2,end_cap_thickness*4,25],center=true);
+    // holes for threaded inserts to bolt the bottom to the ends
+    for(x=attachment_screw_positions_x) {
+      translate([x,front*end_cap_thickness/2,extrusion_width/2]) {
+        m3_countersink_screw(end_cap_height+1);
+      }
     }
   }
 
@@ -82,29 +96,58 @@ module end_cap(cavity_depth=default_cavity_depth) {
 }
 
 module end_cap_front() {
+  end_cap();
+}
+
+module end_cap_rear() {
+  power_plug_hole_diam = 11;
+  power_plug_bevel_height = 2;
+  power_plug_bevel_id = 13.5;
+  power_plug_bevel_od = power_plug_bevel_id;
+  power_plug_body_diameter = power_plug_hole_diam+extrude_width*4*2; // make it easier to screw hex nut on // FIXME: make this based on the max OD of the hex nut?
+  power_plug_area_thickness = 4;
+
+  power_plug_pos_x = left*(end_cap_width/2-end_cap_height/2)+end_cap_offset_x;
+  power_plug_pos_y = end_cap_thickness;
+  power_plug_pos_z = 0;
+
   module body() {
-    end_cap(default_cavity_depth/2);
+    mirror([0,1,0]) {
+      end_cap();
+    }
+
+    rounded_diam = 3;
+    tab_width = hbp_cabling_hole_width-3;
+    translate([hbp_cabling_position_x,end_cap_thickness/2,0]) {
+      rotate([90,0,0]) {
+        linear_extrude(height=end_cap_thickness,center=true,convexity=2) {
+          for(x=[left,right]) {
+            translate([x*tab_width/2,-extrusion_width/2,0]) {
+              rotate([0,0,225+x*45]) {
+                # round_corner_filler_profile(rounded_diam,resolution);
+              }
+            }
+          }
+          hull() {
+            translate([0,-extrusion_width/2,0]) {
+              square([tab_width,1],center=true);
+            }
+            translate([0,hbp_cabling_position_z+hbp_cabling_hole_height/2+rounded_diam/2,0]) {
+              rounded_square(tab_width,rounded_diam,rounded_diam);
+            }
+          }
+        }
+      }
+    }
   }
 
   module holes() {
-    // vent holes
-    num_holes = 6;
-    hole_width = 4;
-    hole_height = cavity_height-4;
-    spacing = (cavity_width) / (num_holes);
+    translate([power_plug_pos_x,power_plug_pos_y,power_plug_pos_z]) {
+      rotate([-90,0,0]) {
+        hole(power_plug_bevel_id,power_plug_bevel_height*2,resolution);
 
-    start = (num_holes % 2) ? 0 : 1;
-    initial = (num_holes % 2) ? 0 : spacing/2;
-    echo("start: ", start);
-
-    rotate([90,0,0]) {
-      linear_extrude(height=end_cap_thickness*3,convexity=3,center=true) {
-        for(x=[left,right]) {
-          for(i=[start:floor(num_holes/2)]) {
-            translate([end_cap_offset_x+x*(i*spacing-initial),cavity_pos_z]) {
-              rounded_square(hole_width,hole_height,hole_width);
-            }
-          }
+        translate([0,0,-end_cap_thickness/2-power_plug_bevel_height-0.2]) {
+          hole(power_plug_hole_diam,end_cap_thickness,resolution);
         }
       }
     }
@@ -116,7 +159,7 @@ module end_cap_front() {
   }
 }
 
-module end_cap_rear() {
+module old_end_cap_rear() {
   duet_port_access_hole_width = 40;
   duet_port_access_hole_height = 11;
   duet_port_access_hole_offset_x = -duet_width/2+duet_port_access_hole_width/2+33;
@@ -510,6 +553,138 @@ module electronics_cover() {
   }
 }
 
+module bottom_cover() {
+  bottom_thickness = 1;
+
+  overall_width = end_cap_width;
+  overall_length = 150 + end_cap_thickness*2;
+  overall_height = room_below_extrusion_for_electronics + bottom_thickness;
+
+  cover_wall_thickness = extrude_width*4;
+
+  damping_material_diam = 4; // theraband latex exercise tubes
+  //damping_material_diam = 1.8; // TPU/TPE filament
+  damping_material_pct_to_expose = 0.22;
+  damping_material_pos_z = -overall_height+damping_material_diam/2-damping_material_diam*damping_material_pct_to_expose;
+  damping_material_offset_from_edge = cover_wall_thickness*2+damping_material_diam/2;
+  damping_material_pos_x = overall_width/2 - damping_material_offset_from_edge;
+  damping_material_pos_y = overall_length/2 - damping_material_offset_from_edge;
+  damping_material_rounded_diam = 13;
+
+  cavity_width = overall_width-cover_wall_thickness*2;
+  cavity_length = overall_length-cover_wall_thickness*2;
+  cavity_depth = overall_height - bottom_thickness;
+  cavity_angle_height = 4;
+
+  m3_very_loose_diam = 3 + 0.6;
+
+  attachment_mount_body_diam = m3_threaded_insert_diam+2*(extrude_width*4);
+  attachment_mount_body_len = m3_threaded_insert_len+5+attachment_mount_body_diam;
+
+  module outer_body_profile() {
+    rounded_square(overall_width,overall_length,end_cap_overhang*2);
+  }
+
+  module body() {
+    translate([end_cap_offset_x,0,0]) {
+      difference() {
+        translate([0,0,-overall_height/2]) {
+          rounded_cube(overall_width,overall_length,overall_height,end_cap_overhang*2);
+        }
+        tolerance_for_damping_materal_holder = damping_material_offset_from_edge+damping_material_diam/2+cover_wall_thickness;
+        translate([0,0,-cavity_depth/2+0.1]) {
+          rounded_cube(overall_width-2*tolerance_for_damping_materal_holder,overall_length-2*tolerance_for_damping_materal_holder,cavity_depth+0.2,5);
+        }
+        straight_wall_depth = cavity_depth - cavity_angle_height;
+        translate([0,0,-straight_wall_depth/2+0.1]) {
+          rounded_cube(cavity_width,cavity_length,straight_wall_depth+0.2,end_cap_overhang*2-(cover_wall_thickness*2));
+        }
+      }
+    }
+
+    difference() {
+      union() {
+        for(x=attachment_screw_positions_x,y=[front,rear]) {
+          mirror([0,y-1,0]) {
+            translate([x,overall_length/2-end_cap_thickness/2,-attachment_mount_body_len/2]) {
+              linear_extrude(height=attachment_mount_body_len,center=true,convexity=3) {
+                accurate_circle(attachment_mount_body_diam,resolution);
+
+                translate([0,end_cap_thickness/4,0]) {
+                  square([attachment_mount_body_diam,end_cap_thickness/2],center=true);
+                }
+
+                for(x=[left,right]) {
+                  translate([x*attachment_mount_body_diam/2,end_cap_thickness/2-cover_wall_thickness,0]) {
+                    rotate([0,0,-135+x*45]) {
+                      round_corner_filler_profile(5);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      hull() {
+        translate([end_cap_offset_x,0,-overall_height/2-m3_threaded_insert_len-5-attachment_mount_body_diam]) {
+          cube([overall_width,cavity_length+0.5,overall_height],center=true);
+          translate([0,0,attachment_mount_body_diam]) {
+            cube([overall_width,cavity_length-end_cap_thickness-attachment_mount_body_diam,overall_height+1],center=true);
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    // holes for cables, including strain relief
+    hole_height = abs(hbp_cabling_position_z)+hbp_cabling_hole_height/2-extrusion_width/2;
+    translate([hbp_cabling_position_x,overall_length/2-cover_wall_thickness/2,-hole_height/2+0.1]) {
+      // % cube([hbp_cabling_hole_width,cover_wall_thickness,hole_height],center=true);
+      linear_extrude(height=hole_height+0.2,center=true,convexity=3) {
+        difference() {
+          square([hbp_cabling_hole_width+cover_wall_thickness,10],center=true);
+          for(x=[left,right]) {
+            translate([x*(hbp_cabling_hole_width/2+cover_wall_thickness/2),0,0]) {
+              accurate_circle(cover_wall_thickness,resolution);
+            }
+          }
+        }
+      }
+    }
+
+    // attachment screws
+    for(x=attachment_screw_positions_x,y=[front,rear]) {
+      translate([x,y*(150/2+end_cap_thickness/2),0]) {
+        hole(m3_threaded_insert_diam,2*(m3_threaded_insert_len+1),resolution);
+        hole(m3_very_loose_diam,10*2,resolution);
+      }
+    }
+
+    // damping material holders
+    translate([end_cap_offset_x,0,damping_material_pos_z]) {
+      for(x=[left,right],y=[front,rear]) {
+        translate([0,y*damping_material_pos_y,0]) {
+          rotate([0,90,0]) {
+            hole(damping_material_diam*1,damping_material_pos_x*2-damping_material_rounded_diam,resolution);
+          }
+        }
+        translate([x*damping_material_pos_x,0,0]) {
+          rotate([90,0,0]) {
+            hole(damping_material_diam*1,damping_material_pos_y*2-damping_material_rounded_diam,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module end_cap_assembly() {
   translate([0,0,-20/2]) {
     translate([0,150/2,0]) {
@@ -520,10 +695,10 @@ module end_cap_assembly() {
     }
 
     // duet wifi
-    translate([0,150/2-duet_hole_spacing_y/2+duet_mounting_hole_offset_y,duet_mounting_hole_offset_z-0.1]) {
+    translate([0,0,duet_mounting_hole_offset_z-0.1]) {
       rotate([180,0,0]) {
         rotate([90,0,90]) {
-          % color("#3d526d") import("./lib/duet-pcb-binary-format.stl");
+          color("#3d526d") import("./lib/duet-pcb-binary-format.stl");
         }
       }
 
@@ -534,9 +709,40 @@ module end_cap_assembly() {
       }
     }
 
-    electronics_cover();
+    // electronics_cover();
+  }
+
+  //translate([0,0,-43-20.5]) {
+  translate([0,0,-20.5]) {
+    bottom_cover();
   }
 }
+
+/*
+module wave(length,depth,num_units) {
+  thick = 8;
+  spacing = length / num_units;
+
+  for(i = [0:.2:length]) {
+    hull() {
+      for(i = [i, i + .2]) {
+        translate([i, 0, 0]) {
+          square([.2, pow(1 + cos(i * 360 / length * num_units), 2)]);
+        }
+      }
+    }
+  }
+  translate([length/2,depth/2,0]) {
+    % square([length,depth],center=true);
+  }
+  //translate([45, - thick, 0]) square([80, h]);
+  //translate([80, 0, 0]) square([80, h + thick]);
+}
+
+translate([0,front*150,0]) {
+  wave(100,10,5);
+}
+*/
 
 translate([0,0,-10]) {
   rotate([90,0,0]) {
