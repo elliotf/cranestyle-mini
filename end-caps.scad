@@ -292,7 +292,7 @@ module x_max_cover() {
           hull() {
             cube([20,t_slot_nut_cavity_room,t_slot_tab_height+1],center=true);
 
-            translate([left*t_slot_tab_depth,t_slot_tab_depth,0]) {
+            translate([left*20,20,0]) {
               cube([20,t_slot_nut_cavity_room,t_slot_tab_height+1],center=true);
             }
           }
@@ -339,44 +339,13 @@ module x_min_cover() {
           accurate_circle(end_cap_rounded_diam,resolution);
         }
       }
-      translate([left*width/2,0,0]) {
-        // rounded_square(width,height,rounded_diam);
-
-        // FIXME: something to hold onto/brace the bottom cover
-        //
-        translate([left*(width/2),0,0]) {
-          cover_wall_brace_profile(left);
-        }
+      translate([left*width,0,0]) {
+        cover_wall_brace_profile(left);
       }
       rounded_square(t_slot_tab_depth*2,t_slot_tab_height,2);
-      /*
-      hull() {
-        translate([left*(width-rounded_diam/2),-height/2+rounded_diam/2,0]) {
-          accurate_circle(rounded_diam,resolution);
-        }
-        translate([left*(width-cover_wall_thickness/2),-height/2,0]) {
-          rounded_square(cover_wall_slot_width+extrude_width*4,cover_wall_slot_height*2,1);
-        }
-      }
-      */
     }
 
     module holes() {
-      /*
-      translate([0,0,0]) {
-        translate([left*(width-cover_wall_thickness/2),bottom*(height/2+cover_wall_slot_height),0]) {
-          // % square([cover_wall_thickness,2*2],center=true);
-          rounded_square(cover_wall_slot_width,(cover_wall_slot_height)*2,extrude_width*2);
-          for(x=[left,right]) {
-            translate([x*(cover_wall_slot_width/2),0,0]) {
-              rotate([0,0,45-x*45]) {
-                round_corner_filler_profile(extrude_width*2,resolution);
-              }
-            }
-          }
-        }
-      }
-      */
     }
 
     difference() {
@@ -413,7 +382,6 @@ module x_min_cover() {
         rotate([0,-90,0]) {
           wire_allowance_gap(room_for_silicone_tubing,cut_depth);
         }
-        // % cube([width,room_for_silicone_tubing,cut_depth*2],center=true);
 
         // anchors for the X carriage wire bundle clamp
         y_offset = 2;
@@ -466,19 +434,6 @@ module x_min_cover() {
     translate([left*(width),0,0]) {
       cover_wall_brace_holes(left);
     }
-    /*
-    for(y=cover_wall_braces_pos_y) {
-      translate([left*(width/2-cover_wall_thickness/2),y,-height/2-10]) {
-        hull() {
-          cube([width,cover_wall_thickness+2*tolerance,20],center=true);
-
-          translate([0,cover_wall_slot_height,-cover_wall_slot_height-tolerance]) {
-            cube([width,cover_wall_thickness+2*tolerance+2*(cover_wall_slot_height),20],center=true);
-          }
-        }
-      }
-    }
-    */
   }
 
   difference() {
@@ -675,37 +630,11 @@ module end_cap_assembly() {
     x_max_cover();
   }
 
-  translate([0,0,-43-20.5]) {
-  // translate([0,0,-20.5]) {
+  // translate([0,0,-43-20.5]) {
+  translate([0,0,-20.5]) {
     bottom_cover();
   }
 }
-
-/*
-module wave(length,depth,num_units) {
-  thick = 8;
-  spacing = length / num_units;
-
-  for(i = [0:.2:length]) {
-    hull() {
-      for(i = [i, i + .2]) {
-        translate([i, 0, 0]) {
-          square([.2, pow(1 + cos(i * 360 / length * num_units), 2)]);
-        }
-      }
-    }
-  }
-  translate([length/2,depth/2,0]) {
-    % square([length,depth],center=true);
-  }
-  //translate([45, - thick, 0]) square([80, h]);
-  //translate([80, 0, 0]) square([80, h + thick]);
-}
-
-translate([0,front*150,0]) {
-  wave(100,10,5);
-}
-*/
 
 translate([0,0,-10]) {
   rotate([90,0,0]) {
